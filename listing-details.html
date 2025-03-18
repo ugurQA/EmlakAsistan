@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Listing Details</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8"> <!-- Ensures proper handling of Turkish characters -->
+  <style>
+    /* Basic inline styles for table and images (can be moved to styles.css) */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .image-gallery {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .image-gallery img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <h1>Listing Details</h1>
+  <button onclick="location.href='dashboard.html'">Back to Dashboard</button>
+  <div id="listingDetails"></div>
+
+  <script type="module" src="app.js"></script>
+  <script>
+    // Load listing details based on URL parameter
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const docId = urlParams.get("id");
+      if (docId) {
+        const listingsDiv = document.getElementById("listingDetails");
+        if (listingsDiv) {
+          getDocs(query(collection(db, "properties"), where("agent", "==", auth.currentUser.email))).then(snapshot => {
+            const listing = snapshot.docs.find(doc => doc.id === docId);
+            if (listing) {
+              const data = listing.data();
+              const table = document.createElement("table");
+              table.border = "1";
+              table.style.width = "100%";
+              table.style.borderCollapse = "collapse";
+
+              const tbody = document.createElement("tbody");
+              const addRow = (label, value) => {
+                const tr = document.createElement("tr");
+                const td1 = document.createElement("td");
+                td1.textContent = label;
+                td1.style.fontWeight = "bold";
+                const td2 = document.createElement("td");
+                td2.textContent = value || "N/A";
+                const td3 = document.createElement("td"); // Empty for 4-column layout
+                const td4 = document.createElement("td"); // Empty for 4-column layout
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tr.appendChild(td4);
+                tbody.appendChild(tr);
+              };
+
+              addRow("ID", data.listingId);
+              addRow("Başlık", data.title);
+              addRow("Tür", data.type);
+              addRow("Kategori", data.category);
+              addRow("Adres", data.address);
+              addRow("Yer", `${data.province}/${data.district}`);
+              addRow("Metrekare", data.squareMeters);
+              if (data.category === "Konut") {
+                addRow("Oda Sayısı", data.roomType);
+                addRow("Kat", data.floor);
+                addRow("Toplam Kat", data.totalFloors);
+                addRow("Isınma", data.heating);
+                addRow("Otopark", data.parking);
+                addRow("Site İçerisinde", data.site);
+                addRow("Açıklama", data.description);
+                addRow("Not", data.notes);
+              } else if (data.category === "Arsa") {
+                addRow("İmar Durumu", data.developmentStatus);
+              }
+              addRow("Fiyat", data.price ? `${data.price.toLocaleString()} TL` : "N/A");
+              addRow("İletişim", data.contact);
+              addRow("Ajan", data.agent);
+              addRow("Tarih", data.timestamp ? data.timestamp.toDate().toLocaleString() : "N/A");
+
+              table.appendChild(tbody);
+              listingsDiv.appendChild(table);
+
+              // Images section
+              const imagesDiv = document.createElement("div");
+              imagesDiv.className = "image-gallery";
+              if (data.photos && data.photos.length > 0) {
+                data.photos.forEach(photoUrl => {
+                  const img = document.createElement("img");
+                  img.src = photoUrl;
+                  imagesDiv.appendChild(img);
+                });
+              } else {
+                const noImage = document.createElement("p");
+                noImage.textContent = "No images available";
+                imagesDiv.appendChild(noImage);
+              }
+              listingsDiv.appendChild(imagesDiv);
+            } else {
+              listingsDiv.innerHTML = "<p>Listing not found.</p>";
+            }
+          }).catch(err => {
+            console.log("Details load error:", err.message);
+            listingsDiv.innerHTML = "<p>Error loading details.</p>";
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

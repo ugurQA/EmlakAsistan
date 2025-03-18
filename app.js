@@ -1,8 +1,8 @@
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -160,7 +160,8 @@ if (window.location.pathname.includes("add.html")) {
           squareMeters: parseFloat(document.getElementById("squareMeters").value) || 0,
           listingId: newId,
           agent: user.email,
-          timestamp: serverTimestamp()
+          timestamp: serverTimestamp(),
+          photos: [] // Array to store photo URLs
         };
 
         if (category === "Konut") {
@@ -180,16 +181,25 @@ if (window.location.pathname.includes("add.html")) {
         addDoc(collection(db, "properties"), listing).then(docRef => {
           console.log("Listing saved with ID:", docRef.id);
           if (photos.length > 0) {
-            const uploadTasks = Array.from(photos).map(photo =>
-              uploadBytes(ref(storage, `photos/${docRef.id}/${photo.name}`), photo)
-            );
-            Promise.all(uploadTasks).then(() => {
-              console.log("Photos uploaded");
-              alert(`İlan eklendi! ID: ${newId}`);
-              window.location.href = "dashboard.html";
+            const uploadPromises = [];
+            for (let i = 0; i < photos.length; i++) {
+              const photoRef = ref(storage, `photos/${docRef.id}/${photos[i].name}`);
+              uploadPromises.push(uploadBytes(photoRef, photos[i]).then(snapshot => {
+                return getDownloadURL(snapshot.ref).then(url => {
+                  listing.photos.push(url); // Add URL to the listing object
+                });
+              }));
+            }
+            Promise.all(uploadPromises).then(() => {
+              // Update Firestore with photo URLs
+              return updateDoc(docRef, { photos: listing.photos }).then(() => {
+                console.log("Photos URLs saved:", listing.photos);
+                alert(`İlan eklendi! ID: ${newId}`);
+                window.location.href = "dashboard.html";
+              });
             }).catch(err => {
-              console.log("Photo upload error:", err.message);
-              alert("Fotoğraf yükleme hatası: " + err.message);
+              console.log("Photo upload or URL retrieval error:", err.message);
+              alert("Fotoğraf yükleme veya URL alma hatası: " + err.message);
             });
           } else {
             console.log("No photos to upload");
@@ -265,13 +275,18 @@ onAuthStateChanged(auth, (user) => {
             const tr = document.createElement("tr");
             tr.style.textAlign = "center";
 
-            // Thumbnail Image (placeholder; adjust when integrating Storage URLs)
+            // Thumbnail Image
             const tdImage = document.createElement("td");
             const img = document.createElement("img");
-            img.src = "placeholder.jpg"; // Replace with actual photo URL logic later
             img.style.width = "50px";
             img.style.height = "50px";
             img.style.objectFit = "cover";
+            if (data.photos && data.photos.length > 0) {
+              img.src = data.photos[0]; // Use the first photo as thumbnail
+            } else {
+              img.src = ""; // No placeholder, just empty if no photos
+              img.alt = "No image available";
+            }
             tdImage.appendChild(img);
             tr.appendChild(tdImage);
 
@@ -309,7 +324,7 @@ onAuthStateChanged(auth, (user) => {
             const tdActions = document.createElement("td");
             const viewButton = document.createElement("button");
             viewButton.textContent = "View";
-            viewButton.onclick = () => showListingDetails(doc.id, data);
+            viewButton.onclick = () => window.location.href = `listing-details.html?id=${doc.id}`;
             tdActions.appendChild(viewButton);
             tr.appendChild(tdActions);
 
@@ -327,113 +342,6 @@ onAuthStateChanged(auth, (user) => {
     }
   }
 });
-
-// Function to show detailed listing view
-function showListingDetails(docId, data) {
-  // Create a modal for details
-  const detailsDiv = document.createElement("div");
-  detailsDiv.id = "listingDetails";
-  detailsDiv.style.position = "fixed";
-  detailsDiv.style.top = "0";
-  detailsDiv.style.left = "0";
-  detailsDiv.style.width = "100%";
-  detailsDiv.style.height = "100%";
-  detailsDiv.style.backgroundColor = "rgba(0,0,0,0.5)";
-  detailsDiv.style.zIndex = "1000";
-  detailsDiv.style.display = "flex";
-  detailsDiv.style.justifyContent = "center";
-  detailsDiv.style.alignItems = "center";
-
-  const detailsContent = document.createElement("div");
-  detailsContent.style.backgroundColor = "white";
-  detailsContent.style.padding = "20px";
-  detailsContent.style.borderRadius = "5px";
-  detailsContent.style.maxWidth = "600px";
-  detailsContent.style.width = "90%";
-
-  // Detailed table
-  const table = document.createElement("table");
-  table.border = "1";
-  table.style.width = "100%";
-  table.style.borderCollapse = "collapse";
-
-  const tbody = document.createElement("tbody");
-  const addRow = (label, value) => {
-    const tr = document.createElement("tr");
-    const tdLabel = document.createElement("td");
-    tdLabel.textContent = label;
-    tdLabel.style.padding = "8px";
-    tdLabel.style.fontWeight = "bold";
-    const tdValue = document.createElement("td");
-    tdValue.textContent = value || "N/A";
-    tdValue.style.padding = "8px";
-    tr.appendChild(tdLabel);
-    tr.appendChild(tdValue);
-    tbody.appendChild(tr);
-  };
-
-  addRow("ID", data.listingId);
-  addRow("Başlık", data.title);
-  addRow("Tür", data.type);
-  addRow("Kategori", data.category);
-  addRow("Adres", data.address);
-  addRow("Yer", `${data.province}/${data.district}`);
-  addRow("Metrekare", data.squareMeters);
-  if (data.category === "Konut") {
-    addRow("Oda Sayısı", data.roomType);
-    addRow("Kat", data.floor);
-    addRow("Toplam Kat", data.totalFloors);
-    addRow("Isınma", data.heating);
-    addRow("Otopark", data.parking);
-    addRow("Site İçerisinde", data.site);
-    addRow("Açıklama", data.description);
-    addRow("Not", data.notes);
-  } else if (data.category === "Arsa") {
-    addRow("İmar Durumu", data.developmentStatus);
-  }
-  addRow("Fiyat", data.price ? `${data.price.toLocaleString()} TL` : "N/A");
-  addRow("İletişim", data.contact);
-  addRow("Ajan", data.agent);
-  addRow("Tarih", data.timestamp ? data.timestamp.toDate().toLocaleString() : "N/A");
-
-  table.appendChild(tbody);
-  detailsContent.appendChild(table);
-
-  // Images section
-  const imagesDiv = document.createElement("div");
-  imagesDiv.style.marginTop = "20px";
-  imagesDiv.style.display = "flex";
-  imagesDiv.style.flexWrap = "wrap";
-  imagesDiv.style.gap = "10px";
-
-  // Placeholder for images (adjust based on actual photo storage)
-  if (false) { // Replace with condition to check if photos exist (e.g., data.photos)
-    // This is a placeholder; you'll need to integrate Storage URL retrieval
-    // Example: data.photos.forEach(photoUrl => { ... })
-    const img = document.createElement("img");
-    img.src = "placeholder.jpg"; // Replace with actual URL
-    img.style.width = "100px";
-    img.style.height = "100px";
-    img.style.objectFit = "cover";
-    imagesDiv.appendChild(img);
-  } else {
-    const noImage = document.createElement("p");
-    noImage.textContent = "No images available";
-    imagesDiv.appendChild(noImage);
-  }
-
-  detailsContent.appendChild(imagesDiv);
-
-  // Close button
-  const closeButton = document.createElement("button");
-  closeButton.textContent = "Close";
-  closeButton.style.marginTop = "10px";
-  closeButton.onclick = () => document.body.removeChild(detailsDiv);
-  detailsContent.appendChild(closeButton);
-
-  detailsDiv.appendChild(detailsContent);
-  document.body.appendChild(detailsDiv);
-}
 
 // Admin Dashboard
 if (window.location.pathname.includes("admin.html")) {
