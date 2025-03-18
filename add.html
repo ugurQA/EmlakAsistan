@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Yeni İlan Ekle</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8"> <!-- Ensures proper handling of Turkish characters -->
+</head>
+
+<body>
+  <h1>Yeni İlan Ekle</h1>
+  <form id="listingForm" onsubmit="addListing(); return false;">
+    <div class="form-group">
+      <span>• İlan Başlığı:</span>
+      <input type="text" id="title" placeholder="İlan Başlığı" required>
+    </div>
+    <div class="form-group">
+      <span>• Tür:</span>
+      <select id="type" onchange="updateSubcategories()" required>
+        <option value="----">----</option>
+        <option value="Satılık">Satılık</option>
+        <option value="Kiralık">Kiralık</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <span>• Kategori:</span>
+      <select id="category" onchange="updateDetails()" required>
+        <option value="----">----</option>
+        <option value="Konut">Konut</option>
+        <option value="Arsa">Arsa</option>
+      </select>
+    </div>
+    <div id="commonFields">
+      <div class="form-group">
+        <span>• Adres:</span>
+        <input type="text" id="address" placeholder="Adres" required>
+      </div>
+      <div class="form-group">
+        <span>• İl:</span>
+        <select id="province" onchange="updateDistricts()" required>
+          <option value="----">----</option>
+          <option value="İzmir">İzmir</option>
+          <option value="Aydın">Aydın</option>
+          <option value="Manisa">Manisa</option>
+          <option value="Ankara">Ankara</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <span>• İlçe:</span>
+        <select id="district" required>
+          <option value="----">----</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <span>• Fiyat:</span>
+        <input type="number" id="price" placeholder="Fiyat" required>
+      </div>
+      <div class="form-group">
+        <span>• İletişim Numarası:</span>
+        <input type="tel" id="contact" placeholder="İletişim Numarası" required>
+      </div>
+    </div>
+    <div id="propertyDetails" style="display: none;">
+      <div class="form-group">
+        <span>• Metrekare:</span>
+        <input type="number" id="squareMeters" placeholder="Metrekare" required>
+      </div>
+      <div id="konutDetails" style="display: none;">
+        <div class="form-group">
+          <span>• Oda Sayısı:</span>
+          <select id="roomType">
+            <option value="----">----</option>
+            <option value="1+0">1+0</option>
+            <option value="1+1">1+1</option>
+            <option value="2+1">2+1</option>
+            <option value="3+1">3+1</option>
+            <option value="4+1">4+1</option>
+            <option value="5+1">5+1</option>
+            <option value="3+2">3+2</option>
+            <option value="4+2">4+2</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span>• Bulunduğu Kat:</span>
+          <select id="floor">
+            <option value="----">----</option>
+            <option value="Kot">Kot</option>
+            <option value="Zemin">Zemin</option>
+            <option value="Yüksek Giriş">Yüksek Giriş</option>
+            <script>
+              for (let i = 1; i <= 50; i++) {
+                document.write(`<option value="${i}">${i}</option>`);
+              }
+            </script>
+          </select>
+        </div>
+        <div class="form-group">
+          <span>• Kat Sayısı:</span>
+          <select id="totalFloors">
+            <option value="----">----</option>
+            <script>
+              for (let i = 1; i <= 50; i++) {
+                document.write(`<option value="${i}">${i}</option>`);
+              }
+            </script>
+          </select>
+        </div>
+        <div class="form-group">
+          <span>• Isınma:</span>
+          <select id="heating">
+            <option value="----">----</option>
+            <option value="Klima">Klima</option>
+            <option value="Doğalgaz">Doğalgaz</option>
+            <option value="Merkezi (Payölçer)">Merkezi (Payölçer)</option>
+            <option value="Jeotermal">Jeotermal</option>
+            <option value="Soba">Soba</option>
+            <option value="Isı Pompası">Isı Pompası</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span>• Otopark:</span>
+          <select id="parking">
+            <option value="----">----</option>
+            <option value="Evet">Evet</option>
+            <option value="Hayır">Hayır</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span>• Site İçerisinde:</span>
+          <select id="site">
+            <option value="----">----</option>
+            <option value="Evet">Evet</option>
+            <option value="Hayır">Hayır</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <span>• Açıklama:</span>
+          <textarea id="description" placeholder="Açıklama" maxlength="3000"></textarea>
+        </div>
+        <div class="form-group">
+          <span>• Not:</span>
+          <textarea id="notes" placeholder="Not" maxlength="3000"></textarea>
+        </div>
+      </div>
+      <div id="arsaDetails" style="display: none;">
+        <div class="form-group">
+          <span>• İmar Durumu:</span>
+          <select id="developmentStatus">
+            <option value="----">----</option>
+            <option value="Arsa">Arsa</option>
+            <option value="Tarla">Tarla</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <span>• Fotoğraflar:</span>
+      <input type="file" id="photos" multiple accept="image/*" onchange="displayPhotos(event)">
+      <div id="photoPreview"></div>
+    </div>
+    <input type="hidden" id="listingId">
+    <div class="form-group">
+      <button type="submit">Kaydet</button>
+    </div>
+  </form>
+  <script type="module" src="app.js"></script>
+</body>
+
+</html>
