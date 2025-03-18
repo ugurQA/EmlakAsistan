@@ -3,12 +3,71 @@
 <head>
   <title>Agent Dashboard</title>
   <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8"> <!-- Ensures proper handling of Turkish characters -->
+  <style>
+    /* Basic inline styles for table and modal (can be moved to styles.css) */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    #listingDetails {
+      display: none; /* Initially hidden, controlled by JS */
+    }
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <h1>Your Listings</h1>
   <button onclick="location.href='add.html'">Add Listing</button>
-  <input type="text" id="search" placeholder="Search...">
+  <input type="text" id="search" placeholder="Search..." onkeyup="filterListings()">
   <div id="listings"></div>
+
   <script type="module" src="app.js"></script>
+  <script>
+    // Simple filter function (can be enhanced)
+    function filterListings() {
+      const input = document.getElementById("search").value.toLowerCase();
+      const table = document.querySelector("#listings table");
+      if (table) {
+        const tr = table.getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+          let found = false;
+          for (let j = 1; j < tr[i].cells.length - 1; j++) { // Exclude Actions column
+            if (tr[i].cells[j].textContent.toLowerCase().indexOf(input) > -1) {
+              found = true;
+              break;
+            }
+          }
+          tr[i].style.display = found ? "" : "none";
+        }
+      }
+    }
+  </script>
 </body>
 </html>

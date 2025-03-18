@@ -235,23 +235,205 @@ onAuthStateChanged(auth, (user) => {
   if (user && window.location.pathname.includes("dashboard.html")) {
     console.log("Loading listings for user:", user.email);
     const listingsDiv = document.getElementById("listings");
-    getDocs(query(collection(db, "properties"), where("agent", "==", user.email))).then(snapshot => {
-      console.log("Query snapshot size:", snapshot.size);
-      listingsDiv.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        console.log("Found listing:", data);
-        listingsDiv.innerHTML += `<p>${data.title} - ${data.category} (ID: ${data.listingId}) <button onclick="editListing('${doc.id}')">Düzenle</button></p>`;
+    if (listingsDiv) {
+      getDocs(query(collection(db, "properties"), where("agent", "==", user.email))).then(snapshot => {
+        console.log("Query snapshot size:", snapshot.size);
+        listingsDiv.innerHTML = ""; // Clear existing content
+        if (!snapshot.empty) {
+          // Create table
+          const table = document.createElement("table");
+          table.border = "1";
+          table.style.width = "100%";
+          table.style.borderCollapse = "collapse";
+
+          // Create header row
+          const thead = document.createElement("thead");
+          const headerRow = document.createElement("tr");
+          ["Image", "Tür", "Kategori", "Yer", "Metrekare", "Oda Sayısı", "Fiyat", "Actions"].forEach(headerText => {
+            const th = document.createElement("th");
+            th.textContent = headerText;
+            th.style.padding = "8px";
+            headerRow.appendChild(th);
+          });
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+
+          // Create body
+          const tbody = document.createElement("tbody");
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const tr = document.createElement("tr");
+            tr.style.textAlign = "center";
+
+            // Thumbnail Image (placeholder; adjust when integrating Storage URLs)
+            const tdImage = document.createElement("td");
+            const img = document.createElement("img");
+            img.src = "placeholder.jpg"; // Replace with actual photo URL logic later
+            img.style.width = "50px";
+            img.style.height = "50px";
+            img.style.objectFit = "cover";
+            tdImage.appendChild(img);
+            tr.appendChild(tdImage);
+
+            // Tür
+            const tdType = document.createElement("td");
+            tdType.textContent = data.type;
+            tr.appendChild(tdType);
+
+            // Kategori
+            const tdCategory = document.createElement("td");
+            tdCategory.textContent = data.category;
+            tr.appendChild(tdCategory);
+
+            // Yer (İl/İlçe)
+            const tdLocation = document.createElement("td");
+            tdLocation.textContent = `${data.province}/${data.district}`;
+            tr.appendChild(tdLocation);
+
+            // Metrekare
+            const tdSquareMeters = document.createElement("td");
+            tdSquareMeters.textContent = data.squareMeters || "N/A";
+            tr.appendChild(tdSquareMeters);
+
+            // Oda Sayısı (empty for Arsa)
+            const tdRoomType = document.createElement("td");
+            tdRoomType.textContent = data.category === "Konut" ? data.roomType || "N/A" : "";
+            tr.appendChild(tdRoomType);
+
+            // Fiyat
+            const tdPrice = document.createElement("td");
+            tdPrice.textContent = data.price ? `${data.price.toLocaleString()} TL` : "N/A";
+            tr.appendChild(tdPrice);
+
+            // Actions (View Button)
+            const tdActions = document.createElement("td");
+            const viewButton = document.createElement("button");
+            viewButton.textContent = "View";
+            viewButton.onclick = () => showListingDetails(doc.id, data);
+            tdActions.appendChild(viewButton);
+            tr.appendChild(tdActions);
+
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          listingsDiv.appendChild(table);
+        } else {
+          console.log("No listings found for this agent");
+          listingsDiv.innerHTML = "<p>Henüz ilanınız yok.</p>";
+        }
+      }).catch(err => {
+        console.log("Listings load error:", err.message);
       });
-      if (snapshot.empty) {
-        console.log("No listings found for this agent");
-        listingsDiv.innerHTML = "<p>Henüz ilanınız yok.</p>";
-      }
-    }).catch(err => {
-      console.log("Listings load error:", err.message);
-    });
+    }
   }
 });
+
+// Function to show detailed listing view
+function showListingDetails(docId, data) {
+  // Create a modal for details
+  const detailsDiv = document.createElement("div");
+  detailsDiv.id = "listingDetails";
+  detailsDiv.style.position = "fixed";
+  detailsDiv.style.top = "0";
+  detailsDiv.style.left = "0";
+  detailsDiv.style.width = "100%";
+  detailsDiv.style.height = "100%";
+  detailsDiv.style.backgroundColor = "rgba(0,0,0,0.5)";
+  detailsDiv.style.zIndex = "1000";
+  detailsDiv.style.display = "flex";
+  detailsDiv.style.justifyContent = "center";
+  detailsDiv.style.alignItems = "center";
+
+  const detailsContent = document.createElement("div");
+  detailsContent.style.backgroundColor = "white";
+  detailsContent.style.padding = "20px";
+  detailsContent.style.borderRadius = "5px";
+  detailsContent.style.maxWidth = "600px";
+  detailsContent.style.width = "90%";
+
+  // Detailed table
+  const table = document.createElement("table");
+  table.border = "1";
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+
+  const tbody = document.createElement("tbody");
+  const addRow = (label, value) => {
+    const tr = document.createElement("tr");
+    const tdLabel = document.createElement("td");
+    tdLabel.textContent = label;
+    tdLabel.style.padding = "8px";
+    tdLabel.style.fontWeight = "bold";
+    const tdValue = document.createElement("td");
+    tdValue.textContent = value || "N/A";
+    tdValue.style.padding = "8px";
+    tr.appendChild(tdLabel);
+    tr.appendChild(tdValue);
+    tbody.appendChild(tr);
+  };
+
+  addRow("ID", data.listingId);
+  addRow("Başlık", data.title);
+  addRow("Tür", data.type);
+  addRow("Kategori", data.category);
+  addRow("Adres", data.address);
+  addRow("Yer", `${data.province}/${data.district}`);
+  addRow("Metrekare", data.squareMeters);
+  if (data.category === "Konut") {
+    addRow("Oda Sayısı", data.roomType);
+    addRow("Kat", data.floor);
+    addRow("Toplam Kat", data.totalFloors);
+    addRow("Isınma", data.heating);
+    addRow("Otopark", data.parking);
+    addRow("Site İçerisinde", data.site);
+    addRow("Açıklama", data.description);
+    addRow("Not", data.notes);
+  } else if (data.category === "Arsa") {
+    addRow("İmar Durumu", data.developmentStatus);
+  }
+  addRow("Fiyat", data.price ? `${data.price.toLocaleString()} TL` : "N/A");
+  addRow("İletişim", data.contact);
+  addRow("Ajan", data.agent);
+  addRow("Tarih", data.timestamp ? data.timestamp.toDate().toLocaleString() : "N/A");
+
+  table.appendChild(tbody);
+  detailsContent.appendChild(table);
+
+  // Images section
+  const imagesDiv = document.createElement("div");
+  imagesDiv.style.marginTop = "20px";
+  imagesDiv.style.display = "flex";
+  imagesDiv.style.flexWrap = "wrap";
+  imagesDiv.style.gap = "10px";
+
+  // Placeholder for images (adjust based on actual photo storage)
+  if (false) { // Replace with condition to check if photos exist (e.g., data.photos)
+    // This is a placeholder; you'll need to integrate Storage URL retrieval
+    // Example: data.photos.forEach(photoUrl => { ... })
+    const img = document.createElement("img");
+    img.src = "placeholder.jpg"; // Replace with actual URL
+    img.style.width = "100px";
+    img.style.height = "100px";
+    img.style.objectFit = "cover";
+    imagesDiv.appendChild(img);
+  } else {
+    const noImage = document.createElement("p");
+    noImage.textContent = "No images available";
+    imagesDiv.appendChild(noImage);
+  }
+
+  detailsContent.appendChild(imagesDiv);
+
+  // Close button
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "Close";
+  closeButton.style.marginTop = "10px";
+  closeButton.onclick = () => document.body.removeChild(detailsDiv);
+  detailsContent.appendChild(closeButton);
+
+  detailsDiv.appendChild(detailsContent);
+  document.body.appendChild(detailsDiv);
+}
 
 // Admin Dashboard
 if (window.location.pathname.includes("admin.html")) {
