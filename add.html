@@ -8,14 +8,14 @@
 
 <body>
   <h1>Yeni İlan Ekle</h1>
-  <form id="listingForm" onsubmit="addListing(); return false;">
+  <form id="listingForm">
     <div class="form-group">
       <span>• İlan Başlığı:</span>
       <input type="text" id="title" placeholder="İlan Başlığı" required>
     </div>
     <div class="form-group">
       <span>• Tür:</span>
-      <select id="type" onchange="updateSubcategories()" required>
+      <select id="type" required>
         <option value="----">----</option>
         <option value="Satılık">Satılık</option>
         <option value="Kiralık">Kiralık</option>
@@ -23,7 +23,7 @@
     </div>
     <div class="form-group">
       <span>• Kategori:</span>
-      <select id="category" onchange="updateDetails()" required>
+      <select id="category" required>
         <option value="----">----</option>
         <option value="Konut">Konut</option>
         <option value="Arsa">Arsa</option>
@@ -36,7 +36,7 @@
       </div>
       <div class="form-group">
         <span>• İl:</span>
-        <select id="province" onchange="updateDistricts()" required>
+        <select id="province" required>
           <option value="----">----</option>
           <option value="İzmir">İzmir</option>
           <option value="Aydın">Aydın</option>
@@ -79,6 +79,7 @@
             <option value="4+2">4+2</option>
           </select>
         </div>
+        <!-- Rest of Konut fields remain unchanged -->
         <div class="form-group">
           <span>• Bulunduğu Kat:</span>
           <select id="floor">
@@ -93,6 +94,7 @@
             </script>
           </select>
         </div>
+        <!-- Other fields (totalFloors, heating, etc.) remain unchanged -->
         <div class="form-group">
           <span>• Kat Sayısı:</span>
           <select id="totalFloors">
@@ -154,7 +156,7 @@
     </div>
     <div class="form-group">
       <span>• Fotoğraflar:</span>
-      <input type="file" id="photos" multiple accept="image/*" onchange="displayPhotos(event)">
+      <input type="file" id="photos" multiple accept="image/*">
       <div id="photoPreview"></div>
     </div>
     <input type="hidden" id="listingId">

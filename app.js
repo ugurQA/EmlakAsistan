@@ -1,9 +1,10 @@
+// Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage, ref, uploadBytes } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
-
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBbae_WFHcINiBBjEDEyhbDKcaU_Aj7TQw",
   authDomain: "emlakasistan-a76f1.firebaseapp.com",
@@ -13,16 +14,16 @@ const firebaseConfig = {
   appId: "1:652074794709:web:82ba55444395a926b56c5c",
 };
 
-
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+console.log("Firebase initialized:", app.name);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Export helper functions
 export function updateSubcategories() {
+  console.log("updateSubcategories called for type:", document.getElementById("type").value);
   const type = document.getElementById("type").value;
   const categorySelect = document.getElementById("category");
   categorySelect.innerHTML = "";
@@ -47,6 +48,7 @@ export function updateSubcategories() {
 }
 
 export function updateDetails() {
+  console.log("updateDetails called for category:", document.getElementById("category").value);
   const category = document.getElementById("category").value;
   const propertyDetails = document.getElementById("propertyDetails");
   const konutDetails = document.getElementById("konutDetails");
@@ -62,6 +64,7 @@ export function updateDetails() {
 }
 
 export function updateDistricts() {
+  console.log("updateDistricts called for province:", document.getElementById("province").value);
   const province = document.getElementById("province").value;
   const districtSelect = document.getElementById("district");
   if (districtSelect) {
@@ -87,6 +90,7 @@ export function updateDistricts() {
 }
 
 export function displayPhotos(event) {
+  console.log("displayPhotos called");
   const photoPreview = document.getElementById("photoPreview");
   if (photoPreview) {
     photoPreview.innerHTML = "";
@@ -106,43 +110,33 @@ export function displayPhotos(event) {
   }
 }
 
-// Initial page load for add.html
+// Initial page load and event listeners for add.html
 if (window.location.pathname.includes("add.html")) {
+  console.log("Initializing add.html");
   updateSubcategories();
   updateDistricts();
-  document.getElementById("type").addEventListener("change", updateSubcategories);
-  document.getElementById("category").addEventListener("change", updateDetails);
-  document.getElementById("province").addEventListener("change", updateDistricts);
-  document.getElementById("photos").addEventListener("change", displayPhotos);
-}
-
-// Export main functions and attach to window
-window.login = function() {
-  console.log("Login function called");
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      console.log("Login successful");
-      if (email === "admin@office.com") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
-    })
-    .catch(err => {
-      console.log("Login error: ", err.message);
-      alert(err.message);
-    });
-};
-
-window.addListing = function() {
+  const typeSelect = document.getElementById("type");
+  const categorySelect = document.getElementById("category");
+  const provinceSelect = document.getElementById("province");
+  const photosInput = document.getElementById("photos");
   const form = document.getElementById("listingForm");
+  if (typeSelect) typeSelect.addEventListener("change", updateSubcategories);
+  if (categorySelect) categorySelect.addEventListener("change", updateDetails);
+  if (provinceSelect) provinceSelect.addEventListener("change", updateDistricts);
+  if (photosInput) photosInput.addEventListener("change", displayPhotos);
   if (form) {
-    form.addEventListener("submit", (e) => {
+    console.log("Attaching form submission listener");
+    form.addEventListener("submit", function(e) {
       e.preventDefault();
+      console.log("Form submission intercepted");
       const user = auth.currentUser;
-      if (!user) return alert("Please log in first.");
+      console.log("Current user before save:", user);
+      if (!user) {
+        console.log("No authenticated user");
+        alert("Please log in first.");
+        return;
+      }
+      console.log("Authenticated user:", user.email);
 
       getDocs(query(collection(db, "properties"), orderBy("listingId", "desc"), limit(1))).then(snapshot => {
         let newId = 1;
@@ -150,6 +144,7 @@ window.addListing = function() {
           newId = snapshot.docs[0].data().listingId + 1;
         }
         document.getElementById("listingId").value = newId;
+        console.log("Generated listingId:", newId);
 
         const photos = document.getElementById("photos").files;
         const category = document.getElementById("category").value;
@@ -160,9 +155,9 @@ window.addListing = function() {
           address: document.getElementById("address").value,
           province: document.getElementById("province").value,
           district: document.getElementById("district").value,
-          price: parseFloat(document.getElementById("price").value),
+          price: parseFloat(document.getElementById("price").value) || 0,
           contact: document.getElementById("contact").value,
-          squareMeters: parseFloat(document.getElementById("squareMeters").value),
+          squareMeters: parseFloat(document.getElementById("squareMeters").value) || 0,
           listingId: newId,
           agent: user.email,
           timestamp: serverTimestamp()
@@ -181,35 +176,79 @@ window.addListing = function() {
           listing.developmentStatus = document.getElementById("developmentStatus").value;
         }
 
+        console.log("Attempting to save listing:", listing);
         addDoc(collection(db, "properties"), listing).then(docRef => {
+          console.log("Listing saved with ID:", docRef.id);
           if (photos.length > 0) {
             const uploadTasks = Array.from(photos).map(photo =>
               uploadBytes(ref(storage, `photos/${docRef.id}/${photo.name}`), photo)
             );
             Promise.all(uploadTasks).then(() => {
+              console.log("Photos uploaded");
               alert(`İlan eklendi! ID: ${newId}`);
               window.location.href = "dashboard.html";
+            }).catch(err => {
+              console.log("Photo upload error:", err.message);
+              alert("Fotoğraf yükleme hatası: " + err.message);
             });
           } else {
+            console.log("No photos to upload");
             alert(`İlan eklendi! ID: ${newId}`);
             window.location.href = "dashboard.html";
           }
-        }).catch(err => alert(err.message));
+        }).catch(err => {
+          console.log("Save error:", err.message);
+          alert("İlan kaydedilemedi: " + err.message);
+        });
+      }).catch(err => {
+        console.log("ID query error:", err.message);
+        alert("Hata oluştu: " + err.message);
       });
     });
+  } else {
+    console.error("Form element with id 'listingForm' not found");
   }
+}
+
+// Export main functions and attach to window
+window.login = function() {
+  console.log("Login function called");
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      console.log("Login successful with email:", email);
+      if (email === "admin@office.com") {
+        window.location.href = "admin.html";
+      } else {
+        window.location.href = "dashboard.html";
+      }
+    })
+    .catch(err => {
+      console.log("Login error: ", err.message);
+      alert(err.message);
+    });
 };
 
 // Load Agent Listings
 onAuthStateChanged(auth, (user) => {
   if (user && window.location.pathname.includes("dashboard.html")) {
+    console.log("Loading listings for user:", user.email);
     const listingsDiv = document.getElementById("listings");
     getDocs(query(collection(db, "properties"), where("agent", "==", user.email))).then(snapshot => {
+      console.log("Query snapshot size:", snapshot.size);
       listingsDiv.innerHTML = "";
       snapshot.forEach(doc => {
         const data = doc.data();
+        console.log("Found listing:", data);
         listingsDiv.innerHTML += `<p>${data.title} - ${data.category} (ID: ${data.listingId}) <button onclick="editListing('${doc.id}')">Düzenle</button></p>`;
       });
+      if (snapshot.empty) {
+        console.log("No listings found for this agent");
+        listingsDiv.innerHTML = "<p>Henüz ilanınız yok.</p>";
+      }
+    }).catch(err => {
+      console.log("Listings load error:", err.message);
     });
   }
 });
@@ -227,6 +266,8 @@ if (window.location.pathname.includes("admin.html")) {
     });
     document.getElementById("agentStats").innerHTML = Object.entries(agentStats)
       .map(([agent, count]) => `<p>${agent}: ${count} ilan</p>`).join("");
+  }).catch(err => {
+    console.log("Admin data load error:", err.message);
   });
 }
 
