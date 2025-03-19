@@ -194,7 +194,7 @@
     }
     .confirm-content {
       background-color: white;
-      padding: 20px;
+      padding: 30px; /* Increased padding for better spacing */
       border-radius: 5px;
       text-align: center;
       max-width: 400px;
@@ -243,6 +243,8 @@
     <button class="back-btn" onclick="location.href='dashboard.html'">Back to Dashboard</button>
     <button class="delete-btn" onclick="showDeleteConfirm()">İlanı Sil</button>
     <button class="edit-btn" onclick="toggleEditMode()">Edit</button>
+  </div>
+  <div class="button-group" id="editActions">
     <button class="save-btn" id="saveBtn" style="display: none;" onclick="saveChanges()">Save</button>
     <button class="cancel-btn" id="cancelBtn" style="display: none;" onclick="cancelEdit()">Cancel</button>
   </div>
@@ -270,6 +272,7 @@
 
   <script type="module">
     import { db, getDoc, doc, updateDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject } from './app.js';
+    import { createRoomTypeDropdown, createHeatingDropdown, createParkingDropdown, createSiteDropdown, createDevelopmentStatusDropdown, createFloorDropdown, createTotalFloorsDropdown } from './components.js';
 
     let currentImageIndex = 0;
     let images = [];
@@ -313,13 +316,13 @@
           const tbody = document.createElement("tbody");
 
           // Helper function to add a row with two key-value pairs
-          const addRow = (key1, value1, key2, value2, field1, field2) => {
+          const addRow = (key1, value1, key2, value2, field1, field2, editable1 = true, editable2 = true) => {
             const tr = document.createElement("tr");
             const tdKey1 = document.createElement("td");
             tdKey1.className = "key";
             tdKey1.textContent = key1;
             const tdValue1 = document.createElement("td");
-            tdValue1.className = "value editable";
+            tdValue1.className = `value ${editable1 ? "editable" : ""}`;
             tdValue1.dataset.field = field1;
             tdValue1.textContent = value1 || "";
             if (key1 === "Fiyat" && value1) {
@@ -330,7 +333,7 @@
             tdKey2.className = "key";
             tdKey2.textContent = key2 || "";
             const tdValue2 = document.createElement("td");
-            tdValue2.className = "value editable";
+            tdValue2.className = `value ${editable2 ? "editable" : ""}`;
             tdValue2.dataset.field = field2;
             tdValue2.textContent = value2 || "";
             if (key2 === "Fiyat" && value2) {
@@ -345,13 +348,13 @@
           };
 
           // Helper function to add a full-width row for a single key-value pair
-          const addFullRow = (key, value, field) => {
+          const addFullRow = (key, value, field, editable = true) => {
             const tr = document.createElement("tr");
             const tdKey = document.createElement("td");
             tdKey.className = "key";
             tdKey.textContent = key;
             const tdValue = document.createElement("td");
-            tdValue.className = "full-value editable";
+            tdValue.className = `full-value ${editable ? "editable" : ""}`;
             tdValue.dataset.field = field;
             tdValue.colSpan = 3;
             tdValue.textContent = value || "";
@@ -361,22 +364,22 @@
           };
 
           // Common fields for both Konut and Arsa
-          addRow("ID:", data.listingId, "Fiyat:", data.price ? `${data.price.toLocaleString()} TL` : "", "listingId", "price");
-          addRow("Tür:", data.type, "Kategori:", data.category, "type", "category");
-          addRow("Yer:", `${data.province}/${data.district}`, "Adres:", data.address, "location", "address");
-          addRow("İletişim:", data.contact, "Ajan:", data.agent, "contact", "agent");
+          addRow("ID:", data.listingId, "Fiyat:", data.price ? `${data.price.toLocaleString()} TL` : "", "listingId", "price", false, true);
+          addRow("Tür:", data.type, "Kategori:", data.category, "type", "category", false, false);
+          addRow("Yer:", `${data.province}/${data.district}`, "Adres:", data.address, "location", "address", false, true);
+          addRow("İletişim:", data.contact, "Ajan:", data.agent, "contact", "agent", true, false);
 
           // Category-specific fields
           if (data.category === "Konut") {
-            addRow("Metrekare:", data.squareMeters, "Oda Sayısı:", data.roomType, "squareMeters", "roomType");
-            addRow("Kat:", data.floor, "Toplam Kat:", data.totalFloors, "floor", "totalFloors");
-            addRow("Isınma:", data.heating, "Site İçerisinde:", data.site, "heating", "site");
-            addRow("Otopark:", data.parking, "Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "parking", "timestamp");
+            addRow("Metrekare:", data.squareMeters, "Oda Sayısı:", data.roomType, "squareMeters", "roomType", true, true);
+            addRow("Kat:", data.floor, "Toplam Kat:", data.totalFloors, "floor", "totalFloors", true, true);
+            addRow("Isınma:", data.heating, "Site İçerisinde:", data.site, "heating", "site", true, true);
+            addRow("Otopark:", data.parking, "Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "parking", "timestamp", true, false);
             addFullRow("Açıklama:", data.description, "description");
             addFullRow("Not:", data.notes, "notes");
           } else if (data.category === "Arsa") {
-            addRow("Metrekare:", data.squareMeters, "İmar Durumu:", data.developmentStatus, "squareMeters", "developmentStatus");
-            addFullRow("Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "timestamp");
+            addRow("Metrekare:", data.squareMeters, "İmar Durumu:", data.developmentStatus, "squareMeters", "developmentStatus", true, true);
+            addFullRow("Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "timestamp", false);
             addFullRow("Açıklama:", data.description, "description");
             addFullRow("Not:", data.notes, "notes");
           }
@@ -488,64 +491,21 @@
           if (field === "description" || field === "notes") {
             inputElement = document.createElement("textarea");
             inputElement.value = value;
-          } else if (field === "type") {
-            inputElement = document.createElement("select");
-            ["Satılık", "Kiralık"].forEach(option => {
-              const opt = document.createElement("option");
-              opt.value = option;
-              opt.text = option;
-              if (option === value) opt.selected = true;
-              inputElement.appendChild(opt);
-            });
-          } else if (field === "category") {
-            inputElement = document.createElement("select");
-            ["Konut", "Arsa"].forEach(option => {
-              const opt = document.createElement("option");
-              opt.value = option;
-              opt.text = option;
-              if (option === value) opt.selected = true;
-              inputElement.appendChild(opt);
-            });
-          } else if (field === "location") {
-            const [province, district] = value.split("/");
-            const provinceSelect = document.createElement("select");
-            const districtSelect = document.createElement("select");
-            ["İzmir", "Manisa", "Ankara"].forEach(p => {
-              const opt = document.createElement("option");
-              opt.value = p;
-              opt.text = p;
-              if (p === province) opt.selected = true;
-              provinceSelect.appendChild(opt);
-            });
-            const districts = {
-              "İzmir": ["Buca", "Gaziemir", "Karabağlar", "Bornova", "Balçova"],
-              "Manisa": ["Yunusemre", "Şehzadeler", "Akhisar", "Turgutlu"],
-              "Ankara": ["Çankaya", "Keçiören", "Mamak", "Polatlı", "Eryaman"]
-            };
-            provinceSelect.onchange = () => {
-              districtSelect.innerHTML = "";
-              districts[provinceSelect.value].forEach(d => {
-                const opt = document.createElement("option");
-                opt.value = d;
-                opt.text = d;
-                districtSelect.appendChild(opt);
-              });
-              setUnsavedChanges(true);
-            };
-            districts[province].forEach(d => {
-              const opt = document.createElement("option");
-              opt.value = d;
-              opt.text = d;
-              if (d === district) opt.selected = true;
-              districtSelect.appendChild(opt);
-            });
-            districtSelect.onchange = () => setUnsavedChanges(true);
-            cell.innerHTML = "";
-            cell.appendChild(provinceSelect);
-            cell.appendChild(document.createTextNode("/"));
-            cell.appendChild(districtSelect);
-            return;
-          } else if (field === "price" || field === "squareMeters" || field === "floor" || field === "totalFloors") {
+          } else if (field === "roomType") {
+            inputElement = createRoomTypeDropdown(value);
+          } else if (field === "heating") {
+            inputElement = createHeatingDropdown(value);
+          } else if (field === "site") {
+            inputElement = createSiteDropdown(value);
+          } else if (field === "parking") {
+            inputElement = createParkingDropdown(value);
+          } else if (field === "developmentStatus") {
+            inputElement = createDevelopmentStatusDropdown(value);
+          } else if (field === "floor") {
+            inputElement = createFloorDropdown(value);
+          } else if (field === "totalFloors") {
+            inputElement = createTotalFloorsDropdown(value);
+          } else if (field === "price" || field === "squareMeters") {
             inputElement = document.createElement("input");
             inputElement.type = "number";
             inputElement.value = value.replace(/[^0-9]/g, "");
@@ -582,17 +542,10 @@
         if (field === "description" || field === "notes") {
           const textarea = cell.querySelector("textarea");
           updatedData[field] = textarea ? textarea.value : cell.textContent;
-        } else if (field === "type" || field === "category") {
+        } else if (field === "roomType" || field === "heating" || field === "site" || field === "parking" || field === "developmentStatus" || field === "floor" || field === "totalFloors") {
           const select = cell.querySelector("select");
           updatedData[field] = select ? select.value : cell.textContent;
-        } else if (field === "location") {
-          const provinceSelect = cell.querySelector("select:nth-child(1)");
-          const districtSelect = cell.querySelector("select:nth-child(3)");
-          if (provinceSelect && districtSelect) {
-            updatedData.province = provinceSelect.value;
-            updatedData.district = districtSelect.value;
-          }
-        } else if (field === "price" || field === "squareMeters" || field === "floor" || field === "totalFloors") {
+        } else if (field === "price" || field === "squareMeters") {
           const input = cell.querySelector("input");
           updatedData[field] = input ? (parseFloat(input.value) || 0) : 0;
         } else {

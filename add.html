@@ -67,72 +67,27 @@
       <div id="konutDetails" style="display: none;">
         <div class="form-group">
           <span>• Oda Sayısı:</span>
-          <select id="roomType">
-            <option value="----">----</option>
-            <option value="1+0">1+0</option>
-            <option value="1+1">1+1</option>
-            <option value="2+1">2+1</option>
-            <option value="3+1">3+1</option>
-            <option value="4+1">4+1</option>
-            <option value="5+1">5+1</option>
-            <option value="3+2">3+2</option>
-            <option value="4+2">4+2</option>
-          </select>
+          <select id="roomType"></select>
         </div>
-        <!-- Rest of Konut fields remain unchanged -->
         <div class="form-group">
           <span>• Bulunduğu Kat:</span>
-          <select id="floor">
-            <option value="----">----</option>
-            <option value="Kot">Kot</option>
-            <option value="Zemin">Zemin</option>
-            <option value="Yüksek Giriş">Yüksek Giriş</option>
-            <script>
-              for (let i = 1; i <= 50; i++) {
-                document.write(`<option value="${i}">${i}</option>`);
-              }
-            </script>
-          </select>
+          <select id="floor"></select>
         </div>
-        <!-- Other fields (totalFloors, heating, etc.) remain unchanged -->
         <div class="form-group">
           <span>• Kat Sayısı:</span>
-          <select id="totalFloors">
-            <option value="----">----</option>
-            <script>
-              for (let i = 1; i <= 50; i++) {
-                document.write(`<option value="${i}">${i}</option>`);
-              }
-            </script>
-          </select>
+          <select id="totalFloors"></select>
         </div>
         <div class="form-group">
           <span>• Isınma:</span>
-          <select id="heating">
-            <option value="----">----</option>
-            <option value="Klima">Klima</option>
-            <option value="Doğalgaz">Doğalgaz</option>
-            <option value="Merkezi (Payölçer)">Merkezi (Payölçer)</option>
-            <option value="Jeotermal">Jeotermal</option>
-            <option value="Soba">Soba</option>
-            <option value="Isı Pompası">Isı Pompası</option>
-          </select>
+          <select id="heating"></select>
         </div>
         <div class="form-group">
           <span>• Otopark:</span>
-          <select id="parking">
-            <option value="----">----</option>
-            <option value="Evet">Evet</option>
-            <option value="Hayır">Hayır</option>
-          </select>
+          <select id="parking"></select>
         </div>
         <div class="form-group">
           <span>• Site İçerisinde:</span>
-          <select id="site">
-            <option value="----">----</option>
-            <option value="Evet">Evet</option>
-            <option value="Hayır">Hayır</option>
-          </select>
+          <select id="site"></select>
         </div>
         <div class="form-group">
           <span>• Açıklama:</span>
@@ -146,11 +101,7 @@
       <div id="arsaDetails" style="display: none;">
         <div class="form-group">
           <span>• İmar Durumu:</span>
-          <select id="developmentStatus">
-            <option value="----">----</option>
-            <option value="Arsa">Arsa</option>
-            <option value="Tarla">Tarla</option>
-          </select>
+          <select id="developmentStatus"></select>
         </div>
       </div>
     </div>
@@ -164,7 +115,64 @@
       <button type="submit">Kaydet</button>
     </div>
   </form>
-  <script type="module" src="app.js"></script>
-</body>
 
+  <script type="module">
+    import { createRoomTypeDropdown, createHeatingDropdown, createParkingDropdown, createSiteDropdown, createDevelopmentStatusDropdown, createFloorDropdown, createTotalFloorsDropdown } from './components.js';
+    import './app.js'; // Import app.js to initialize event listeners
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize dropdowns using components.js
+      const roomTypeSelect = document.getElementById("roomType");
+      const heatingSelect = document.getElementById("heating");
+      const parkingSelect = document.getElementById("parking");
+      const siteSelect = document.getElementById("site");
+      const developmentStatusSelect = document.getElementById("developmentStatus");
+      const floorSelect = document.getElementById("floor");
+      const totalFloorsSelect = document.getElementById("totalFloors");
+
+      if (roomTypeSelect) {
+        const dropdown = createRoomTypeDropdown();
+        roomTypeSelect.replaceWith(dropdown);
+        dropdown.id = "roomType";
+        dropdown.name = "roomType";
+      }
+      if (heatingSelect) {
+        const dropdown = createHeatingDropdown();
+        heatingSelect.replaceWith(dropdown);
+        dropdown.id = "heating";
+        dropdown.name = "heating";
+      }
+      if (parkingSelect) {
+        const dropdown = createParkingDropdown();
+        parkingSelect.replaceWith(dropdown);
+        dropdown.id = "parking";
+        dropdown.name = "parking";
+      }
+      if (siteSelect) {
+        const dropdown = createSiteDropdown();
+        siteSelect.replaceWith(dropdown);
+        dropdown.id = "site";
+        dropdown.name = "site";
+      }
+      if (developmentStatusSelect) {
+        const dropdown = createDevelopmentStatusDropdown();
+        developmentStatusSelect.replaceWith(dropdown);
+        dropdown.id = "developmentStatus";
+        dropdown.name = "developmentStatus";
+      }
+      if (floorSelect) {
+        const dropdown = createFloorDropdown();
+        floorSelect.replaceWith(dropdown);
+        dropdown.id = "floor";
+        dropdown.name = "floor";
+      }
+      if (totalFloorsSelect) {
+        const dropdown = createTotalFloorsDropdown();
+        totalFloorsSelect.replaceWith(dropdown);
+        dropdown.id = "totalFloors";
+        dropdown.name = "totalFloors";
+      }
+    });
+  </script>
+</body>
 </html>

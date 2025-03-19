@@ -1,4 +1,4 @@
-// Import Firebase modules
+// app.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
@@ -53,14 +53,9 @@ export function updateDetails() {
   const propertyDetails = document.getElementById("propertyDetails");
   const konutDetails = document.getElementById("konutDetails");
   const arsaDetails = document.getElementById("arsaDetails");
-  if (propertyDetails) propertyDetails.style.display = "block";
-  if (konutDetails) konutDetails.style.display = "none";
-  if (arsaDetails) arsaDetails.style.display = "none";
-  if (category === "Konut" && konutDetails) {
-    konutDetails.style.display = "block";
-  } else if (category === "Arsa" && arsaDetails) {
-    arsaDetails.style.display = "block";
-  }
+  if (propertyDetails) propertyDetails.style.display = category !== "----" ? "block" : "none";
+  if (konutDetails) konutDetails.style.display = category === "Konut" ? "block" : "none";
+  if (arsaDetails) arsaDetails.style.display = category === "Arsa" ? "block" : "none";
 }
 
 export function updateDistricts() {
@@ -75,6 +70,7 @@ export function updateDistricts() {
     districtSelect.appendChild(defaultOpt);
     const districts = {
       "İzmir": ["Buca", "Gaziemir", "Karabağlar", "Bornova", "Balçova"],
+      "Aydın": ["Efeler", "Nazilli", "Söke", "Kuşadası", "Didim"],
       "Manisa": ["Yunusemre", "Şehzadeler", "Akhisar", "Turgutlu"],
       "Ankara": ["Çankaya", "Keçiören", "Mamak", "Polatlı", "Eryaman"]
     };
@@ -126,7 +122,7 @@ if (window.location.pathname.includes("add.html")) {
   if (photosInput) photosInput.addEventListener("change", displayPhotos);
   if (form) {
     console.log("Attaching form submission listener");
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", async function(e) {
       e.preventDefault();
       console.log("Form submission intercepted");
       const user = auth.currentUser;
@@ -138,7 +134,8 @@ if (window.location.pathname.includes("add.html")) {
       }
       console.log("Authenticated user:", user.email);
 
-      getDocs(query(collection(db, "properties"), orderBy("listingId", "desc"), limit(1))).then(snapshot => {
+      try {
+        const snapshot = await getDocs(query(collection(db, "properties"), orderBy("listingId", "desc"), limit(1)));
         let newId = 1;
         if (!snapshot.empty) {
           newId = snapshot.docs[0].data().listingId + 1;
@@ -178,42 +175,36 @@ if (window.location.pathname.includes("add.html")) {
         }
 
         console.log("Attempting to save listing:", listing);
-        addDoc(collection(db, "properties"), listing).then(docRef => {
-          console.log("Listing saved with ID:", docRef.id);
-          if (photos.length > 0) {
-            const uploadPromises = [];
-            for (let i = 0; i < photos.length; i++) {
-              const photoRef = ref(storage, `photos/${docRef.id}/${photos[i].name}`);
-              uploadPromises.push(uploadBytes(photoRef, photos[i]).then(snapshot => {
-                return getDownloadURL(snapshot.ref).then(url => {
-                  listing.photos.push(url); // Add URL to the listing object
-                });
-              }));
-            }
-            Promise.all(uploadPromises).then(() => {
-              // Update Firestore with photo URLs
-              return updateDoc(docRef, { photos: listing.photos }).then(() => {
-                console.log("Photos URLs saved:", listing.photos);
-                alert(`İlan eklendi! ID: ${newId}`);
-                window.location.href = "dashboard.html";
+        const docRef = await addDoc(collection(db, "properties"), listing);
+        console.log("Listing saved with ID:", docRef.id);
+
+        if (photos.length > 0) {
+          const uploadPromises = [];
+          for (let i = 0; i < photos.length; i++) {
+            const photoRef = ref(storage, `photos/${docRef.id}/${photos[i].name}`);
+            uploadPromises.push(uploadBytes(photoRef, photos[i]).then(snapshot => {
+              return getDownloadURL(snapshot.ref).then(url => {
+                listing.photos.push(url); // Add URL to the listing object
               });
-            }).catch(err => {
-              console.log("Photo upload or URL retrieval error:", err.message);
-              alert("Fotoğraf yükleme veya URL alma hatası: " + err.message);
-            });
-          } else {
-            console.log("No photos to upload");
-            alert(`İlan eklendi! ID: ${newId}`);
-            window.location.href = "dashboard.html";
+            }));
           }
-        }).catch(err => {
-          console.log("Save error:", err.message);
-          alert("İlan kaydedilemedi: " + err.message);
-        });
-      }).catch(err => {
-        console.log("ID query error:", err.message);
-        alert("Hata oluştu: " + err.message);
-      });
+          await Promise.all(uploadPromises);
+          // Update Firestore with photo URLs
+          await updateDoc(docRef, { photos: listing.photos });
+          console.log("Photos URLs saved:", listing.photos);
+        } else {
+          console.log("No photos to upload");
+        }
+
+        alert(`İlan eklendi! ID: ${newId}`);
+        form.reset();
+        updateDetails(); // Reset visibility of property details
+        document.getElementById("photoPreview").innerHTML = "";
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.log("Save error:", err.message);
+        alert("İlan kaydedilemedi: " + err.message);
+      }
     });
   } else {
     console.error("Form element with id 'listingForm' not found");
@@ -389,21 +380,31 @@ window.addAgent = function() {
 };
 
 // Delete Listing
-window.deleteListing = function(docId) {
+window.deleteListing = async function(docId) {
   console.log("Deleting listing with ID:", docId);
-  deleteDoc(doc(db, "properties", docId)).then(() => {
-    console.log("Listing deleted successfully");
+  try {
     // Delete associated photos from storage
-    const photosRef = ref(storage, `photos/${docId}`);
-    // Since Firebase Storage doesn't support deleting a folder directly, we assume photos are named sequentially or use a list operation if needed
-    // For simplicity, we'll redirect after deletion
+    const listingRef = doc(db, "properties", docId);
+    const listingSnap = await getDoc(listingRef);
+    if (listingSnap.exists()) {
+      const photos = listingSnap.data().photos || [];
+      const deletePhotoPromises = photos.map(photoUrl => {
+        const photoRef = ref(storage, photoUrl);
+        return deleteObject(photoRef).catch(err => console.log("Error deleting photo:", err));
+      });
+      await Promise.all(deletePhotoPromises);
+    }
+
+    // Delete the document
+    await deleteDoc(listingRef);
+    console.log("Listing deleted successfully");
     alert("İlan başarıyla silindi!");
     window.location.href = "dashboard.html";
-  }).catch(err => {
+  } catch (err) {
     console.log("Delete error:", err.message);
     alert("İlan silinirken hata oluştu: " + err.message);
-  });
+  }
 };
 
 // Export db and Firestore functions for use in other scripts
-export { db, getDoc, doc, updateDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };
+export { db, collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };
