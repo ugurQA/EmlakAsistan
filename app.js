@@ -338,6 +338,7 @@ onAuthStateChanged(auth, (user) => {
             tbody.appendChild(tr);
           });
           table.appendChild(tbody);
+
           listingsDiv.appendChild(table);
         } else {
           console.log("No listings found for this agent");
