@@ -1,61 +1,96 @@
 // admin.js
+import { auth, db } from './firebaseConfig.js';
+import { collection, getDocs, query, where, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { deleteUser } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { createListingsTable } from './components.js';
 
-// Import the createListingTable function (if you're using modules)
-// If you are not using modules, then do not add the import keyword.
-//import { createListingTable } from './components.js';
-
-const agentsTableBody = document.getElementById('agentsTable').querySelector('tbody');
-const listingsTableBody = document.getElementById('listingsTable').querySelector('tbody');
+const agentsTableBody = document.getElementById('agentsTable')?.querySelector('tbody');
+const listingsTableBody = document.getElementById('listingsTable')?.querySelector('tbody');
 
 // Fetch and display agents
-function displayAgents() {
-    const agentsRef = firebase.database().ref('users');
-    agentsRef.on('value', (snapshot) => {
+async function displayAgents() {
+    if (!agentsTableBody) return;
+    
+    try {
+        const usersQuery = query(collection(db, 'users'), where('role', '==', 'agent'));
+        const agentsSnapshot = await getDocs(usersQuery);
+        
         agentsTableBody.innerHTML = ''; // Clear existing table
-        snapshot.forEach((agentSnapshot) => {
-            const agentId = agentSnapshot.key;
-            const agentData = agentSnapshot.val();
-            if (agentData.role === 'agent') {
-                const row = agentsTableBody.insertRow();
-                row.insertCell().textContent = agentId;
-                row.insertCell().textContent = agentData.displayName;
-
-                // Count listings for the agent
-                const listingsRef = firebase.database().ref('listings');
-                listingsRef.orderByChild('agentId').equalTo(agentId).once('value', (listingsSnapshot) => {
-                    row.insertCell().textContent = listingsSnapshot.size;
-                });
-
-                // Delete button
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
-                deleteButton.addEventListener('click', () => deleteAgent(agentId));
-                row.insertCell().appendChild(deleteButton);
-            }
-        });
-    });
-}
-
-// Delete agent function
-function deleteAgent(agentId) {
-    if (confirm('Are you sure you want to delete this agent?')) {
-        firebase.database().ref(`users/${agentId}`).remove()
-            .then(() => {
-                alert('Agent deleted successfully.');
-            })
-            .catch((error) => {
-                console.error('Error deleting agent:', error);
-                alert('Error deleting agent.');
-            });
+        
+        for (const agentDoc of agentsSnapshot.docs) {
+            const agentData = agentDoc.data();
+            const row = agentsTableBody.insertRow();
+            
+            row.insertCell().textContent = agentDoc.id;
+            row.insertCell().textContent = agentData.displayName || 'N/A';
+            
+            // Count listings for the agent
+            const listingsQuery = query(collection(db, 'properties'), where('agent', '==', agentData.email));
+            const listingsSnapshot = await getDocs(listingsQuery);
+            row.insertCell().textContent = listingsSnapshot.size;
+            
+            // Delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
+            deleteButton.addEventListener('click', () => deleteAgent(agentDoc.id));
+            row.insertCell().appendChild(deleteButton);
+        }
+    } catch (error) {
+        console.error('Error fetching agents:', error);
+        alert('Error loading agents: ' + error.message);
     }
 }
 
-// Fetch and display listings (reusing logic from agent dashboard)
-function displayListings() {
-    createListingTable(listingsTableBody);
+// Delete agent function
+async function deleteAgent(agentId) {
+    if (!confirm('Are you sure you want to delete this agent?')) return;
+    
+    try {
+        // Delete user from Authentication
+        const user = await auth.getUser(agentId);
+        if (user) {
+            await deleteUser(user);
+        }
+        
+        // Delete user document from Firestore
+        await deleteDoc(doc(db, 'users', agentId));
+        
+        alert('Agent deleted successfully.');
+        displayAgents(); // Refresh the table
+    } catch (error) {
+        console.error('Error deleting agent:', error);
+        alert('Error deleting agent: ' + error.message);
+    }
 }
 
-// Initialize
-displayAgents();
-displayListings();
+// Display listings
+async function displayListings() {
+    const listingsContainer = document.getElementById('ilanlar');
+    if (!listingsContainer) return;
+    
+    try {
+        const listingsSnapshot = await getDocs(collection(db, 'properties'));
+        const listings = listingsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        createListingsTable(listingsContainer, listings, {
+            showAgent: true,
+            onViewClick: (id) => window.location.href = `listing-details.html?id=${id}`
+        });
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        alert('Error loading listings: ' + error.message);
+    }
+}
+
+// Initialize the admin dashboard
+document.addEventListener('DOMContentLoaded', () => {
+    displayAgents();
+    displayListings();
+});
+
+// Export functions for use in HTML
+window.deleteAgent = deleteAgent;

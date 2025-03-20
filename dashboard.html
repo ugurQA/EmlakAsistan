@@ -2,127 +2,230 @@
 <html>
 <head>
   <title>Agent Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
   <meta charset="UTF-8">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Table styles moved from inline to here */
-    table {
-      border-collapse: collapse;
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .main-container {
+      padding-top: 40px;
+      margin-left: 100px;
+      margin-right: 20px;
+      margin-bottom: 100px;
+      width: calc(100% - 40px);
+    }
+    
+    .page-title {
+      margin-bottom: 20px;
+    }
+
+    /* Common width for all main containers */
+    .actions-container,
+    .nav-tabs,
+    .controls-row,
+    .table-container {
       width: 100%;
-      margin-top: 20px;
-      font-size: 14px;
+      margin-bottom: 20px;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 4px;
-      text-align: center;
-      vertical-align: middle;
+
+    .actions-container {
+      display: flex;
+      justify-content: space-between;
     }
-    th {
-      background-color: #f2f2f2;
+
+    .nav-tabs {
+      border-bottom: 1px solid #dee2e6;
     }
-    img {
-      max-width: 100%;
-      height: auto;
-    }
-    .button-container {
+
+    .controls-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
     }
-    .filter-sort-container {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .filter-sort-container i {
-      cursor: pointer;
-      margin: 0 10px;
-      font-size: 18px;
-    }
-    .filter-dropdowns {
-      display: none; /* Hidden by default, shown via JS */
-      position: absolute;
-      background-color: white;
-      border: 1px solid #ddd;
-      padding: 10px;
-      z-index: 1;
-    }
-    .sort-options {
-      display: none; /* Hidden by default, shown via JS */
-      position: absolute;
-      background-color: white;
-      border: 1px solid #ddd;
-      padding: 10px;
-      z-index: 1;
-    }
+
     .search-container {
       position: relative;
-      display: inline-block;
+      width: 250px;
     }
+
+    .search-container input {
+      padding-right: 30px;
+    }
+
     .search-container i {
       position: absolute;
       right: 10px;
       top: 50%;
       transform: translateY(-50%);
-      color: #888;
+      color: #6c757d;
+    }
+
+    .filter-sort-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .filter-dropdowns {
+      display: none;
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      z-index: 1000;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      right: 0;
+      top: 100%;
+    }
+
+    .filter-dropdowns select {
+      display: block;
+      width: 200px;
+      margin-bottom: 0.5rem;
+    }
+
+    .sort-options {
+      display: none;
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 0.5rem;
+      z-index: 1000;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      right: 0;
+      top: 100%;
+      min-width: 150px;
+    }
+
+    .sort-options button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.25rem 0.5rem;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .sort-options button:hover {
+      background-color: #f8f9fa;
+    }
+
+    .table-container {
+      width: calc(100% - 80px);
+    }
+
+    .position-relative {
+      position: relative;
+    }
+
+    .table {
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <h1>İlanlar</h1> <!-- Renamed from "Your Listings" -->
-  <div class="button-container">
-    <button class="dashboard-btn" onclick="location.href='add.html'">
-      <i class="fas fa-plus"></i> İlan Ekle <!-- Renamed and icon added -->
-    </button>
-    <div style="flex-grow: 1;"></div> <!-- Spacer to push Çıkış to the right -->
-    <button class="dashboard-btn" onclick="logout()">
-      <i class="fas fa-sign-out-alt"></i> Çıkış <!-- Renamed, moved right, icon added -->
-    </button>
-  </div>
-  <div class="search-container">
-    <input type="text" id="search" placeholder="arama" onkeyup="filterListings()">
-    <i class="fas fa-search"></i> <!-- Search icon -->
-  </div>
-  <div class="filter-sort-container">
-    <i class="fas fa-filter" onclick="toggleFilter()"></i> <!-- Filter icon -->
-    <div id="filterDropdown" class="filter-dropdowns">
-      <select id="filterCity" onchange="applyFilters()">
-        <option value="">İl Seç</option>
-        <!-- Options populated via JS -->
-      </select>
-      <select id="filterRoom" onchange="applyFilters()">
-        <option value="">Oda Sayısı Seç</option>
-        <!-- Options populated via JS -->
-      </select>
-      <select id="filterType" onchange="applyFilters()">
-        <option value="">Tür Seç</option>
-        <option value="Satılık">Satılık</option>
-        <option value="Kiralık">Kiralık</option>
-      </select>
-      <select id="filterCategory" onchange="applyFilters()">
-        <option value="">Kategori Seç</option>
-        <option value="Konut">Konut</option>
-        <option value="Arsa">Arsa</option>
-      </select>
+  <div class="main-container">
+    <h1 class="page-title">Agent Dashboard</h1>
+    
+    <div class="actions-container">
+      <button class="btn btn-success btn-sm" onclick="location.href='add.html'">
+        <i class="fas fa-plus"></i> İlan Ekle
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="window.logout()">
+        <i class="fas fa-sign-out-alt"></i> Çıkış
+      </button>
     </div>
-    <i class="fas fa-sort" onclick="toggleSort()"></i> <!-- Sort icon -->
-    <div id="sortOptions" class="sort-options">
-      <button onclick="sortListings('price')">Fiyat</button>
-      <button onclick="sortListings('squareMeters')">Metrekare</button>
-    </div>
-  </div>
-  <div id="listings"></div>
 
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#myListings">
+          <i class="fas fa-user"></i> İlanlarım
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#allListings">
+          <i class="fas fa-list"></i> Tüm İlanlar
+        </a>
+      </li>
+    </ul>
+
+    <div class="controls-row">
+      <div class="search-container">
+        <input type="text" id="search" class="form-control form-control-sm" placeholder="Arama...">
+        <i class="fas fa-search"></i>
+      </div>
+
+      <div class="filter-sort-container">
+        <div class="position-relative">
+          <button class="btn btn-outline-secondary btn-sm" onclick="toggleFilter()">
+            <i class="fas fa-filter"></i> Filtrele
+          </button>
+          <div id="filterDropdown" class="filter-dropdowns">
+            <select id="filterCity" class="form-control form-control-sm" onchange="applyFilters()">
+              <option value="">İl Seç</option>
+            </select>
+            <select id="filterRoom" class="form-control form-control-sm" onchange="applyFilters()">
+              <option value="">Oda Sayısı Seç</option>
+            </select>
+            <select id="filterType" class="form-control form-control-sm" onchange="applyFilters()">
+              <option value="">Tür Seç</option>
+              <option value="Satılık">Satılık</option>
+              <option value="Kiralık">Kiralık</option>
+            </select>
+            <select id="filterCategory" class="form-control form-control-sm" onchange="applyFilters()">
+              <option value="">Kategori Seç</option>
+              <option value="Konut">Konut</option>
+              <option value="Arsa">Arsa</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="position-relative">
+          <button class="btn btn-outline-secondary btn-sm" onclick="toggleSort()">
+            <i class="fas fa-sort"></i> Sırala
+          </button>
+          <div id="sortOptions" class="sort-options">
+            <button onclick="sortListings('price')">
+              <i class="fas fa-sort-amount-down"></i> Fiyata Göre
+            </button>
+            <button onclick="sortListings('squareMeters')">
+              <i class="fas fa-ruler-combined"></i> Metrekareye Göre
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content">
+      <div id="myListings" class="tab-pane fade show active">
+        <div class="table-container">
+          <div id="listings"></div>
+        </div>
+      </div>
+      <div id="allListings" class="tab-pane fade">
+        <div class="table-container">
+          <div id="allListingsContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script type="module" src="app.js"></script>
   <script>
     function filterListings() {
       const input = document.getElementById("search").value.toLowerCase();
-      const table = document.querySelector("#listings table");
+      const activeTab = document.querySelector('.tab-pane.active');
+      const table = activeTab.querySelector('table');
       if (table) {
         const tr = table.getElementsByTagName("tr");
         for (let i = 1; i < tr.length; i++) {
@@ -140,13 +243,28 @@
 
     function toggleFilter() {
       const filterDropdown = document.getElementById("filterDropdown");
-      filterDropdown.style.display = filterDropdown.style.display === "block" ? "none" : "block";
+      const display = filterDropdown.style.display;
+      document.getElementById("sortOptions").style.display = "none";
+      filterDropdown.style.display = display === "block" ? "none" : "block";
     }
 
     function toggleSort() {
       const sortOptions = document.getElementById("sortOptions");
-      sortOptions.style.display = sortOptions.style.display === "block" ? "none" : "block";
+      const display = sortOptions.style.display;
+      document.getElementById("filterDropdown").style.display = "none";
+      sortOptions.style.display = display === "block" ? "none" : "block";
     }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.filter-sort-container')) {
+        document.getElementById("filterDropdown").style.display = "none";
+        document.getElementById("sortOptions").style.display = "none";
+      }
+    });
+
+    // Add input event listener for search
+    document.getElementById('search').addEventListener('input', filterListings);
   </script>
 </body>
 </html>
