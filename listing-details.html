@@ -310,7 +310,8 @@
   </div>
 
   <script type="module">
-    import { db, getDoc, doc, updateDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject } from './app.js';
+    import { auth, db, storage, ref, uploadBytes, getDownloadURL, deleteObject } from './firebaseConfig.js';
+    import { getDoc, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
     import { createRoomTypeDropdown, createHeatingDropdown, createParkingDropdown, createSiteDropdown, createDevelopmentStatusDropdown, createFloorDropdown, createTotalFloorsDropdown } from './components.js';
 
     let currentImageIndex = 0;
@@ -319,6 +320,12 @@
     let originalData = null;
     let editMode = false;
     let newImages = []; // For newly added images during edit
+
+    // Add this function to handle back button
+    function goBack() {
+      const userRole = localStorage.getItem('userRole');
+      window.location.href = userRole === 'admin' ? 'admin.html' : 'dashboard.html';
+    }
 
     // Load listing details based on URL parameter
     document.addEventListener("DOMContentLoaded", () => {
@@ -329,6 +336,16 @@
         if (listingsDiv) {
           loadListingDetails(listingsDiv);
         }
+      }
+
+      // Add back button
+      const container = document.querySelector('.container');
+      if (container) {
+        const backButton = document.createElement('button');
+        backButton.className = 'btn btn-secondary mb-3';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Geri Dön';
+        backButton.onclick = goBack;
+        container.insertBefore(backButton, container.firstChild);
       }
     });
 
