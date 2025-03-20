@@ -1,6 +1,6 @@
 // app.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
@@ -231,7 +231,21 @@ window.login = function() {
     });
 };
 
+window.logout = function() {
+  console.log("Logout function called");
+  signOut(auth)
+    .then(() => {
+      console.log("Logout successful");
+      window.location.href = "index.html"; // Redirect to login page
+    })
+    .catch(err => {
+      console.log("Logout error:", err.message);
+      alert("Çıkış yapılırken hata oluştu: " + err.message);
+    });
+};
+
 // Load Agent Listings
+let listingsData = []; // Store listings for filtering/sorting
 onAuthStateChanged(auth, (user) => {
   if (user && window.location.pathname.includes("dashboard.html")) {
     console.log("Loading listings for user:", user.email);
@@ -240,106 +254,35 @@ onAuthStateChanged(auth, (user) => {
       getDocs(query(collection(db, "properties"), where("agent", "==", user.email))).then(snapshot => {
         console.log("Query snapshot size:", snapshot.size);
         listingsDiv.innerHTML = ""; // Clear existing content
+        listingsData = []; // Reset listings data
         if (!snapshot.empty) {
-          // Create table
-          const table = document.createElement("table");
-          table.border = "1";
-          table.style.width = "100%";
-          table.style.borderCollapse = "collapse";
-
-          // Create header row
-          const thead = document.createElement("thead");
-          const headerRow = document.createElement("tr");
-          ["Image", "Title", "Tür", "Kategori", "Yer", "Metrekare", "Oda Sayısı", "Fiyat", "Actions"].forEach(headerText => {
-            const th = document.createElement("th");
-            th.textContent = headerText;
-            th.style.padding = "4px"; // Smaller padding for compactness
-            if (headerText === "Title") {
-              th.style.width = "40%"; // Wider title column
-            } else if (headerText === "Actions") {
-              th.style.width = "5%"; // Narrower actions column
-            } else {
-              th.style.width = "7%"; // Smaller width for other columns
-            }
-            headerRow.appendChild(th);
-          });
-          thead.appendChild(headerRow);
-          table.appendChild(thead);
-
-          // Create body
-          const tbody = document.createElement("tbody");
+          // Populate filter dropdowns
+          const cities = new Set();
+          const rooms = new Set();
           snapshot.forEach(doc => {
             const data = doc.data();
-            const tr = document.createElement("tr");
-            tr.style.textAlign = "center";
-
-            // Thumbnail Image
-            const tdImage = document.createElement("td");
-            const img = document.createElement("img");
-            img.style.width = "50px";
-            img.style.height = "50px";
-            img.style.objectFit = "cover";
-            if (data.photos && data.photos.length > 0) {
-              img.src = data.photos[0]; // Use the first photo as thumbnail
-            } else {
-              img.src = ""; // No placeholder
-              img.alt = "No image available";
-            }
-            tdImage.appendChild(img);
-            tr.appendChild(tdImage);
-
-            // Title
-            const tdTitle = document.createElement("td");
-            tdTitle.textContent = data.title || "No title";
-            tdTitle.style.textAlign = "left"; // Left-align title
-            tr.appendChild(tdTitle);
-
-            // Tür
-            const tdType = document.createElement("td");
-            tdType.textContent = data.type;
-            tr.appendChild(tdType);
-
-            // Kategori
-            const tdCategory = document.createElement("td");
-            tdCategory.textContent = data.category;
-            tr.appendChild(tdCategory);
-
-            // Yer (İl/İlçe)
-            const tdLocation = document.createElement("td");
-            tdLocation.textContent = `${data.province}/${data.district}`;
-            tr.appendChild(tdLocation);
-
-            // Metrekare
-            const tdSquareMeters = document.createElement("td");
-            tdSquareMeters.textContent = data.squareMeters || "";
-            tr.appendChild(tdSquareMeters);
-
-            // Oda Sayısı (empty for Arsa)
-            const tdRoomType = document.createElement("td");
-            tdRoomType.textContent = data.category === "Konut" ? data.roomType || "" : "";
-            tr.appendChild(tdRoomType);
-
-            // Fiyat
-            const tdPrice = document.createElement("td");
-            tdPrice.textContent = data.price ? `${data.price.toLocaleString()} TL` : "";
-            tdPrice.style.color = "red"; // Match reference image pricing color
-            tr.appendChild(tdPrice);
-
-            // Actions (View Button)
-            const tdActions = document.createElement("td");
-            const viewButton = document.createElement("button");
-            viewButton.textContent = "View";
-            viewButton.style.padding = "2px 6px"; // Smaller button
-            viewButton.style.fontSize = "12px"; // Smaller text
-            viewButton.onclick = () => window.location.href = `listing-details.html?id=${doc.id}`;
-            tdActions.appendChild(viewButton);
-            tr.appendChild(tdActions);
-
-            tbody.appendChild(tr);
+            listingsData.push({ id: doc.id, ...data });
+            cities.add(data.province);
+            if (data.roomType) rooms.add(data.roomType);
           });
-          table.appendChild(tbody);
 
-          listingsDiv.appendChild(table);
+          const filterCity = document.getElementById("filterCity");
+          cities.forEach(city => {
+            const opt = document.createElement("option");
+            opt.value = city;
+            opt.text = city;
+            filterCity.appendChild(opt);
+          });
+
+          const filterRoom = document.getElementById("filterRoom");
+          rooms.forEach(room => {
+            const opt = document.createElement("option");
+            opt.value = room;
+            opt.text = room;
+            filterRoom.appendChild(opt);
+          });
+
+          renderListings(listingsData);
         } else {
           console.log("No listings found for this agent");
           listingsDiv.innerHTML = "<p>Henüz ilanınız yok.</p>";
@@ -350,6 +293,128 @@ onAuthStateChanged(auth, (user) => {
     }
   }
 });
+
+function renderListings(data) {
+  const listingsDiv = document.getElementById("listings");
+  listingsDiv.innerHTML = "";
+  const table = document.createElement("table");
+  table.border = "1";
+  table.style.width = "100%";
+  table.style.borderCollapse = "collapse";
+
+  // Create header row
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  ["Image", "Başlık", "Tür", "Kategori", "Yer", "Metrekare", "Oda Sayısı", "Fiyat", "Actions"].forEach(headerText => {
+    const th = document.createElement("th");
+    th.textContent = headerText;
+    th.style.padding = "4px";
+    if (headerText === "Başlık") {
+      th.style.width = "30%"; // 3x wider than others (assuming others are ~10%)
+    } else if (headerText === "Actions") {
+      th.style.width = "5%";
+    } else {
+      th.style.width = "10%";
+    }
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  // Create body
+  const tbody = document.createElement("tbody");
+  data.forEach(listing => {
+    const tr = document.createElement("tr");
+    tr.style.textAlign = "center";
+
+    // Thumbnail Image
+    const tdImage = document.createElement("td");
+    const img = document.createElement("img");
+    img.style.width = "50px";
+    img.style.height = "50px";
+    img.style.objectFit = "cover";
+    if (listing.photos && listing.photos.length > 0) {
+      img.src = listing.photos[0];
+    } else {
+      img.src = "";
+      img.alt = "No image";
+    }
+    tdImage.appendChild(img);
+    tr.appendChild(tdImage);
+
+    // Başlık (Title)
+    const tdTitle = document.createElement("td");
+    tdTitle.textContent = listing.title || "No title";
+    tdTitle.style.textAlign = "left";
+    tr.appendChild(tdTitle);
+
+    // Tür
+    const tdType = document.createElement("td");
+    tdType.textContent = listing.type;
+    tr.appendChild(tdType);
+
+    // Kategori
+    const tdCategory = document.createElement("td");
+    tdCategory.textContent = listing.category;
+    tr.appendChild(tdCategory);
+
+    // Yer (İl/İlçe)
+    const tdLocation = document.createElement("td");
+    tdLocation.textContent = `${listing.province}/${listing.district}`;
+    tr.appendChild(tdLocation);
+
+    // Metrekare
+    const tdSquareMeters = document.createElement("td");
+    tdSquareMeters.textContent = listing.squareMeters || "";
+    tr.appendChild(tdSquareMeters);
+
+    // Oda Sayısı
+    const tdRoomType = document.createElement("td");
+    tdRoomType.textContent = listing.category === "Konut" ? listing.roomType || "" : "";
+    tr.appendChild(tdRoomType);
+
+    // Fiyat
+    const tdPrice = document.createElement("td");
+    tdPrice.textContent = listing.price ? `${listing.price.toLocaleString()} TL` : "";
+    tdPrice.style.color = "red";
+    tr.appendChild(tdPrice);
+
+    // Actions (Detay Button)
+    const tdActions = document.createElement("td");
+    const viewButton = document.createElement("button");
+    viewButton.innerHTML = '<i class="fas fa-eye"></i> Detay'; // Icon + "Detay"
+    viewButton.className = "detay-btn"; // For styling
+    viewButton.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
+    tdActions.appendChild(viewButton);
+    tr.appendChild(tdActions);
+
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  listingsDiv.appendChild(table);
+}
+
+window.applyFilters = function() {
+  const city = document.getElementById("filterCity").value;
+  const room = document.getElementById("filterRoom").value;
+  const type = document.getElementById("filterType").value;
+  const category = document.getElementById("filterCategory").value;
+
+  let filteredData = [...listingsData];
+  if (city) filteredData = filteredData.filter(l => l.province === city);
+  if (room) filteredData = filteredData.filter(l => l.roomType === room);
+  if (type) filteredData = filteredData.filter(l => l.type === type);
+  if (category) filteredData = filteredData.filter(l => l.category === category);
+
+  renderListings(filteredData);
+};
+
+window.sortListings = function(criterion) {
+  let sortedData = [...listingsData];
+  sortedData.sort((a, b) => (a[criterion] || 0) - (b[criterion] || 0));
+  renderListings(sortedData);
+  document.getElementById("sortOptions").style.display = "none"; // Hide after sorting
+};
 
 // Admin Dashboard
 if (window.location.pathname.includes("admin.html")) {
@@ -384,7 +449,6 @@ window.addAgent = function() {
 window.deleteListing = async function(docId) {
   console.log("Deleting listing with ID:", docId);
   try {
-    // Delete associated photos from storage
     const listingRef = doc(db, "properties", docId);
     const listingSnap = await getDoc(listingRef);
     if (listingSnap.exists()) {
@@ -396,7 +460,6 @@ window.deleteListing = async function(docId) {
       await Promise.all(deletePhotoPromises);
     }
 
-    // Delete the document
     await deleteDoc(listingRef);
     console.log("Listing deleted successfully");
     alert("İlan başarıyla silindi!");
@@ -407,5 +470,5 @@ window.deleteListing = async function(docId) {
   }
 };
 
-// Export db and Firestore functions for use in other scripts
+// Export db and Firestore functions
 export { db, collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };

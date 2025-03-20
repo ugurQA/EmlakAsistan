@@ -1,17 +1,21 @@
+/* styles.css */
 body {
   font-family: Arial, sans-serif;
   padding: 20px;
   max-width: 600px;
   margin: 0 auto;
 }
+
 .form-group {
   margin-bottom: 15px;
 }
+
 .form-group span {
   display: inline-block;
   width: 150px;
   font-weight: bold;
 }
+
 input, select, textarea, button {
   display: inline-block;
   padding: 5px;
@@ -19,11 +23,13 @@ input, select, textarea, button {
   margin-left: 10px;
   vertical-align: middle;
 }
+
 textarea {
   width: 300px;
   height: 100px;
   vertical-align: top;
 }
+
 button {
   background: #007BFF;
   color: white;
@@ -31,16 +37,53 @@ button {
   cursor: pointer;
   padding: 10px 20px;
 }
+
 button:hover {
   background: #0056b3;
 }
+
 #photoPreview img {
   display: block;
   margin-top: 5px;
 }
+
+/* Login page padding */
+#email, #password, #index.html button {
+  padding: 8px; /* Increased padding for login inputs and button */
+}
+
+/* Dashboard-specific styles */
+.dashboard-btn {
+  width: 120px; /* Narrower buttons */
+  padding: 8px 10px; /* Adjusted padding */
+  font-size: 14px;
+  margin: 0 5px; /* Padding between buttons */
+}
+
+.dashboard-btn i {
+  margin-right: 5px; /* Space between icon and text */
+}
+
+#search {
+  padding: 8px; /* Padding for search field */
+  width: 200px; /* Consistent width */
+}
+
+.detay-btn {
+  padding: 2px 6px; /* Half size of regular button */
+  font-size: 12px;
+  width: auto;
+}
+
+.detay-btn i {
+  margin-right: 3px; /* Smaller space for icon */
+}
+
 @media (max-width: 600px) {
   body { padding: 10px; }
   .form-group span { display: block; width: 100%; }
   input, select, textarea { display: block; width: 100%; margin-left: 0; margin-top: 5px; }
   button { width: 100%; }
+  .dashboard-btn { width: 100%; margin: 5px 0; }
+  #search { width: 100%; }
 }

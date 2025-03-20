@@ -3,18 +3,20 @@
 <head>
   <title>Agent Dashboard</title>
   <link rel="stylesheet" href="styles.css">
-  <meta charset="UTF-8"> <!-- Ensures proper handling of Turkish characters -->
+  <meta charset="UTF-8">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Basic inline styles for table (can be moved to styles.css) */
+    /* Table styles moved from inline to here */
     table {
       border-collapse: collapse;
       width: 100%;
       margin-top: 20px;
-      font-size: 14px; /* Smaller font for compactness */
+      font-size: 14px;
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 4px; /* Smaller padding for compactness */
+      padding: 4px;
       text-align: center;
       vertical-align: middle;
     }
@@ -25,21 +27,99 @@
       max-width: 100%;
       height: auto;
     }
-    button {
-      padding: 2px 6px;
-      font-size: 12px;
+    .button-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .filter-sort-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .filter-sort-container i {
+      cursor: pointer;
+      margin: 0 10px;
+      font-size: 18px;
+    }
+    .filter-dropdowns {
+      display: none; /* Hidden by default, shown via JS */
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 10px;
+      z-index: 1;
+    }
+    .sort-options {
+      display: none; /* Hidden by default, shown via JS */
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 10px;
+      z-index: 1;
+    }
+    .search-container {
+      position: relative;
+      display: inline-block;
+    }
+    .search-container i {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
     }
   </style>
 </head>
 <body>
-  <h1>Your Listings</h1>
-  <button onclick="location.href='add.html'">Add Listing</button>
-  <input type="text" id="search" placeholder="Search..." onkeyup="filterListings()">
+  <h1>İlanlar</h1> <!-- Renamed from "Your Listings" -->
+  <div class="button-container">
+    <button class="dashboard-btn" onclick="location.href='add.html'">
+      <i class="fas fa-plus"></i> İlan Ekle <!-- Renamed and icon added -->
+    </button>
+    <div style="flex-grow: 1;"></div> <!-- Spacer to push Çıkış to the right -->
+    <button class="dashboard-btn" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> Çıkış <!-- Renamed, moved right, icon added -->
+    </button>
+  </div>
+  <div class="search-container">
+    <input type="text" id="search" placeholder="arama" onkeyup="filterListings()">
+    <i class="fas fa-search"></i> <!-- Search icon -->
+  </div>
+  <div class="filter-sort-container">
+    <i class="fas fa-filter" onclick="toggleFilter()"></i> <!-- Filter icon -->
+    <div id="filterDropdown" class="filter-dropdowns">
+      <select id="filterCity" onchange="applyFilters()">
+        <option value="">İl Seç</option>
+        <!-- Options populated via JS -->
+      </select>
+      <select id="filterRoom" onchange="applyFilters()">
+        <option value="">Oda Sayısı Seç</option>
+        <!-- Options populated via JS -->
+      </select>
+      <select id="filterType" onchange="applyFilters()">
+        <option value="">Tür Seç</option>
+        <option value="Satılık">Satılık</option>
+        <option value="Kiralık">Kiralık</option>
+      </select>
+      <select id="filterCategory" onchange="applyFilters()">
+        <option value="">Kategori Seç</option>
+        <option value="Konut">Konut</option>
+        <option value="Arsa">Arsa</option>
+      </select>
+    </div>
+    <i class="fas fa-sort" onclick="toggleSort()"></i> <!-- Sort icon -->
+    <div id="sortOptions" class="sort-options">
+      <button onclick="sortListings('price')">Fiyat</button>
+      <button onclick="sortListings('squareMeters')">Metrekare</button>
+    </div>
+  </div>
   <div id="listings"></div>
 
   <script type="module" src="app.js"></script>
   <script>
-    // Simple filter function (can be enhanced)
     function filterListings() {
       const input = document.getElementById("search").value.toLowerCase();
       const table = document.querySelector("#listings table");
@@ -47,7 +127,7 @@
         const tr = table.getElementsByTagName("tr");
         for (let i = 1; i < tr.length; i++) {
           let found = false;
-          for (let j = 1; j < tr[i].cells.length - 1; j++) { // Exclude Actions column
+          for (let j = 1; j < tr[i].cells.length - 1; j++) {
             if (tr[i].cells[j].textContent.toLowerCase().indexOf(input) > -1) {
               found = true;
               break;
@@ -56,6 +136,16 @@
           tr[i].style.display = found ? "" : "none";
         }
       }
+    }
+
+    function toggleFilter() {
+      const filterDropdown = document.getElementById("filterDropdown");
+      filterDropdown.style.display = filterDropdown.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleSort() {
+      const sortOptions = document.getElementById("sortOptions");
+      sortOptions.style.display = sortOptions.style.display === "block" ? "none" : "block";
     }
   </script>
 </body>

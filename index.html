@@ -1,49 +1,21 @@
+<!DOCTYPE html>
+<html>
 <head>
-  <title>Real Estate Login</title>
+  <title>Emlak Asistan</title>
   <link rel="stylesheet" href="styles.css">
   <meta charset="UTF-8">
 </head>
-
 <body>
-  <h1>Login</h1>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBbae_WFHcINiBBjEDEyhbDKcaU_Aj7TQw",
-  authDomain: "emlakasistan-a76f1.firebaseapp.com",
-  projectId: "emlakasistan-a76f1",
-  storageBucket: "emlakasistan-a76f1.firebasestorage.app",
-  messagingSenderId: "652074794709",
-  appId: "1:652074794709:web:82ba55444395a926b56c5c",
-  measurementId: "G-KF22GNKWLX"
-};
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    window.login = function() {
-      console.log("Login function called");
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          console.log("Login successful");
-          if (email === "admin@office.com") {
-            window.location.href = "admin.html";
-          } else {
-            window.location.href = "dashboard.html";
-          }
-        })
-        .catch(err => {
-          console.log("Login error: ", err.message);
-          alert(err.message);
-        });
-    };
-  </script>
+  <h1>Giriş Yap</h1>
+  <div class="form-group">
+    <span>E-posta:</span>
+    <input type="email" id="email" placeholder="E-posta giriniz">
+  </div>
+  <div class="form-group">
+    <span>Şifre:</span>
+    <input type="password" id="password" placeholder="Şifre giriniz">
+  </div>
+  <button onclick="login()">Giriş Yap</button>
+  <script type="module" src="app.js"></script>
 </body>
-
+</html>
