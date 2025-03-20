@@ -1,8 +1,12 @@
 // app.js
-import { auth, db, storage, ref, uploadBytes, getDownloadURL, deleteObject } from './firebaseConfig.js';
+import { auth, db } from './firebaseConfig.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 import { createListingsTable } from './components.js';
+
+// Initialize Firebase Storage
+const storage = getStorage();
 
 // Export helper functions
 export function updateSubcategories() {
@@ -163,7 +167,7 @@ window.addListing = async function() {
           })
           .catch(error => {
             console.error(`Error uploading photo ${i + 1}:`, error);
-            throw error; // Re-throw to be caught by Promise.all
+            throw error;
           });
         
         uploadPromises.push(uploadPromise);
@@ -179,15 +183,13 @@ window.addListing = async function() {
       } catch (error) {
         console.error('Error during photo upload:', error);
         alert('Error uploading photos: ' + error.message);
-        return; // Exit early if photo upload fails
+        return;
       }
-    } else {
-      console.log("No photos to upload");
     }
 
     alert(`İlan eklendi! ID: ${newId}`);
     document.getElementById("listingForm").reset();
-    updateDetails(); // Reset visibility of property details
+    updateDetails();
     document.getElementById("photoPreview").innerHTML = "";
     window.location.href = "dashboard.html";
   } catch (err) {
