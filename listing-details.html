@@ -310,9 +310,13 @@
   </div>
 
   <script type="module">
-    import { auth, db, storage, ref, uploadBytes, getDownloadURL, deleteObject } from './firebaseConfig.js';
-    import { getDoc, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+    import { auth, db } from './firebaseConfig.js';
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+    import { getDoc, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
     import { createRoomTypeDropdown, createHeatingDropdown, createParkingDropdown, createSiteDropdown, createDevelopmentStatusDropdown, createFloorDropdown, createTotalFloorsDropdown } from './components.js';
+
+    // Initialize Firebase Storage with custom domain
+    const storage = getStorage(undefined, 'gs://emlakasistan-a76f1.firebasestorage.app');
 
     let currentImageIndex = 0;
     let images = [];
@@ -681,9 +685,37 @@
       popup.style.display = "none";
     }
 
+    async function deleteListing(docId) {
+      console.log("Deleting listing with ID:", docId);
+      try {
+        // First, get the listing to get photo URLs
+        const listingRef = doc(db, "properties", docId);
+        const listingSnap = await getDoc(listingRef);
+        
+        if (listingSnap.exists()) {
+          const photos = listingSnap.data().photos || [];
+          // Delete all photos from storage
+          const deletePhotoPromises = photos.map(photoUrl => {
+            const photoRef = ref(storage, photoUrl);
+            return deleteObject(photoRef).catch(err => console.log("Error deleting photo:", err));
+          });
+          await Promise.all(deletePhotoPromises);
+        }
+
+        // Delete the document from Firestore
+        await deleteDoc(listingRef);
+        console.log("Listing deleted successfully");
+        alert("İlan başarıyla silindi!");
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.log("Delete error:", err.message);
+        alert("İlan silinirken hata oluştu: " + err.message);
+      }
+    }
+
     function confirmDelete() {
       closeDeleteConfirm();
-      window.deleteListing(docId);
+      deleteListing(docId);
     }
 
     // Image pop-up functions

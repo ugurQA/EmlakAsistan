@@ -9,7 +9,8 @@
       "Accept",
       "Authorization",
       "Content-Disposition",
-      "X-Requested-With"
+      "X-Requested-With",
+      "Access-Control-Allow-Origin"
     ]
   }
 ] 

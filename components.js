@@ -217,14 +217,13 @@ export function createDevelopmentStatusDropdown() {
     select.className = 'form-control';
     const options = [
         { value: '', text: 'Seçiniz' },
-        { value: 'İmarlı', text: 'İmarlı' },
-        { value: 'İmarsız', text: 'İmarsız' },
-        { value: 'Hisseli', text: 'Hisseli' }
+        { value: 'Tarla', text: 'Tarla' },
+        { value: 'Arsa', text: 'Arsa' }
     ];
     options.forEach(opt => {
         const option = document.createElement('option');
         option.value = opt.value;
-        option.textContent = opt.text;
+        option.text = opt.text;
         select.appendChild(option);
     });
     return select;

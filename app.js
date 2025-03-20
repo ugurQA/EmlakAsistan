@@ -5,8 +5,8 @@ import { collection, addDoc, getDocs, query, orderBy, limit, where, serverTimest
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 import { createListingsTable } from './components.js';
 
-// Initialize Firebase Storage
-const storage = getStorage();
+// Initialize Firebase Storage with custom domain
+const storage = getStorage(undefined, 'gs://emlakasistan-a76f1.firebasestorage.app');
 
 // Export helper functions
 export function updateSubcategories() {
