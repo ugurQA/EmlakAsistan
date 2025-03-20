@@ -120,7 +120,7 @@ export function createListingsTable(container, listings, options = {}) {
         const tdActions = document.createElement('td');
         const viewButton = document.createElement('button');
         viewButton.className = 'btn btn-primary btn-sm';
-        viewButton.innerHTML = '<i class="fas fa-eye"></i> Detay';
+        viewButton.innerHTML = '<i class="fas fa-eye me-1"></i>Görüntüle';
         viewButton.onclick = () => onViewClick(listing.id);
         tdActions.appendChild(viewButton);
         tr.appendChild(tdActions);

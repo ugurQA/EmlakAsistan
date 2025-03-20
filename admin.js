@@ -1,12 +1,23 @@
 // admin.js
 import { auth, db } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { createUserWithEmailAndPassword, deleteUser } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { createUserWithEmailAndPassword, deleteUser, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { createListingsTable } from './components.js';
 
 // Load Agent Listings
 let listingsData = [];
 let allListingsData = [];
+
+// Logout function
+window.logout = async function() {
+    try {
+        await signOut(auth);
+        window.location.href = 'index.html';
+    } catch (error) {
+        console.error('Error signing out:', error);
+        alert('Çıkış yapılırken hata oluştu: ' + error.message);
+    }
+};
 
 // Check if user is admin
 auth.onAuthStateChanged(async (user) => {
@@ -25,7 +36,7 @@ auth.onAuthStateChanged(async (user) => {
                     const data = doc.data();
                     listingsData.push({ id: doc.id, ...data });
                 });
-                createListingsTable(listingsDiv, listingsData, false);
+                createListingsTable(listingsDiv, listingsData, { showAgent: false });
             } else {
                 console.log("No admin listings found");
                 listingsDiv.innerHTML = "<p>Henüz ilanınız yok.</p>";
@@ -44,7 +55,7 @@ auth.onAuthStateChanged(async (user) => {
                     const data = doc.data();
                     allListingsData.push({ id: doc.id, ...data });
                 });
-                createListingsTable(allListingsDiv, allListingsData, true);
+                createListingsTable(allListingsDiv, allListingsData, { showAgent: true });
             } else {
                 console.log("No listings found");
                 allListingsDiv.innerHTML = "<p>Henüz ilan yok.</p>";
@@ -84,7 +95,7 @@ async function loadAgents() {
                 <td>${listingsSnapshot.size}</td>
                 <td>
                     <button class="btn btn-danger btn-sm" onclick="deleteAgent('${agentDoc.id}')">
-                        <i class="fas fa-trash"></i>
+                        <i class="fas fa-trash-alt me-1"></i>Sil
                     </button>
                 </td>
             `;
@@ -98,28 +109,7 @@ async function loadAgents() {
 
 // Add new agent
 window.addAgent = async function() {
-    const email = prompt("Yeni ajan e-postası:");
-    const password = prompt("Yeni ajan şifresi:");
-    
-    if (email && password) {
-        try {
-            // Create user in Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            
-            // Add user to Firestore with role
-            await addDoc(collection(db, 'users'), {
-                email: email,
-                role: 'agent',
-                createdAt: serverTimestamp()
-            });
-            
-            alert("Ajan başarıyla eklendi!");
-            loadAgents(); // Refresh agents list
-        } catch (error) {
-            console.error('Error adding agent:', error);
-            alert('Error adding agent: ' + error.message);
-        }
-    }
+    window.location.href = 'add-agent.html';
 };
 
 // Delete agent

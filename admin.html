@@ -156,12 +156,14 @@
         <h1 class="page-title">Admin Dashboard</h1>
         
         <div class="actions-container">
-            <button class="btn btn-success btn-sm" onclick="location.href='add.html'">
-                <i class="fas fa-plus"></i> İlan Ekle
-            </button>
-            <button class="btn btn-danger btn-sm" onclick="window.logout()">
-                <i class="fas fa-sign-out-alt"></i> Çıkış
-            </button>
+            <div class="mb-3">
+                <button class="btn btn-success btn-sm" onclick="location.href='add.html'">
+                    <i class="fas fa-plus me-1"></i>İlan Ekle
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="window.logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Çıkış
+                </button>
+            </div>
         </div>
 
         <ul class="nav nav-tabs">
@@ -191,7 +193,7 @@
             <div class="filter-sort-container">
                 <div class="position-relative">
                     <button class="btn btn-outline-secondary btn-sm" onclick="toggleFilter()">
-                        <i class="fas fa-filter"></i> Filtrele
+                        <i class="fas fa-filter me-1"></i>Filtrele
                     </button>
                     <div id="filterDropdown" class="filter-dropdowns">
                         <select id="filterCity" class="form-control form-control-sm" onchange="applyFilters()">
@@ -215,7 +217,7 @@
 
                 <div class="position-relative">
                     <button class="btn btn-outline-secondary btn-sm" onclick="toggleSort()">
-                        <i class="fas fa-sort"></i> Sırala
+                        <i class="fas fa-sort me-1"></i>Sırala
                     </button>
                     <div id="sortOptions" class="sort-options">
                         <button onclick="sortListings('price')">
@@ -245,7 +247,7 @@
                     <div class="agents-header">
                         <h3>Temsilci Listesi</h3>
                         <button class="btn btn-success btn-sm" onclick="window.addAgent()">
-                            <i class="fas fa-plus"></i> Yeni Temsilci
+                            <i class="fas fa-user-plus me-1"></i>Temsilci Ekle
                         </button>
                     </div>
                     <table id="agentsTable" class="table table-striped">
