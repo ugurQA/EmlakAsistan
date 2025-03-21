@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temsilci Detayları</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    .card {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 1.5rem;
+    }
+    .card-body {
+      padding: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+    .non-editable {
+      color: #666;
+      background-color: #f8f9fa;
+    }
+    .action-buttons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+    .btn-sm i {
+      margin-right: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="text-center mb-0">Temsilci Detayları</h3>
+      </div>
+      <div class="card-body">
+        <form id="agentForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Ad</label>
+                <input type="text" class="form-control" id="firstName" disabled>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Soyad</label>
+                <input type="text" class="form-control" id="lastName" disabled>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" disabled>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Telefon</label>
+            <input type="tel" class="form-control" id="phone" disabled>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Kayıt Tarihi</label>
+                <input type="text" class="form-control non-editable" id="dateCreated" disabled>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">İlan Sayısı</label>
+                <input type="number" class="form-control non-editable" id="listingCount" disabled>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="window.returnToDashboard()">
+              <i class="fas fa-arrow-left"></i> Geri
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="toggleEditMode()">
+              <i class="fas fa-edit"></i> Düzenle
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteConfirm()">
+              <i class="fas fa-trash"></i> Sil
+            </button>
+            <button type="button" class="btn btn-success btn-sm" onclick="saveChanges()" id="saveBtn" style="display: none;">
+              <i class="fas fa-save"></i> Kaydet
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="cancelEdit()" id="cancelBtn" style="display: none;">
+              <i class="fas fa-times"></i> İptal
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Temsilciyi Sil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bu temsilciyi silmek istediğinizden emin misiniz?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn btn-danger" onclick="deleteAgent()">Sil</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { doc, getDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+
+    let editMode = false;
+    let originalData = null;
+    let agentId = null;
+
+    // Load agent details when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      agentId = urlParams.get('id');
+      if (agentId) {
+        loadAgentDetails(agentId);
+      }
+    });
+
+    async function loadAgentDetails(agentId) {
+      try {
+        const agentDoc = await getDoc(doc(db, 'agents', agentId));
+        if (agentDoc.exists()) {
+          const data = agentDoc.data();
+          originalData = { ...data };
+
+          // Set values to form fields
+          document.getElementById('firstName').value = data.firstName || '';
+          document.getElementById('lastName').value = data.lastName || '';
+          document.getElementById('email').value = data.email || '';
+          document.getElementById('phone').value = data.phone || '';
+          document.getElementById('listingCount').value = data.listingCount || 0;
+          
+          // Format and display the date created
+          if (data.dateCreated) {
+            const date = data.dateCreated.toDate(); // Convert Firestore Timestamp to Date
+            const formattedDate = new Intl.DateTimeFormat('tr-TR', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            }).format(date);
+            document.getElementById('dateCreated').value = formattedDate;
+          } else if (data.timestamp) { // Fallback for old records
+            const date = data.timestamp.toDate();
+            const formattedDate = new Intl.DateTimeFormat('tr-TR', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            }).format(date);
+            document.getElementById('dateCreated').value = formattedDate;
+          } else {
+            document.getElementById('dateCreated').value = 'Belirtilmemiş';
+          }
+        } else {
+          alert('Temsilci bulunamadı!');
+          window.location.href = 'dashboard.html';
+        }
+      } catch (error) {
+        console.error('Error loading agent details:', error);
+        alert('Temsilci bilgileri yüklenirken hata oluştu!');
+      }
+    }
+
+    function toggleEditMode() {
+      editMode = !editMode;
+      const inputs = document.querySelectorAll('.form-control:not(.non-editable)');
+      const saveBtn = document.getElementById('saveBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const editBtn = document.querySelector('button[onclick="toggleEditMode()"]');
+      const deleteBtn = document.querySelector('button[onclick="showDeleteConfirm()"]');
+      const backBtn = document.querySelector('button[onclick="window.returnToDashboard()"]');
+
+      inputs.forEach(input => {
+        input.disabled = !editMode;
+      });
+
+      // Toggle button visibility
+      saveBtn.style.display = editMode ? 'inline-block' : 'none';
+      cancelBtn.style.display = editMode ? 'inline-block' : 'none';
+      editBtn.style.display = editMode ? 'none' : 'inline-block';
+      deleteBtn.style.display = editMode ? 'none' : 'inline-block';
+      backBtn.style.display = editMode ? 'none' : 'inline-block';
+    }
+
+    async function saveChanges() {
+      try {
+        const updatedData = {
+          firstName: document.getElementById('firstName').value,
+          lastName: document.getElementById('lastName').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value
+        };
+
+        await updateDoc(doc(db, 'agents', agentId), updatedData);
+        alert('Temsilci bilgileri güncellendi!');
+        toggleEditMode();
+        loadAgentDetails(agentId);
+      } catch (error) {
+        console.error('Error updating agent:', error);
+        alert('Güncelleme sırasında bir hata oluştu.');
+      }
+    }
+
+    function cancelEdit() {
+      // Reset form to original values
+      document.getElementById('firstName').value = originalData.firstName || '';
+      document.getElementById('lastName').value = originalData.lastName || '';
+      document.getElementById('email').value = originalData.email || '';
+      document.getElementById('phone').value = originalData.phone || '';
+      toggleEditMode();
+    }
+
+    async function deleteAgent() {
+      try {
+        await deleteDoc(doc(db, 'agents', agentId));
+        alert('Temsilci başarıyla silindi!');
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        console.error('Error deleting agent:', error);
+        alert('Silme işlemi sırasında bir hata oluştu.');
+      }
+    }
+
+    function showDeleteConfirm() {
+      const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      modal.show();
+    }
+
+    // Make functions available to window object for button clicks
+    window.toggleEditMode = toggleEditMode;
+    window.saveChanges = saveChanges;
+    window.cancelEdit = cancelEdit;
+    window.showDeleteConfirm = showDeleteConfirm;
+    window.returnToDashboard = () => window.location.href = 'dashboard.html';
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -1,7 +1,7 @@
 // app.js
 import { auth, db } from './firebaseConfig.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 import { createListingsTable } from './components.js';
 
@@ -105,13 +105,25 @@ window.addListing = async function() {
   console.log("Authenticated user:", user.email);
 
   try {
-    const snapshot = await getDocs(query(collection(db, "properties"), orderBy("listingId", "desc"), limit(1)));
-    let newId = 1;
-    if (!snapshot.empty) {
-      newId = snapshot.docs[0].data().listingId + 1;
+    // Get and increment the counter atomically
+    const counterRef = doc(db, "counters", "listings");
+    let counterDoc = await getDoc(counterRef);
+    
+    if (!counterDoc.exists()) {
+      // Initialize counter if it doesn't exist
+      await setDoc(counterRef, { value: 0 });
+      counterDoc = await getDoc(counterRef);
     }
-    document.getElementById("listingId").value = newId;
-    console.log("Generated listingId:", newId);
+    
+    // Increment the counter
+    const currentValue = counterDoc.data().value || 0;
+    const newId = currentValue + 1;
+    await updateDoc(counterRef, { value: newId });
+    
+    // Format ID as 6-digit string
+    const paddedId = String(newId).padStart(6, '0');
+    document.getElementById("listingId").value = paddedId;
+    console.log("Generated listingId:", paddedId);
 
     const photos = document.getElementById("photos").files;
     const category = document.getElementById("category").value;
@@ -125,7 +137,7 @@ window.addListing = async function() {
       price: parseFloat(document.getElementById("price").value) || 0,
       contact: document.getElementById("contact").value,
       squareMeters: parseFloat(document.getElementById("squareMeters").value) || 0,
-      listingId: newId,
+      listingId: paddedId,
       agent: user.email,
       timestamp: serverTimestamp(),
       photos: [] // Array to store photo URLs
@@ -187,7 +199,7 @@ window.addListing = async function() {
       }
     }
 
-    alert(`İlan eklendi! ID: ${newId}`);
+    alert(`İlan eklendi! ID: ${paddedId}`);
     document.getElementById("listingForm").reset();
     updateDetails();
     document.getElementById("photoPreview").innerHTML = "";
@@ -227,8 +239,6 @@ window.login = function() {
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log("Login successful with email:", email);
-      // Store user role in localStorage
-      localStorage.setItem('userRole', email === "admin@office.com" ? 'admin' : 'agent');
       window.location.href = "dashboard.html";
     })
     .catch(err => {
@@ -259,7 +269,6 @@ window.logout = function() {
   signOut(auth)
     .then(() => {
       console.log("Logout successful");
-      localStorage.removeItem('userRole'); // Clear user role
       window.location.href = "index.html";
     })
     .catch(err => {
@@ -361,12 +370,12 @@ async function loadAgents() {
       const agent = doc.data();
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${agent.email}</td>
-        <td>${agent.name || '-'}</td>
+        <td>${agent.firstName || '-'}</td>
+        <td>${agent.lastName || '-'}</td>
         <td>${agent.listingCount || 0}</td>
         <td>
-          <button class="btn btn-danger btn-sm" onclick="deleteAgent('${doc.id}')">
-            <i class="fas fa-trash"></i> Sil
+          <button class="btn btn-primary btn-sm" onclick="window.location.href='agent-details.html?id=${doc.id}'">
+            <i class="fas fa-eye"></i> Detay
           </button>
         </td>
       `;
@@ -471,24 +480,6 @@ window.sortListings = function(criterion) {
   document.getElementById("sortOptions").style.display = "none";
 };
 
-// Admin Dashboard
-if (window.location.pathname.includes("admin.html")) {
-  getDocs(query(collection(db, "properties"))).then(snapshot => {
-    const agentStats = {};
-    const allListingsDiv = document.getElementById("allListings");
-    allListingsDiv.innerHTML = "";
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      agentStats[data.agent] = (agentStats[data.agent] || 0) + 1;
-      allListingsDiv.innerHTML += `<p>${data.title} - ${data.category} (ID: ${data.listingId}) - ${data.agent}</p>`;
-    });
-    document.getElementById("agentStats").innerHTML = Object.entries(agentStats)
-      .map(([agent, count]) => `<p>${agent}: ${count} ilan</p>`).join("");
-  }).catch(err => {
-    console.log("Admin data load error:", err.message);
-  });
-}
-
 // Add Agent (Admin)
 window.addAgent = function() {
   window.location.href = 'add-agent.html';
@@ -517,11 +508,6 @@ window.deleteListing = async function(docId) {
     console.log("Delete error:", err.message);
     alert("İlan silinirken hata oluştu: " + err.message);
   }
-};
-
-// Agent management functions
-window.addAgent = () => {
-  window.location.href = 'add-agent.html';
 };
 
 // Delete agent function

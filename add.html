@@ -1,127 +1,254 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yeni İlan Ekle</title>
-  <link rel="stylesheet" href="styles.css">
-  <meta charset="UTF-8"> <!-- Ensures proper handling of Turkish characters -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
+  <style>
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .card {
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 1.5rem;
+    }
+    .card-body {
+      padding: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+      padding-left: 1rem;
+    }
+    #listingForm {
+      padding-right: 1.5rem;
+    }
+    .form-group label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      display: block;
+      padding-left: 0.5rem;
+    }
+    .form-control, .form-select {
+      width: 100%;
+    }
+    textarea.form-control {
+      min-height: 100px;
+    }
+    #photoPreview {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    #photoPreview img {
+      max-width: 150px;
+      height: auto;
+      border-radius: 4px;
+    }
+    .action-buttons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      padding-left: 1rem;
+    }
+    .btn-sm {
+      padding: 0.5rem 1rem;
+    }
+    .btn-sm i {
+      margin-right: 0.5rem;
+    }
+  </style>
 </head>
-
 <body>
-  <h1>Yeni İlan Ekle</h1>
-  <form id="listingForm" onsubmit="addListing(); return false;">
-    <div class="form-group">
-      <span>• İlan Başlığı:</span>
-      <input type="text" id="title" placeholder="İlan Başlığı" required>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="text-center mb-0">Yeni İlan Ekle</h3>
+          </div>
+          <div class="card-body">
+            <form id="listingForm" onsubmit="addListing(); return false;">
+              <div class="form-group">
+                <label for="title">İlan Başlığı</label>
+                <input type="text" class="form-control" id="title" placeholder="İlan Başlığı" required>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="type">Tür</label>
+                    <select class="form-select" id="type" required>
+                      <option value="----">----</option>
+                      <option value="Satılık">Satılık</option>
+                      <option value="Kiralık">Kiralık</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="category">Kategori</label>
+                    <select class="form-select" id="category" required>
+                      <option value="----">----</option>
+                      <option value="Konut">Konut</option>
+                      <option value="Arsa">Arsa</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="commonFields">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="province">İl</label>
+                      <select class="form-select" id="province" required>
+                        <option value="----">----</option>
+                        <option value="İzmir">İzmir</option>
+                        <option value="Aydın">Aydın</option>
+                        <option value="Manisa">Manisa</option>
+                        <option value="Ankara">Ankara</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="district">İlçe</label>
+                      <select class="form-select" id="district" required>
+                        <option value="----">----</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="address">Adres</label>
+                  <input type="text" class="form-control" id="address" placeholder="Adres" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="price">Fiyat</label>
+                  <input type="number" class="form-control" id="price" placeholder="Fiyat" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="contact">İletişim Numarası</label>
+                  <input type="tel" class="form-control" id="contact" placeholder="İletişim Numarası" required>
+                </div>
+              </div>
+
+              <div id="propertyDetails" style="display: none;">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="squareMeters">Metrekare</label>
+                      <input type="number" class="form-control" id="squareMeters" placeholder="Metrekare" required>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="konutDetails" style="display: none;">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="roomType">Oda Sayısı</label>
+                        <select class="form-select" id="roomType"></select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="floor">Bulunduğu Kat</label>
+                        <select class="form-select" id="floor"></select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="totalFloors">Kat Sayısı</label>
+                        <select class="form-select" id="totalFloors"></select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="heating">Isınma</label>
+                        <select class="form-select" id="heating"></select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="parking">Otopark</label>
+                        <select class="form-select" id="parking"></select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="site">Site İçerisinde</label>
+                        <select class="form-select" id="site"></select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="description">Açıklama</label>
+                    <textarea class="form-control" id="description" placeholder="Açıklama" maxlength="3000"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="notes">Not</label>
+                    <textarea class="form-control" id="notes" placeholder="Not" maxlength="3000"></textarea>
+                  </div>
+                </div>
+
+                <div id="arsaDetails" style="display: none;">
+                  <div class="form-group">
+                    <label for="developmentStatus">İmar Durumu</label>
+                    <select class="form-select" id="developmentStatus"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="photos">Fotoğraflar</label>
+                <input type="file" class="form-control" id="photos" multiple accept="image/*">
+                <div id="photoPreview"></div>
+              </div>
+
+              <input type="hidden" id="listingId">
+              
+              <div class="action-buttons">
+                <button type="submit" class="btn btn-primary btn-sm">
+                  <i class="fas fa-save"></i> Kaydet
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.returnToDashboard()">
+                  <i class="fas fa-arrow-left"></i> İptal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <span>• Tür:</span>
-      <select id="type" required>
-        <option value="----">----</option>
-        <option value="Satılık">Satılık</option>
-        <option value="Kiralık">Kiralık</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <span>• Kategori:</span>
-      <select id="category" required>
-        <option value="----">----</option>
-        <option value="Konut">Konut</option>
-        <option value="Arsa">Arsa</option>
-      </select>
-    </div>
-    <div id="commonFields">
-      <div class="form-group">
-        <span>• Adres:</span>
-        <input type="text" id="address" placeholder="Adres" required>
-      </div>
-      <div class="form-group">
-        <span>• İl:</span>
-        <select id="province" required>
-          <option value="----">----</option>
-          <option value="İzmir">İzmir</option>
-          <option value="Aydın">Aydın</option>
-          <option value="Manisa">Manisa</option>
-          <option value="Ankara">Ankara</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span>• İlçe:</span>
-        <select id="district" required>
-          <option value="----">----</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <span>• Fiyat:</span>
-        <input type="number" id="price" placeholder="Fiyat" required>
-      </div>
-      <div class="form-group">
-        <span>• İletişim Numarası:</span>
-        <input type="tel" id="contact" placeholder="İletişim Numarası" required>
-      </div>
-    </div>
-    <div id="propertyDetails" style="display: none;">
-      <div class="form-group">
-        <span>• Metrekare:</span>
-        <input type="number" id="squareMeters" placeholder="Metrekare" required>
-      </div>
-      <div id="konutDetails" style="display: none;">
-        <div class="form-group">
-          <span>• Oda Sayısı:</span>
-          <select id="roomType"></select>
-        </div>
-        <div class="form-group">
-          <span>• Bulunduğu Kat:</span>
-          <select id="floor"></select>
-        </div>
-        <div class="form-group">
-          <span>• Kat Sayısı:</span>
-          <select id="totalFloors"></select>
-        </div>
-        <div class="form-group">
-          <span>• Isınma:</span>
-          <select id="heating"></select>
-        </div>
-        <div class="form-group">
-          <span>• Otopark:</span>
-          <select id="parking"></select>
-        </div>
-        <div class="form-group">
-          <span>• Site İçerisinde:</span>
-          <select id="site"></select>
-        </div>
-        <div class="form-group">
-          <span>• Açıklama:</span>
-          <textarea id="description" placeholder="Açıklama" maxlength="3000"></textarea>
-        </div>
-        <div class="form-group">
-          <span>• Not:</span>
-          <textarea id="notes" placeholder="Not" maxlength="3000"></textarea>
-        </div>
-      </div>
-      <div id="arsaDetails" style="display: none;">
-        <div class="form-group">
-          <span>• İmar Durumu:</span>
-          <select id="developmentStatus"></select>
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <span>• Fotoğraflar:</span>
-      <input type="file" id="photos" multiple accept="image/*">
-      <div id="photoPreview"></div>
-    </div>
-    <input type="hidden" id="listingId">
-    <div class="form-group">
-      <button type="submit">Kaydet</button>
-    </div>
-  </form>
+  </div>
 
   <script type="module">
     import { createRoomTypeDropdown, createHeatingDropdown, createParkingDropdown, createSiteDropdown, createDevelopmentStatusDropdown, createFloorDropdown, createTotalFloorsDropdown } from './components.js';
-    import './app.js'; // Import app.js to initialize event listeners
+    import './app.js';
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Initialize dropdowns using components.js
       const roomTypeSelect = document.getElementById("roomType");
       const heatingSelect = document.getElementById("heating");
       const parkingSelect = document.getElementById("parking");
@@ -135,44 +262,58 @@
         roomTypeSelect.replaceWith(dropdown);
         dropdown.id = "roomType";
         dropdown.name = "roomType";
+        dropdown.className = "form-select";
       }
       if (heatingSelect) {
         const dropdown = createHeatingDropdown();
         heatingSelect.replaceWith(dropdown);
         dropdown.id = "heating";
         dropdown.name = "heating";
+        dropdown.className = "form-select";
       }
       if (parkingSelect) {
         const dropdown = createParkingDropdown();
         parkingSelect.replaceWith(dropdown);
         dropdown.id = "parking";
         dropdown.name = "parking";
+        dropdown.className = "form-select";
       }
       if (siteSelect) {
         const dropdown = createSiteDropdown();
         siteSelect.replaceWith(dropdown);
         dropdown.id = "site";
         dropdown.name = "site";
+        dropdown.className = "form-select";
       }
       if (developmentStatusSelect) {
         const dropdown = createDevelopmentStatusDropdown();
         developmentStatusSelect.replaceWith(dropdown);
         dropdown.id = "developmentStatus";
         dropdown.name = "developmentStatus";
+        dropdown.className = "form-select";
       }
       if (floorSelect) {
         const dropdown = createFloorDropdown();
         floorSelect.replaceWith(dropdown);
         dropdown.id = "floor";
         dropdown.name = "floor";
+        dropdown.className = "form-select";
       }
       if (totalFloorsSelect) {
         const dropdown = createTotalFloorsDropdown();
         totalFloorsSelect.replaceWith(dropdown);
         dropdown.id = "totalFloors";
         dropdown.name = "totalFloors";
+        dropdown.className = "form-select";
       }
     });
+
+    window.returnToDashboard = function() {
+      window.location.href = 'dashboard.html';
+    };
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

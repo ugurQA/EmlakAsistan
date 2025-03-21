@@ -1,82 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <title>Listing Details</title>
-  <link rel="stylesheet" href="styles.css">
-  <meta charset="UTF-8"> <!-- Ensures proper handling of Turkish characters -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İlan Detayları</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="styles.css" rel="stylesheet">
   <style>
-    /* Basic inline styles for table and images (can be moved to styles.css) */
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    .card {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 1.5rem;
+    }
+    .card-body {
+      padding: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+    .non-editable {
+      color: #666;
+      background-color: #f8f9fa;
+    }
+    .action-buttons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+    .btn-sm i {
+      margin-right: 0.25rem;
+    }
     table {
+      width: 100%;
+      margin-bottom: 1rem;
       border-collapse: collapse;
-      width: 80%; /* Reduced width for a shorter table */
-      margin: 20px auto; /* Center the table */
-      font-size: 14px;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
+      padding: 0.75rem;
+      border: 1px solid #dee2e6;
     }
     th {
-      background-color: #f2f2f2;
+      background-color: #f8f9fa;
+      font-weight: 500;
     }
     .key {
-      font-weight: bold;
-      width: 20%; /* Key columns (e.g., "ID:") are narrower */
+      width: 20%;
+      background-color: #f8f9fa;
+      font-weight: 500;
     }
     .value {
-      width: 30%; /* Value columns are wider */
+      width: 30%;
     }
     .full-value {
-      width: 80%; /* Full width for merged value cells */
+      width: 80%;
     }
     .image-gallery-container {
+      margin-bottom: 2rem;
       position: relative;
-      width: 80%;
-      margin: 20px auto;
+      width: 100%;
       overflow: hidden;
     }
     .image-gallery {
       display: flex;
-      flex-wrap: nowrap; /* Prevent wrapping to multiple rows */
-      overflow-x: auto; /* Enable horizontal scrolling */
-      scroll-behavior: smooth; /* Smooth scrolling for arrow navigation */
+      flex-wrap: nowrap;
+      overflow-x: auto;
       gap: 10px;
       padding: 10px 0;
-      -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
-      scrollbar-width: none; /* Hide scrollbar in Firefox */
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
     .image-gallery::-webkit-scrollbar {
-      display: none; /* Hide scrollbar in Chrome/Safari */
+      display: none;
     }
     .image-gallery img {
       width: 150px;
       height: 150px;
       object-fit: cover;
-      cursor: pointer; /* Indicate that the image is clickable */
-      flex: 0 0 auto; /* Prevent images from shrinking */
+      border-radius: 4px;
     }
     .image-gallery .image-container {
       position: relative;
-      display: inline-block;
     }
-    .image-gallery .remove-btn {
+    .remove-btn {
       position: absolute;
       top: 5px;
       right: 5px;
       background-color: rgba(255, 0, 0, 0.7);
       color: white;
       border: none;
-      border-radius: 50%; /* Ensure circular shape */
+      border-radius: 50%;
       width: 20px;
       height: 20px;
-      line-height: 20px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 12px;
       display: flex;
       align-items: center;
-      justify-content: center; /* Center the "×" */
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
     }
     .gallery-arrow {
       position: absolute;
@@ -88,11 +123,10 @@
       border-radius: 50%;
       width: 30px;
       height: 30px;
-      font-size: 20px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
       z-index: 10;
     }
     .gallery-arrow.left {
@@ -101,67 +135,6 @@
     .gallery-arrow.right {
       right: 0;
     }
-    .button-group {
-      text-align: center;
-      margin: 10px 0;
-    }
-    .button-group button {
-      display: inline-block; /* Ensure buttons are on the same line */
-      margin: 0 5px;
-      padding: 4px 8px; /* Reduced padding for smaller buttons */
-      font-size: 12px; /* Smaller font size */
-      cursor: pointer;
-      border-radius: 4px;
-      border: none;
-      width: auto; /* Let the width be determined by content */
-      min-width: 100px; /* Minimum width to ensure readability */
-      text-align: center;
-    }
-    .back-btn {
-      background-color: #888; /* Gray for back */
-      color: white;
-    }
-    .delete-btn {
-      background-color: #ff6666; /* Soft red color */
-      color: white;
-    }
-    .edit-btn {
-      background-color: #4CAF50; /* Green for edit */
-      color: white;
-    }
-    .save-btn {
-      background-color: #2196F3; /* Blue for save */
-      color: white;
-    }
-    .cancel-btn {
-      background-color: #ccc; /* Gray for cancel */
-      color: black;
-    }
-    /* Add icons using pseudo-elements */
-    .back-btn::before {
-      content: "← "; /* Unicode arrow for back */
-    }
-    .delete-btn::before {
-      content: "🗑️ "; /* Unicode trash can for delete */
-    }
-    .edit-btn::before {
-      content: "✏️ "; /* Unicode pencil for edit */
-    }
-    .save-btn::before {
-      content: "💾 "; /* Unicode floppy disk for save */
-    }
-    .cancel-btn::before {
-      content: "✖ "; /* Unicode cross for cancel */
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    .listing-title {
-      margin: 10px 0;
-      font-size: 1.5em;
-      color: #333;
-    }
-    /* Pop-up styles for image gallery */
     .popup {
       display: none;
       position: fixed;
@@ -176,14 +149,52 @@
     }
     .popup-content {
       position: relative;
-      max-width: 80%;
-      max-height: 80%;
-      text-align: center;
+      max-width: 90%;
+      max-height: 90%;
     }
     .popup-content img {
       max-width: 100%;
-      max-height: 60vh; /* Larger image in the pop-up */
+      max-height: 80vh;
       object-fit: contain;
+    }
+    .popup .arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      z-index: 1001;
+    }
+    .popup .arrow:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+    .popup .arrow.left {
+      left: 5%;
+    }
+    .popup .arrow.right {
+      right: 5%;
+    }
+    .popup .counter {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 16px;
+      z-index: 1001;
     }
     .close-btn {
       position: fixed;
@@ -194,118 +205,79 @@
       cursor: pointer;
       z-index: 1001;
     }
-    .arrow {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      color: white;
-      font-size: 40px;
-      cursor: pointer;
-      user-select: none;
-      z-index: 1001;
-    }
-    .arrow.left {
-      left: 5%;
-    }
-    .arrow.right {
-      right: 5%;
-    }
-    .counter {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 16px;
-    }
-    /* Confirmation pop-up styles */
-    .confirm-popup {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .confirm-content {
-      background-color: white;
-      padding: 30px; /* Increased padding for better spacing */
-      border-radius: 5px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-    .confirm-content p {
-      margin: 0 0 20px;
-      font-size: 16px;
-    }
-    .confirm-content button {
-      margin: 0 10px;
-      padding: 8px 16px;
-    }
-    .confirm-yes {
-      background-color: #ff6666;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-    .confirm-no {
-      background-color: #ccc;
-      color: black;
-      border: none;
-      border-radius: 4px;
-    }
-    /* Editable field styles */
-    .editable:hover {
-      background-color: #f0f0f0;
-      cursor: pointer;
-    }
-    input, textarea, select {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 5px;
-      font-size: 14px;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 50px;
-    }
   </style>
 </head>
 <body>
-  <h1>Listing Details</h1>
-  <div class="button-group">
-    <button class="back-btn" onclick="location.href='dashboard.html'">İlanlara Dön</button> <!-- Changed from "Back to Dashboard" -->
-    <button class="delete-btn" onclick="showDeleteConfirm()">İlanı Sil</button>
-    <button class="edit-btn" onclick="toggleEditMode()">Edit</button>
-  </div>
-  <div class="button-group" id="editActions">
-    <button class="save-btn" id="saveBtn" style="display: none;" onclick="saveChanges()">Save</button>
-    <button class="cancel-btn" id="cancelBtn" style="display: none;" onclick="cancelEdit()">Cancel</button>
-  </div>
-  <div id="listingDetails"></div>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="text-center mb-0">İlan Detayları</h3>
+      </div>
+      <div class="card-body">
+        <!-- Image Gallery -->
+        <div class="image-gallery-container">
+          <button class="gallery-arrow left" onclick="scrollGallery(-300)">❮</button>
+          <div class="image-gallery" id="imageGallery"></div>
+          <button class="gallery-arrow right" onclick="scrollGallery(300)">❯</button>
+        </div>
 
-  <!-- Pop-up for image gallery -->
-  <div id="imagePopup" class="popup">
-    <div class="popup-content">
-      <span class="close-btn" onclick="closePopup()">×</span>
-      <span class="arrow left" onclick="changeImage(-1)">❮</span>
-      <img id="popupImage" src="" alt="Popup Image">
-      <span class="arrow right" onclick="changeImage(1)">❯</span>
-      <div id="imageCounter" class="counter"></div>
+        <!-- Listing Details -->
+        <div id="listingDetails"></div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="window.returnToDashboard()">
+            <i class="fas fa-arrow-left"></i> Geri
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="toggleEditMode()">
+            <i class="fas fa-edit"></i> Düzenle
+          </button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteConfirm()">
+            <i class="fas fa-trash"></i> Sil
+          </button>
+          <button type="button" class="btn btn-success btn-sm" onclick="saveChanges()" id="saveBtn" style="display: none;">
+            <i class="fas fa-save"></i> Kaydet
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="cancelEdit()" id="cancelBtn" style="display: none;">
+            <i class="fas fa-times"></i> İptal
+          </button>
+        </div>
+
+        <!-- Image Upload (hidden by default) -->
+        <div id="imageUploadDiv" style="display: none;" class="mt-3 text-center">
+          <input type="file" accept="image/*" multiple class="form-control">
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Confirmation pop-up for delete -->
-  <div id="deleteConfirmPopup" class="confirm-popup">
-    <div class="confirm-content">
-      <p>Bu ilanı silmek istediğinizden emin misiniz?</p>
-      <button class="confirm-yes" onclick="confirmDelete()">Evet-Sil</button>
-      <button class="confirm-no" onclick="closeDeleteConfirm()">Hayır-Geri Dön</button>
+  <!-- Image Popup -->
+  <div id="imagePopup" class="popup">
+    <span class="close-btn" onclick="closePopup()">×</span>
+    <div class="popup-content">
+      <img id="popupImage" src="" alt="Popup Image">
+    </div>
+    <button class="arrow left" onclick="changeImage(-1)">❮</button>
+    <button class="arrow right" onclick="changeImage(1)">❯</button>
+    <div class="counter" id="imageCounter"></div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">İlanı Sil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Bu ilanı silmek istediğinizden emin misiniz?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn btn-danger" onclick="deleteListing()">Sil</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -315,7 +287,6 @@
     import { getDoc, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
     import { createRoomTypeDropdown, createHeatingDropdown, createParkingDropdown, createSiteDropdown, createDevelopmentStatusDropdown, createFloorDropdown, createTotalFloorsDropdown } from './components.js';
 
-    // Initialize Firebase Storage with custom domain
     const storage = getStorage(undefined, 'gs://emlakasistan-a76f1.firebasestorage.app');
 
     let currentImageIndex = 0;
@@ -323,55 +294,28 @@
     let docId = null;
     let originalData = null;
     let editMode = false;
-    let newImages = []; // For newly added images during edit
+    let newImages = [];
 
-    // Add this function to handle back button
-    function goBack() {
-      const userRole = localStorage.getItem('userRole');
-      window.location.href = userRole === 'admin' ? 'admin.html' : 'dashboard.html';
-    }
-
-    // Load listing details based on URL parameter
     document.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
       docId = urlParams.get("id");
       if (docId) {
-        const listingsDiv = document.getElementById("listingDetails");
-        if (listingsDiv) {
-          loadListingDetails(listingsDiv);
-        }
-      }
-
-      // Add back button
-      const container = document.querySelector('.container');
-      if (container) {
-        const backButton = document.createElement('button');
-        backButton.className = 'btn btn-secondary mb-3';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Geri Dön';
-        backButton.onclick = goBack;
-        container.insertBefore(backButton, container.firstChild);
+        loadListingDetails();
       }
     });
 
-    function loadListingDetails(listingsDiv) {
-      getDoc(doc(db, "properties", docId)).then(docSnap => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          originalData = { ...data }; // Store original data for cancel functionality
-          images = data.photos || []; // Store images for the pop-up
-
-          // Display the title (Başlık) as a heading above the table
-          const titleHeading = document.createElement("h2");
-          titleHeading.className = "listing-title";
-          titleHeading.textContent = data.title || "No title";
-          listingsDiv.appendChild(titleHeading);
+    async function loadListingDetails() {
+      try {
+        const listingDoc = await getDoc(doc(db, "properties", docId));
+        if (listingDoc.exists()) {
+          const data = listingDoc.data();
+          originalData = { ...data };
+          images = data.photos || [];
 
           // Create the table
           const table = document.createElement("table");
-          table.border = "1";
-          table.style.borderCollapse = "collapse";
+          table.className = 'table';
           table.id = "listingTable";
-
           const tbody = document.createElement("tbody");
 
           // Helper function to add a row with two key-value pairs
@@ -384,9 +328,6 @@
             tdValue1.className = `value ${editable1 ? "editable" : ""}`;
             tdValue1.dataset.field = field1;
             tdValue1.textContent = value1 || "";
-            if (key1 === "Fiyat" && value1) {
-              tdValue1.style.color = "red";
-            }
 
             const tdKey2 = document.createElement("td");
             tdKey2.className = "key";
@@ -395,9 +336,6 @@
             tdValue2.className = `value ${editable2 ? "editable" : ""}`;
             tdValue2.dataset.field = field2;
             tdValue2.textContent = value2 || "";
-            if (key2 === "Fiyat" && value2) {
-              tdValue2.style.color = "red";
-            }
 
             tr.appendChild(tdKey1);
             tr.appendChild(tdValue1);
@@ -406,7 +344,7 @@
             tbody.appendChild(tr);
           };
 
-          // Helper function to add a full-width row for a single key-value pair
+          // Helper function to add a full-width row
           const addFullRow = (key, value, field, editable = true) => {
             const tr = document.createElement("tr");
             const tdKey = document.createElement("td");
@@ -438,57 +376,26 @@
             addFullRow("Not:", data.notes, "notes");
           } else if (data.category === "Arsa") {
             addRow("Metrekare:", data.squareMeters, "İmar Durumu:", data.developmentStatus, "squareMeters", "developmentStatus", true, true);
-            addFullRow("Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "timestamp", false);
+            addRow("Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "", "", "timestamp", "", false, false);
             addFullRow("Açıklama:", data.description, "description");
             addFullRow("Not:", data.notes, "notes");
           }
 
           table.appendChild(tbody);
-          listingsDiv.innerHTML = "";
-          listingsDiv.appendChild(titleHeading);
-          listingsDiv.appendChild(table);
+          const listingDetails = document.getElementById("listingDetails");
+          listingDetails.innerHTML = "";
+          listingDetails.appendChild(table);
 
-          // Images section
-          const galleryContainer = document.createElement("div");
-          galleryContainer.className = "image-gallery-container";
-          const imagesDiv = document.createElement("div");
-          imagesDiv.className = "image-gallery";
-          imagesDiv.id = "imageGallery";
-          renderImages(imagesDiv);
-          galleryContainer.appendChild(imagesDiv);
-
-          // Add navigation arrows
-          const leftArrow = document.createElement("button");
-          leftArrow.className = "gallery-arrow left";
-          leftArrow.textContent = "❮";
-          leftArrow.onclick = () => scrollGallery(-300); // Scroll left by 300px
-          const rightArrow = document.createElement("button");
-          rightArrow.className = "gallery-arrow right";
-          rightArrow.textContent = "❯";
-          rightArrow.onclick = () => scrollGallery(300); // Scroll right by 300px
-          galleryContainer.appendChild(leftArrow);
-          galleryContainer.appendChild(rightArrow);
-
-          listingsDiv.appendChild(galleryContainer);
-
-          // Add image upload input (hidden by default)
-          const imageUploadDiv = document.createElement("div");
-          imageUploadDiv.id = "imageUploadDiv";
-          imageUploadDiv.style.display = "none";
-          const imageUploadInput = document.createElement("input");
-          imageUploadInput.type = "file";
-          imageUploadInput.accept = "image/*";
-          imageUploadInput.multiple = true;
-          imageUploadInput.onchange = handleImageUpload;
-          imageUploadDiv.appendChild(imageUploadInput);
-          listingsDiv.appendChild(imageUploadDiv);
+          // Render images
+          renderImages(document.getElementById("imageGallery"));
         } else {
-          listingsDiv.innerHTML = "<p>Listing not found.</p>";
+          alert("İlan bulunamadı!");
+          window.location.href = "dashboard.html";
         }
-      }).catch(err => {
-        console.log("Details load error:", err.message);
-        listingsDiv.innerHTML = `<p>Error loading details: ${err.message}</p>`;
-      });
+      } catch (error) {
+        console.error("Error loading listing details:", error);
+        alert("İlan detayları yüklenirken hata oluştu!");
+      }
     }
 
     function renderImages(imagesDiv) {
@@ -545,62 +452,63 @@
 
     function toggleEditMode() {
       editMode = !editMode;
-      const table = document.getElementById("listingTable");
-      const cells = table.querySelectorAll(".editable");
+      const inputs = document.querySelectorAll('.editable');
+      const saveBtn = document.getElementById('saveBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const editBtn = document.querySelector('button[onclick="toggleEditMode()"]');
+      const deleteBtn = document.querySelector('button[onclick="showDeleteConfirm()"]');
+      const backBtn = document.querySelector('button[onclick="window.returnToDashboard()"]');
       const imageUploadDiv = document.getElementById("imageUploadDiv");
-      const imagesDiv = document.getElementById("imageGallery");
-      const saveBtn = document.getElementById("saveBtn");
-      const cancelBtn = document.getElementById("cancelBtn");
 
-      if (editMode) {
-        // Enter edit mode
-        cells.forEach(cell => {
-          const field = cell.dataset.field;
-          if (field === "listingId" || field === "timestamp" || field === "agent") return; // Skip non-editable fields
+      inputs.forEach(cell => {
+        const field = cell.dataset.field;
+        if (field === "listingId" || field === "timestamp" || field === "agent") return;
 
-          const value = cell.textContent;
-          let inputElement;
-          if (field === "description" || field === "notes") {
-            inputElement = document.createElement("textarea");
-            inputElement.value = value;
-          } else if (field === "roomType") {
-            inputElement = createRoomTypeDropdown(value);
-          } else if (field === "heating") {
-            inputElement = createHeatingDropdown(value);
-          } else if (field === "site") {
-            inputElement = createSiteDropdown(value);
-          } else if (field === "parking") {
-            inputElement = createParkingDropdown(value);
-          } else if (field === "developmentStatus") {
-            inputElement = createDevelopmentStatusDropdown(value);
-          } else if (field === "floor") {
-            inputElement = createFloorDropdown(value);
-          } else if (field === "totalFloors") {
-            inputElement = createTotalFloorsDropdown(value);
-          } else if (field === "price" || field === "squareMeters") {
-            inputElement = document.createElement("input");
-            inputElement.type = "number";
-            inputElement.value = value.replace(/[^0-9]/g, "");
-          } else {
-            inputElement = document.createElement("input");
-            inputElement.type = "text";
-            inputElement.value = value;
-          }
-          cell.innerHTML = "";
-          cell.appendChild(inputElement);
-        });
-        imageUploadDiv.style.display = "block";
-        renderImages(imagesDiv); // Show remove buttons
-        saveBtn.style.display = "inline-block";
-        cancelBtn.style.display = "inline-block";
-      } else {
-        // Exit edit mode without saving
-        loadListingDetails(document.getElementById("listingDetails"));
-        imageUploadDiv.style.display = "none";
-        newImages = []; // Clear new images
-        saveBtn.style.display = "none";
-        cancelBtn.style.display = "none";
-      }
+        const value = cell.textContent;
+        let inputElement;
+        if (field === "description" || field === "notes") {
+          inputElement = document.createElement("textarea");
+          inputElement.value = value;
+          inputElement.className = "form-control";
+        } else if (field === "roomType") {
+          inputElement = createRoomTypeDropdown(value);
+        } else if (field === "heating") {
+          inputElement = createHeatingDropdown(value);
+        } else if (field === "site") {
+          inputElement = createSiteDropdown(value);
+        } else if (field === "parking") {
+          inputElement = createParkingDropdown(value);
+        } else if (field === "developmentStatus") {
+          inputElement = createDevelopmentStatusDropdown(value);
+        } else if (field === "floor") {
+          inputElement = createFloorDropdown(value);
+        } else if (field === "totalFloors") {
+          inputElement = createTotalFloorsDropdown(value);
+        } else if (field === "price" || field === "squareMeters") {
+          inputElement = document.createElement("input");
+          inputElement.type = "number";
+          inputElement.className = "form-control";
+          inputElement.value = value.replace(/[^0-9]/g, "");
+        } else {
+          inputElement = document.createElement("input");
+          inputElement.type = "text";
+          inputElement.className = "form-control";
+          inputElement.value = value;
+        }
+        cell.innerHTML = "";
+        cell.appendChild(inputElement);
+      });
+
+      // Toggle visibility
+      saveBtn.style.display = editMode ? 'inline-block' : 'none';
+      cancelBtn.style.display = editMode ? 'inline-block' : 'none';
+      editBtn.style.display = editMode ? 'none' : 'inline-block';
+      deleteBtn.style.display = editMode ? 'none' : 'inline-block';
+      backBtn.style.display = editMode ? 'none' : 'inline-block';
+      imageUploadDiv.style.display = editMode ? 'block' : 'none';
+
+      // Update image gallery
+      renderImages(document.getElementById("imageGallery"));
     }
 
     function saveChanges() {
@@ -650,7 +558,7 @@
           alert("İlan başarıyla güncellendi!");
           editMode = false;
           newImages = [];
-          loadListingDetails(document.getElementById("listingDetails"));
+          loadListingDetails();
           document.getElementById("imageUploadDiv").style.display = "none";
           saveBtn.style.display = "none";
           cancelBtn.style.display = "none";
@@ -667,7 +575,7 @@
     function cancelEdit() {
       editMode = false;
       newImages = [];
-      loadListingDetails(document.getElementById("listingDetails"));
+      loadListingDetails();
       document.getElementById("imageUploadDiv").style.display = "none";
       const saveBtn = document.getElementById("saveBtn");
       const cancelBtn = document.getElementById("cancelBtn");
@@ -676,17 +584,18 @@
     }
 
     function showDeleteConfirm() {
-      const popup = document.getElementById("deleteConfirmPopup");
-      popup.style.display = "flex";
+      const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      modal.show();
     }
 
     function closeDeleteConfirm() {
-      const popup = document.getElementById("deleteConfirmPopup");
-      popup.style.display = "none";
+      const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+      if (modal) {
+        modal.hide();
+      }
     }
 
-    async function deleteListing(docId) {
-      console.log("Deleting listing with ID:", docId);
+    async function deleteListing() {
       try {
         // First, get the listing to get photo URLs
         const listingRef = doc(db, "properties", docId);
@@ -715,7 +624,7 @@
 
     function confirmDelete() {
       closeDeleteConfirm();
-      deleteListing(docId);
+      deleteListing();
     }
 
     // Image pop-up functions
@@ -724,14 +633,10 @@
       const popup = document.getElementById("imagePopup");
       const popupImage = document.getElementById("popupImage");
       const counter = document.getElementById("imageCounter");
+      
       popupImage.src = images[currentImageIndex];
-      counter.textContent = `${currentImageIndex + 1}/${images.length}`;
+      updateImageCounter();
       popup.style.display = "flex";
-    }
-
-    function closePopup() {
-      const popup = document.getElementById("imagePopup");
-      popup.style.display = "none";
     }
 
     function changeImage(direction) {
@@ -741,10 +646,20 @@
       } else if (currentImageIndex >= images.length) {
         currentImageIndex = 0;
       }
+      
       const popupImage = document.getElementById("popupImage");
-      const counter = document.getElementById("imageCounter");
       popupImage.src = images[currentImageIndex];
+      updateImageCounter();
+    }
+
+    function updateImageCounter() {
+      const counter = document.getElementById("imageCounter");
       counter.textContent = `${currentImageIndex + 1}/${images.length}`;
+    }
+
+    function closePopup() {
+      const popup = document.getElementById("imagePopup");
+      popup.style.display = "none";
     }
 
     // Add event listener to close the pop-up when clicking outside the image
@@ -761,11 +676,18 @@
     window.changeImage = changeImage;
     window.showDeleteConfirm = showDeleteConfirm;
     window.closeDeleteConfirm = closeDeleteConfirm;
+    window.deleteListing = deleteListing;
     window.confirmDelete = confirmDelete;
     window.toggleEditMode = toggleEditMode;
     window.saveChanges = saveChanges;
     window.cancelEdit = cancelEdit;
     window.scrollGallery = scrollGallery;
+
+    // Return to dashboard
+    window.returnToDashboard = () => window.location.href = 'dashboard.html';
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
