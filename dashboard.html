@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Agent Dashboard</title>
+  <title>Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
@@ -128,19 +128,58 @@
     .table {
       width: 100%;
     }
+
+    /* Agents table styles */
+    .agents-container {
+      margin-top: 20px;
+    }
+
+    .agents-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #agentsTable {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #agentsTable th {
+      background-color: #f8f9fa;
+    }
+
+    .btn-sm {
+      font-size: 0.875rem;
+      padding: 0.375rem 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      min-width: fit-content;
+      margin: 0;
+      border: 1px solid transparent;
+    }
+    .btn-sm i {
+      margin: 0 0.5rem 0 0;
+      padding: 0;
+      line-height: 1;
+      font-size: 0.875rem;
+    }
   </style>
 </head>
 <body>
   <div class="main-container">
-    <h1 class="page-title">Agent Dashboard</h1>
+    <h1 class="page-title">Dashboard</h1>
     
     <div class="actions-container">
       <div class="mb-3">
         <button class="btn btn-success btn-sm" onclick="location.href='add.html'">
-          <i class="fas fa-plus me-1"></i>İlan Ekle
+          <i class="fas fa-plus"></i> İlan Ekle
         </button>
         <button class="btn btn-danger btn-sm" onclick="window.logout()">
-          <i class="fas fa-sign-out-alt me-1"></i>Çıkış
+          <i class="fas fa-sign-out-alt"></i> Çıkış
         </button>
       </div>
     </div>
@@ -156,6 +195,11 @@
           <i class="fas fa-list"></i> Tüm İlanlar
         </a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#agents" id="agents-tab">
+          <i class="fas fa-users"></i> Temsilciler
+        </a>
+      </li>
     </ul>
 
     <div class="controls-row">
@@ -167,7 +211,7 @@
       <div class="filter-sort-container">
         <div class="position-relative">
           <button class="btn btn-outline-secondary btn-sm" onclick="toggleFilter()">
-            <i class="fas fa-filter me-1"></i>Filtrele
+            <i class="fas fa-filter"></i> Filtrele
           </button>
           <div id="filterDropdown" class="filter-dropdowns">
             <select id="filterCity" class="form-control form-control-sm" onchange="applyFilters()">
@@ -191,7 +235,7 @@
 
         <div class="position-relative">
           <button class="btn btn-outline-secondary btn-sm" onclick="toggleSort()">
-            <i class="fas fa-sort me-1"></i>Sırala
+            <i class="fas fa-sort"></i> Sırala
           </button>
           <div id="sortOptions" class="sort-options">
             <button onclick="sortListings('price')">
@@ -206,14 +250,41 @@
     </div>
 
     <div class="tab-content">
-      <div id="myListings" class="tab-pane fade show active">
-        <div class="table-container">
-          <div id="listings"></div>
+      <div id="myListings" class="tab-pane active">
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
         </div>
       </div>
-      <div id="allListings" class="tab-pane fade">
-        <div class="table-container">
-          <div id="allListingsContent"></div>
+      <div id="allListings" class="tab-pane">
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+        </div>
+      </div>
+      <div id="agents" class="tab-pane">
+        <div class="agents-container">
+          <div class="agents-header">
+            <h3>Temsilci Listesi</h3>
+            <button class="btn btn-success btn-sm" onclick="window.addAgent()">
+              <i class="fas fa-user-plus"></i> Temsilci Ekle
+            </button>
+          </div>
+          <table id="agentsTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>İsim</th>
+                <th>İlan Sayısı</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="4" class="text-center">
+                  <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -222,6 +293,20 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script type="module">
+    import { auth } from './firebaseConfig.js';
+
+    // Check user role and show/hide admin elements
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        const isAdmin = user.email === 'admin@office.com';
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(el => {
+          el.style.display = isAdmin ? '' : 'none';
+        });
+      }
+    });
+  </script>
   <script type="module" src="app.js"></script>
   <script>
     function filterListings() {

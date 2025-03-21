@@ -218,20 +218,39 @@ window.login = function() {
   console.log("Login function called");
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+  
+  if (!email || !password) {
+    window.showError("Lütfen e-posta ve şifre alanlarını doldurun.");
+    return;
+  }
+
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log("Login successful with email:", email);
       // Store user role in localStorage
       localStorage.setItem('userRole', email === "admin@office.com" ? 'admin' : 'agent');
-      if (email === "admin@office.com") {
-        window.location.href = "admin.html";
-      } else {
-        window.location.href = "dashboard.html";
-      }
+      window.location.href = "dashboard.html";
     })
     .catch(err => {
       console.log("Login error: ", err.message);
-      alert(err.message);
+      let errorMessage = "Giriş yapılırken bir hata oluştu.";
+      
+      switch (err.code) {
+        case 'auth/invalid-email':
+          errorMessage = "Geçersiz e-posta adresi.";
+          break;
+        case 'auth/user-disabled':
+          errorMessage = "Bu hesap devre dışı bırakılmış.";
+          break;
+        case 'auth/user-not-found':
+          errorMessage = "Bu e-posta adresiyle kayıtlı bir kullanıcı bulunamadı.";
+          break;
+        case 'auth/wrong-password':
+          errorMessage = "Hatalı şifre.";
+          break;
+      }
+      
+      window.showError(errorMessage);
     });
 };
 
@@ -253,83 +272,162 @@ window.logout = function() {
 let listingsData = [];
 let allListingsData = [];
 
-onAuthStateChanged(auth, (user) => {
-  if (user && window.location.pathname.includes("dashboard.html")) {
-    console.log("Loading listings for user:", user.email);
-    
-    // Load personal listings
-    const listingsDiv = document.getElementById("listings");
-    if (listingsDiv) {
-      getDocs(query(collection(db, "properties"), where("agent", "==", user.email))).then(snapshot => {
-        console.log("Personal listings snapshot size:", snapshot.size);
-        listingsDiv.innerHTML = ""; // Clear existing content
-        listingsData = []; // Reset listings data
-        if (!snapshot.empty) {
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            listingsData.push({ id: doc.id, ...data });
-          });
-          renderListings(listingsDiv, listingsData, false);
-        } else {
-          console.log("No personal listings found");
-          listingsDiv.innerHTML = "<p>Henüz ilanınız yok.</p>";
-        }
-      }).catch(err => {
-        console.log("Personal listings load error:", err.message);
-      });
+// Load listings function
+async function loadListings(showAll = false) {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  console.log("Loading listings for user:", user.email, "showAll:", showAll);
+  
+  try {
+    const containerId = showAll ? "allListings" : "myListings";
+    const container = document.getElementById(containerId);
+    if (!container) {
+      console.error(`Container not found for ${containerId}`);
+      return;
     }
 
-    // Load all listings
-    const allListingsDiv = document.getElementById("allListingsContent");
-    if (allListingsDiv) {
-      getDocs(query(collection(db, "properties"))).then(snapshot => {
-        console.log("All listings snapshot size:", snapshot.size);
-        allListingsDiv.innerHTML = ""; // Clear existing content
-        allListingsData = []; // Reset all listings data
-        if (!snapshot.empty) {
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            allListingsData.push({ id: doc.id, ...data });
-          });
-          renderListings(allListingsDiv, allListingsData, true);
-        } else {
-          console.log("No listings found");
-          allListingsDiv.innerHTML = "<p>Henüz ilan yok.</p>";
-        }
+    let q;
+    if (showAll) {
+      q = query(collection(db, "properties"));
+    } else {
+      q = query(collection(db, "properties"), where("agent", "==", user.email));
+    }
 
-        // Populate filter dropdowns with all available options
-        const cities = new Set();
-        const rooms = new Set();
-        allListingsData.forEach(listing => {
-          if (listing.province) cities.add(listing.province);
-          if (listing.roomType) rooms.add(listing.roomType);
+    const querySnapshot = await getDocs(q);
+    console.log(`${showAll ? "All" : "Personal"} listings snapshot size:`, querySnapshot.size);
+
+    if (querySnapshot.empty) {
+      container.innerHTML = '<div class="alert alert-info">Henüz ilan bulunmamaktadır.</div>';
+      return;
+    }
+
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      data.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Sort by timestamp
+    data.sort((a, b) => {
+      const timeA = a.timestamp?.seconds || 0;
+      const timeB = b.timestamp?.seconds || 0;
+      return timeB - timeA;
+    });
+
+    // Store data for filtering
+    if (showAll) {
+      allListingsData = data;
+      // Update filter dropdowns
+      updateFilterDropdowns(data);
+    } else {
+      listingsData = data;
+    }
+
+    renderListings(container, data, showAll);
+  } catch (error) {
+    console.error("Error loading listings:", error);
+    const container = document.getElementById(showAll ? "allListings" : "myListings");
+    if (container) {
+      container.innerHTML = '<div class="alert alert-danger">İlanlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</div>';
+    }
+  }
+}
+
+// Load agents function
+async function loadAgents() {
+  const agentsTableBody = document.querySelector('#agentsTable tbody');
+  if (!agentsTableBody) {
+    console.error('Agents table body not found');
+    return;
+  }
+
+  try {
+    const querySnapshot = await getDocs(collection(db, 'agents'));
+    
+    if (querySnapshot.empty) {
+      agentsTableBody.innerHTML = `
+        <tr>
+          <td colspan="4">
+            <div class="alert alert-info text-center">
+              Henüz temsilci bulunmamaktadır.
+            </div>
+          </td>
+        </tr>`;
+      return;
+    }
+
+    agentsTableBody.innerHTML = '';
+    querySnapshot.forEach((doc) => {
+      const agent = doc.data();
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${agent.email}</td>
+        <td>${agent.name || '-'}</td>
+        <td>${agent.listingCount || 0}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" onclick="deleteAgent('${doc.id}')">
+            <i class="fas fa-trash"></i> Sil
+          </button>
+        </td>
+      `;
+      agentsTableBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error('Error loading agents:', error);
+    agentsTableBody.innerHTML = `
+      <tr>
+        <td colspan="4">
+          <div class="alert alert-danger text-center">
+            Temsilciler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
+          </div>
+        </td>
+      </tr>`;
+  }
+}
+
+// Dashboard initialization
+onAuthStateChanged(auth, async (user) => {
+  if (user && window.location.pathname.includes("dashboard.html")) {
+    console.log("Loading dashboard for user:", user.email);
+    const isAdmin = user.email === 'admin@office.com';
+    
+    // Get all tab elements
+    const myListingsTab = document.querySelector('a[href="#myListings"]').parentElement;
+    const allListingsTab = document.querySelector('a[href="#allListings"]').parentElement;
+    const agentsTab = document.querySelector('a[href="#agents"]').parentElement;
+
+    // Show/hide tabs based on role
+    myListingsTab.style.display = ''; // Show for both admin and agent
+    allListingsTab.style.display = ''; // Show for both admin and agent
+    agentsTab.style.display = isAdmin ? '' : 'none'; // Only show for admin
+
+    // Initialize Bootstrap tabs
+    $(document).ready(async function() {
+      try {
+        // Load all content immediately
+        await Promise.all([
+          loadListings(false),  // Load personal listings
+          loadListings(true),   // Load all listings
+          isAdmin ? loadAgents() : Promise.resolve() // Load agents if admin
+        ]);
+
+        // Handle tab changes
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+          const targetId = $(e.target).attr('href').substring(1);
+          console.log("Tab changed to:", targetId);
         });
 
-        const filterCity = document.getElementById("filterCity");
-        if (filterCity) {
-          filterCity.innerHTML = '<option value="">İl Seç</option>';
-          cities.forEach(city => {
-            const opt = document.createElement("option");
-            opt.value = city;
-            opt.text = city;
-            filterCity.appendChild(opt);
-          });
+        // Check if we need to switch to agents tab (coming from add-agent page)
+        const returnToAgents = sessionStorage.getItem('returnToAgents');
+        if (returnToAgents === 'true' && isAdmin) {
+          sessionStorage.removeItem('returnToAgents');
+          // Use Bootstrap's tab API to switch tabs
+          $('#agents-tab').tab('show');
         }
-
-        const filterRoom = document.getElementById("filterRoom");
-        if (filterRoom) {
-          filterRoom.innerHTML = '<option value="">Oda Sayısı Seç</option>';
-          rooms.forEach(room => {
-            const opt = document.createElement("option");
-            opt.value = room;
-            opt.text = room;
-            filterRoom.appendChild(opt);
-          });
-        }
-      }).catch(err => {
-        console.log("All listings load error:", err.message);
-      });
-    }
+      } catch (error) {
+        console.error("Error loading initial content:", error);
+      }
+    });
   }
 });
 
@@ -393,13 +491,7 @@ if (window.location.pathname.includes("admin.html")) {
 
 // Add Agent (Admin)
 window.addAgent = function() {
-  const email = prompt("Yeni ajan e-postası:");
-  const password = prompt("Yeni ajan şifresi:");
-  if (email && password) {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(() => alert("Ajan eklendi!"))
-      .catch(err => alert(err.message));
-  }
+  window.location.href = 'add-agent.html';
 };
 
 // Delete Listing
@@ -426,6 +518,59 @@ window.deleteListing = async function(docId) {
     alert("İlan silinirken hata oluştu: " + err.message);
   }
 };
+
+// Agent management functions
+window.addAgent = () => {
+  window.location.href = 'add-agent.html';
+};
+
+// Delete agent function
+window.deleteAgent = async (agentId) => {
+  if (!confirm('Bu temsilciyi silmek istediğinizden emin misiniz?')) {
+    return;
+  }
+
+  try {
+    await deleteDoc(doc(db, 'agents', agentId));
+    await loadAgents(); // Refresh the agents list
+    alert('Temsilci başarıyla silindi.');
+  } catch (error) {
+    console.error('Error deleting agent:', error);
+    alert('Temsilci silinirken bir hata oluştu.');
+  }
+};
+
+// Helper function to update filter dropdowns
+function updateFilterDropdowns(data) {
+  const cities = new Set();
+  const rooms = new Set();
+  data.forEach(listing => {
+    if (listing.province) cities.add(listing.province);
+    if (listing.roomType) rooms.add(listing.roomType);
+  });
+
+  const filterCity = document.getElementById("filterCity");
+  if (filterCity) {
+    filterCity.innerHTML = '<option value="">İl Seç</option>';
+    Array.from(cities).sort().forEach(city => {
+      const opt = document.createElement("option");
+      opt.value = city;
+      opt.text = city;
+      filterCity.appendChild(opt);
+    });
+  }
+
+  const filterRoom = document.getElementById("filterRoom");
+  if (filterRoom) {
+    filterRoom.innerHTML = '<option value="">Oda Sayısı Seç</option>';
+    Array.from(rooms).sort().forEach(room => {
+      const opt = document.createElement("option");
+      opt.value = room;
+      opt.text = room;
+      filterRoom.appendChild(opt);
+    });
+  }
+}
 
 // Export db and Firestore functions
 export { collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };

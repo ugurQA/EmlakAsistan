@@ -4,7 +4,7 @@ import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyBbae_WFHcINiBBjEDEyhbDKcaU_Aj7TQw",
   authDomain: "emlakasistan-a76f1.firebaseapp.com",
   projectId: "emlakasistan-a76f1",

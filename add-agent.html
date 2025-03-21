@@ -14,9 +14,25 @@
         .action-buttons {
             display: flex;
             gap: 10px;
+            margin-top: 1.5rem;
         }
         .action-buttons .btn {
             flex: 1;
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            min-width: fit-content;
+            margin: 0;
+            border: 1px solid transparent;
+        }
+        .action-buttons .btn i {
+            font-size: 0.875rem;
+            margin: 0 0.5rem 0 0;
+            padding: 0;
+            line-height: 1;
         }
         .card-body {
             padding: 2rem 3rem;
@@ -34,7 +50,7 @@
 <body>
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-9">
+            <div class="col-md-10">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="text-center mb-0">Yeni Temsilci Ekle</h3>
@@ -62,8 +78,8 @@
                                 <input type="password" class="form-control" id="password" required>
                             </div>
                             <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus me-2"></i>Temsilci Ekle</button>
-                                <a href="admin.html" class="btn btn-secondary"><i class="fas fa-times me-2"></i>İptal</a>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Temsilci Ekle</button>
+                                <a href="admin.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> İptal</a>
                             </div>
                         </form>
                     </div>
@@ -74,39 +90,65 @@
 
     <script type="module">
         import { auth, db } from './firebaseConfig.js';
-        import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+        import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+        import { createUserWithEmailAndPassword, initializeAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+        import { getApp, initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+
+        // Create a secondary auth instance for agent creation
+        const secondaryApp = initializeApp(getApp().options, 'Secondary');
+        const secondaryAuth = initializeAuth(secondaryApp);
 
         document.getElementById('addAgentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
             const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!firstName || !lastName || !phone || !email || !password) {
+                alert('Lütfen tüm alanları doldurun.');
+                return;
+            }
 
             try {
-                // Add user to Firestore with role and name
-                await addDoc(collection(db, 'users'), {
-                    email: email,
+                // Create user with secondary auth instance
+                const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+                
+                // Add agent to Firestore
+                await addDoc(collection(db, 'agents'), {
                     firstName: firstName,
                     lastName: lastName,
-                    displayName: `${firstName} ${lastName}`,
+                    name: `${firstName} ${lastName}`,
                     phone: phone,
-                    password: password, // Store password temporarily - should be handled by backend in production
-                    role: 'agent',
-                    createdAt: serverTimestamp()
+                    email: email,
+                    listingCount: 0,
+                    timestamp: new Date(),
+                    uid: userCredential.user.uid
                 });
-                
+
+                // Clean up secondary auth
+                await secondaryAuth.signOut();
+
                 alert('Temsilci başarıyla eklendi!');
-                window.location.href = 'admin.html';
+                sessionStorage.setItem('returnToAgents', 'true');
+                window.location.href = 'dashboard.html';
+                
             } catch (error) {
                 console.error('Error adding agent:', error);
-                alert('Hata: ' + error.message);
+                alert('Temsilci eklenirken bir hata oluştu: ' + error.message);
             }
         });
+
+        window.returnToDashboard = function() {
+            sessionStorage.setItem('returnToAgents', 'true');
+            window.location.href = 'dashboard.html';
+        };
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html> 
