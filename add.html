@@ -154,20 +154,26 @@
                       <input type="number" class="form-control" id="squareMeters" placeholder="Metrekare" required>
                     </div>
                   </div>
+                  <div class="col-md-6" id="roomTypeContainer" style="display: none;">
+                    <div class="form-group">
+                      <label for="roomType">Oda Sayısı</label>
+                      <select class="form-select" id="roomType"></select>
+                    </div>
+                  </div>
                 </div>
 
                 <div id="konutDetails" style="display: none;">
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="roomType">Oda Sayısı</label>
-                        <select class="form-select" id="roomType"></select>
+                        <label for="floor">Bulunduğu Kat</label>
+                        <select class="form-select" id="floor"></select>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="floor">Bulunduğu Kat</label>
-                        <select class="form-select" id="floor"></select>
+                        <label for="totalFloors">Kat Sayısı</label>
+                        <select class="form-select" id="totalFloors"></select>
                       </div>
                     </div>
                   </div>
@@ -175,14 +181,14 @@
                   <div class="row">
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="totalFloors">Kat Sayısı</label>
-                        <select class="form-select" id="totalFloors"></select>
+                        <label for="heating">Isınma</label>
+                        <select class="form-select" id="heating"></select>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label for="heating">Isınma</label>
-                        <select class="form-select" id="heating"></select>
+                        <label for="site">Site İçerisinde</label>
+                        <select class="form-select" id="site"></select>
                       </div>
                     </div>
                   </div>
@@ -192,12 +198,6 @@
                       <div class="form-group">
                         <label for="parking">Otopark</label>
                         <select class="form-select" id="parking"></select>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="site">Site İçerisinde</label>
-                        <select class="form-select" id="site"></select>
                       </div>
                     </div>
                   </div>
@@ -217,6 +217,16 @@
                   <div class="form-group">
                     <label for="developmentStatus">İmar Durumu</label>
                     <select class="form-select" id="developmentStatus"></select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="description">Açıklama</label>
+                    <textarea class="form-control" id="description" placeholder="Açıklama" maxlength="3000"></textarea>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="notes">Not</label>
+                    <textarea class="form-control" id="notes" placeholder="Not" maxlength="3000"></textarea>
                   </div>
                 </div>
               </div>
@@ -257,6 +267,7 @@
       const floorSelect = document.getElementById("floor");
       const totalFloorsSelect = document.getElementById("totalFloors");
 
+      // Initialize dropdowns
       if (roomTypeSelect) {
         const dropdown = createRoomTypeDropdown();
         roomTypeSelect.replaceWith(dropdown);
@@ -306,6 +317,31 @@
         dropdown.name = "totalFloors";
         dropdown.className = "form-select";
       }
+
+      // Add category change handler
+      const categorySelect = document.getElementById("category");
+      categorySelect.addEventListener("change", function() {
+        const propertyDetails = document.getElementById("propertyDetails");
+        const konutDetails = document.getElementById("konutDetails");
+        const arsaDetails = document.getElementById("arsaDetails");
+        const roomTypeContainer = document.getElementById("roomTypeContainer");
+
+        propertyDetails.style.display = this.value !== "----" ? "block" : "none";
+        
+        if (this.value === "Konut") {
+          konutDetails.style.display = "block";
+          arsaDetails.style.display = "none";
+          roomTypeContainer.style.display = "block";
+        } else if (this.value === "Arsa") {
+          konutDetails.style.display = "none";
+          arsaDetails.style.display = "block";
+          roomTypeContainer.style.display = "none";
+        } else {
+          konutDetails.style.display = "none";
+          arsaDetails.style.display = "none";
+          roomTypeContainer.style.display = "none";
+        }
+      });
     });
 
     window.returnToDashboard = function() {

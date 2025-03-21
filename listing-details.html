@@ -9,7 +9,7 @@
   <link href="styles.css" rel="stylesheet">
   <style>
     .container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 2rem auto;
     }
     .card {
@@ -50,9 +50,10 @@
       width: 100%;
       margin-bottom: 1rem;
       border-collapse: collapse;
+      font-size: 0.9rem;
     }
     th, td {
-      padding: 0.75rem;
+      padding: 0.75rem 0.5rem;
       border: 1px solid #dee2e6;
     }
     th {
@@ -60,15 +61,21 @@
       font-weight: 500;
     }
     .key {
-      width: 20%;
+      width: 15%;
       background-color: #f8f9fa;
-      font-weight: 500;
+      font-weight: bold;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
     .value {
-      width: 30%;
+      width: 35%;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
     .full-value {
-      width: 80%;
+      width: 85%;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
     .image-gallery-container {
       margin-bottom: 2rem;
@@ -364,19 +371,19 @@
           addRow("ID:", data.listingId, "Fiyat:", data.price ? `${data.price.toLocaleString()} TL` : "", "listingId", "price", false, true);
           addRow("Tür:", data.type, "Kategori:", data.category, "type", "category", false, false);
           addRow("Yer:", `${data.province}/${data.district}`, "Adres:", data.address, "location", "address", false, true);
-          addRow("İletişim:", data.contact, "Ajan:", data.agent, "contact", "agent", true, false);
+          addRow("İletişim:", data.contact, "Temsilci:", data.agent, "contact", "agent", true, false);
 
           // Category-specific fields
           if (data.category === "Konut") {
             addRow("Metrekare:", data.squareMeters, "Oda Sayısı:", data.roomType, "squareMeters", "roomType", true, true);
             addRow("Kat:", data.floor, "Toplam Kat:", data.totalFloors, "floor", "totalFloors", true, true);
             addRow("Isınma:", data.heating, "Site İçerisinde:", data.site, "heating", "site", true, true);
-            addRow("Otopark:", data.parking, "Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "parking", "timestamp", true, false);
+            addRow("Otopark:", data.parking, "Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleDateString('tr-TR') : "", "parking", "timestamp", true, false);
             addFullRow("Açıklama:", data.description, "description");
             addFullRow("Not:", data.notes, "notes");
           } else if (data.category === "Arsa") {
             addRow("Metrekare:", data.squareMeters, "İmar Durumu:", data.developmentStatus, "squareMeters", "developmentStatus", true, true);
-            addRow("Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleString() : "", "", "", "timestamp", "", false, false);
+            addRow("Tarih:", data.timestamp ? data.timestamp.toDate().toLocaleDateString('tr-TR') : "", "", "", "timestamp", "", false, false);
             addFullRow("Açıklama:", data.description, "description");
             addFullRow("Not:", data.notes, "notes");
           }

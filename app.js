@@ -280,6 +280,28 @@ window.logout = function() {
 // Load Agent Listings
 let listingsData = [];
 let allListingsData = [];
+let agentMap = new Map(); // Store agent data globally
+
+// Load agents function
+async function loadAgentFilter() {
+  try {
+    const agentsSnapshot = await getDocs(collection(db, 'agents'));
+    const filterAgent = document.getElementById('filterAgent');
+    agentMap.clear(); // Clear existing data
+    
+    if (filterAgent) {
+      filterAgent.innerHTML = '<option value="">Temsilci Seç</option>';
+      agentsSnapshot.forEach(doc => {
+        const agent = doc.data();
+        const fullName = `${agent.firstName} ${agent.lastName}`;
+        agentMap.set(agent.email, fullName);
+        filterAgent.innerHTML += `<option value="${agent.email}">${fullName}</option>`;
+      });
+    }
+  } catch (error) {
+    console.error('Error loading agents for filter:', error);
+  }
+}
 
 // Load listings function
 async function loadListings(showAll = false) {
@@ -289,6 +311,11 @@ async function loadListings(showAll = false) {
   console.log("Loading listings for user:", user.email, "showAll:", showAll);
   
   try {
+    // Load agents first if showing all listings
+    if (showAll) {
+      await loadAgentFilter();
+    }
+
     const containerId = showAll ? "allListings" : "myListings";
     const container = document.getElementById(containerId);
     if (!container) {
@@ -441,10 +468,51 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 function renderListings(container, data, showAgent = false) {
-  createListingsTable(container, data, {
-    showAgent: showAgent,
-    onViewClick: (id) => window.location.href = `listing-details.html?id=${id}`
+  if (!container) return;
+  
+  let table = `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fotoğraf</th>
+          <th>ID</th>
+          <th>Tür</th>
+          <th>Kategori</th>
+          <th>Fiyat</th>
+          <th>Konum</th>
+          ${showAgent ? '<th>Temsilci</th>' : ''}
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach(listing => {
+    const thumbnailUrl = listing.photos && listing.photos.length > 0 ? listing.photos[0] : '';
+    const agentName = showAgent ? (agentMap.get(listing.agent) || listing.agent || '-') : '';
+    
+    table += `
+      <tr>
+        <td>
+          ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="Thumbnail" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">` : '-'}
+        </td>
+        <td>${listing.listingId || '-'}</td>
+        <td>${listing.type || '-'}</td>
+        <td>${listing.category || '-'}</td>
+        <td>${listing.price ? listing.price.toLocaleString() + ' TL' : '-'}</td>
+        <td>${listing.province}/${listing.district || '-'}</td>
+        ${showAgent ? `<td>${agentName}</td>` : ''}
+        <td>
+          <button class="btn btn-primary btn-sm" onclick="window.location.href='listing-details.html?id=${listing.id}'">
+            <i class="fas fa-eye"></i> Detay
+          </button>
+        </td>
+      </tr>
+    `;
   });
+
+  table += '</tbody></table>';
+  container.innerHTML = table;
 }
 
 window.applyFilters = function() {
@@ -452,6 +520,7 @@ window.applyFilters = function() {
   const room = document.getElementById("filterRoom").value;
   const type = document.getElementById("filterType").value;
   const category = document.getElementById("filterCategory").value;
+  
   const activeTab = document.querySelector('.tab-pane.active');
   const isAllListings = activeTab.id === 'allListings';
   
@@ -463,7 +532,7 @@ window.applyFilters = function() {
   if (type) filteredData = filteredData.filter(l => l.type === type);
   if (category) filteredData = filteredData.filter(l => l.category === category);
 
-  const container = isAllListings ? document.getElementById('allListingsContent') : document.getElementById('listings');
+  const container = document.getElementById(isAllListings ? 'allListings' : 'myListings');
   renderListings(container, filteredData, isAllListings);
 };
 
