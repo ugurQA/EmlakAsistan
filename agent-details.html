@@ -251,31 +251,40 @@
       toggleEditMode();
     }
 
-    async function deleteAgent() {
-      try {
-        await deleteDoc(doc(db, 'agents', agentId));
-        alert('Temsilci başarıyla silindi!');
-        window.location.href = 'dashboard.html';
-      } catch (error) {
-        console.error('Error deleting agent:', error);
-        alert('Silme işlemi sırasında bir hata oluştu.');
-      }
-    }
-
     function showDeleteConfirm() {
       const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
       modal.show();
     }
 
-    // Make functions available to window object for button clicks
+    async function deleteAgent() {
+      try {
+        // Delete the agent document
+        await deleteDoc(doc(db, 'agents', agentId));
+        
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+        modal.hide();
+        
+        // Show success message and redirect
+        alert('Temsilci başarıyla silindi!');
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        console.error('Error deleting agent:', error);
+        alert('Temsilci silinirken bir hata oluştu.');
+      }
+    }
+
+    // Make functions available globally
     window.toggleEditMode = toggleEditMode;
     window.saveChanges = saveChanges;
     window.cancelEdit = cancelEdit;
     window.showDeleteConfirm = showDeleteConfirm;
+    window.deleteAgent = deleteAgent;
     window.returnToDashboard = () => window.location.href = 'dashboard.html';
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+</html> 
 </html> 

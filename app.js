@@ -8,6 +8,25 @@ import { createListingsTable } from './components.js';
 // Initialize Firebase Storage with custom domain
 const storage = getStorage(undefined, 'gs://emlakasistan-a76f1.firebasestorage.app');
 
+// Reset listing counter once
+const resetCounterOnce = async () => {
+  try {
+    const counterRef = doc(db, "counters", "listings");
+    const counterDoc = await getDoc(counterRef);
+    
+    if (!counterDoc.exists()) {
+      // Initialize counter if it doesn't exist
+      await setDoc(counterRef, { value: 0 });
+      console.log('Listing counter initialized to 0');
+    }
+  } catch (error) {
+    console.error('Error initializing counter:', error);
+  }
+};
+
+// Initialize counter when the application starts
+resetCounterOnce();
+
 // Export helper functions
 export function updateSubcategories() {
   console.log("updateSubcategories called for type:", document.getElementById("type").value);
@@ -120,8 +139,8 @@ window.addListing = async function() {
     const newId = currentValue + 1;
     await updateDoc(counterRef, { value: newId });
     
-    // Format ID as 6-digit string
-    const paddedId = String(newId).padStart(6, '0');
+    // Format ID as 4-digit string
+    const paddedId = String(newId).padStart(4, '0');
     document.getElementById("listingId").value = paddedId;
     console.log("Generated listingId:", paddedId);
 
@@ -383,7 +402,7 @@ async function loadAgents() {
     if (querySnapshot.empty) {
       agentsTableBody.innerHTML = `
         <tr>
-          <td colspan="4">
+          <td colspan="7">
             <div class="alert alert-info text-center">
               Henüz temsilci bulunmamaktadır.
             </div>
@@ -393,26 +412,36 @@ async function loadAgents() {
     }
 
     agentsTableBody.innerHTML = '';
+    let rowNumber = 1;
+    
     querySnapshot.forEach((doc) => {
       const agent = doc.data();
       const row = document.createElement('tr');
+      
+      // Create cells with consistent styling
       row.innerHTML = `
-        <td>${agent.firstName || '-'}</td>
-        <td>${agent.lastName || '-'}</td>
-        <td>${agent.listingCount || 0}</td>
-        <td>
-          <button class="btn btn-primary btn-sm" onclick="window.location.href='agent-details.html?id=${doc.id}'">
-            <i class="fas fa-eye"></i> Detay
+        <td class="text-center" style="width: 50px;">${rowNumber++}</td>
+        <td style="width: 150px;">${agent.firstName || '-'}</td>
+        <td style="width: 150px;">${agent.lastName || '-'}</td>
+        <td style="width: 150px;">${agent.phone || '-'}</td>
+        <td class="text-center" style="width: 120px;">${agent.createdAt ? agent.createdAt.toDate().toLocaleDateString('tr-TR') : '-'}</td>
+        <td class="text-center" style="width: 100px;">${agent.listingCount || '0'}</td>
+        <td class="text-center" style="width: 80px;">
+          <button class="btn btn-primary btn-sm d-flex align-items-center justify-content-center" 
+                  style="width: 32px; height: 32px; padding: 0; margin: 0 auto;"
+                  onclick="window.location.href='agent-details.html?id=${doc.id}'">
+            <i class="fas fa-eye" style="margin: 0;"></i>
           </button>
         </td>
       `;
+      
       agentsTableBody.appendChild(row);
     });
   } catch (error) {
     console.error('Error loading agents:', error);
     agentsTableBody.innerHTML = `
       <tr>
-        <td colspan="4">
+        <td colspan="7">
           <div class="alert alert-danger text-center">
             Temsilciler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
           </div>
@@ -431,11 +460,13 @@ onAuthStateChanged(auth, async (user) => {
     const myListingsTab = document.querySelector('a[href="#myListings"]').parentElement;
     const allListingsTab = document.querySelector('a[href="#allListings"]').parentElement;
     const agentsTab = document.querySelector('a[href="#agents"]').parentElement;
+    const profileTab = document.querySelector('a[href="#profile"]').parentElement;
 
     // Show/hide tabs based on role
     myListingsTab.style.display = ''; // Show for both admin and agent
     allListingsTab.style.display = ''; // Show for both admin and agent
     agentsTab.style.display = isAdmin ? '' : 'none'; // Only show for admin
+    profileTab.style.display = ''; // Show for both admin and agent
 
     // Initialize Bootstrap tabs
     $(document).ready(async function() {
@@ -444,13 +475,17 @@ onAuthStateChanged(auth, async (user) => {
         await Promise.all([
           loadListings(false),  // Load personal listings
           loadListings(true),   // Load all listings
-          isAdmin ? loadAgents() : Promise.resolve() // Load agents if admin
+          isAdmin ? loadAgents() : Promise.resolve(), // Load agents if admin
+          loadProfile() // Load profile for all users
         ]);
 
         // Handle tab changes
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
           const targetId = $(e.target).attr('href').substring(1);
           console.log("Tab changed to:", targetId);
+          if (targetId === 'profile') {
+            loadProfile();
+          }
         });
 
         // Check if we need to switch to agents tab (coming from add-agent page)
@@ -468,58 +503,212 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 function renderListings(container, data, showAgent = false) {
-  if (!container) return;
+  container.innerHTML = '';
   
-  let table = `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Fotoğraf</th>
-          <th>ID</th>
-          <th>Tür</th>
-          <th>Kategori</th>
-          <th>Fiyat</th>
-          <th>Konum</th>
-          ${showAgent ? '<th>Temsilci</th>' : ''}
-          <th>İşlemler</th>
-        </tr>
-      </thead>
-      <tbody>
+  const table = document.createElement('table');
+  table.className = 'table table-striped table-hover';
+  table.style.cssText = `
+    border-collapse: collapse;
+    --bs-table-cell-padding-x: 0.3rem;
+    table-layout: fixed;
+    width: 100%;
   `;
-
-  data.forEach(listing => {
-    const thumbnailUrl = listing.photos && listing.photos.length > 0 ? listing.photos[0] : '';
-    const agentName = showAgent ? (agentMap.get(listing.agent) || listing.agent || '-') : '';
-    
-    table += `
-      <tr>
-        <td>
-          ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="Thumbnail" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">` : '-'}
-        </td>
-        <td>${listing.listingId || '-'}</td>
-        <td>${listing.type || '-'}</td>
-        <td>${listing.category || '-'}</td>
-        <td>${listing.price ? listing.price.toLocaleString() + ' TL' : '-'}</td>
-        <td>${listing.province}/${listing.district || '-'}</td>
-        ${showAgent ? `<td>${agentName}</td>` : ''}
-        <td>
-          <button class="btn btn-primary btn-sm" onclick="window.location.href='listing-details.html?id=${listing.id}'">
-            <i class="fas fa-eye"></i> Detay
-          </button>
-        </td>
-      </tr>
-    `;
+  
+  // Create header
+  const thead = document.createElement('thead');
+  thead.className = 'thead-light';
+  const headerRow = document.createElement('tr');
+  
+  const columns = [
+    { id: 'image', label: 'Fotoğraf', width: '50px' },
+    { id: 'listingId', label: 'ID', width: '60px' },
+    { id: 'title', label: 'Başlık', width: '200px' },
+    { id: 'typeCategory', label: 'Tür/Kategori', width: '120px' },
+    { id: 'location', label: 'Konum', width: '120px' },
+    { id: 'squareMeters', label: 'Metrekare', width: '90px' },
+    { id: 'price', label: 'Fiyat', width: '100px' },
+    ...(showAgent ? [{ id: 'agent', label: 'Temsilci', width: '150px' }] : []),
+    { id: 'actions', label: '', width: '44px' }
+  ];
+  
+  columns.forEach(column => {
+    const th = document.createElement('th');
+    th.textContent = column.label;
+    th.style.width = column.width;
+    th.style.padding = '0.5rem 0.3rem';
+    headerRow.appendChild(th);
   });
-
-  table += '</tbody></table>';
-  container.innerHTML = table;
+  
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+  
+  // Create body
+  const tbody = document.createElement('tbody');
+  data.forEach(listing => {
+    const tr = document.createElement('tr');
+    
+    // Image cell
+    const tdImage = document.createElement('td');
+    tdImage.style.width = '50px';
+    tdImage.style.padding = '0.5rem 0.3rem';
+    const img = document.createElement('img');
+    img.style.width = '40px';
+    img.style.height = '40px';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '4px';
+    if (listing.photos && listing.photos.length > 0) {
+      img.src = listing.photos[0];
+    } else {
+      img.src = '';
+      img.alt = 'No image';
+    }
+    tdImage.appendChild(img);
+    tr.appendChild(tdImage);
+    
+    // ID cell
+    const tdId = document.createElement('td');
+    tdId.style.width = '60px';
+    tdId.style.padding = '0.5rem 0.3rem';
+    tdId.textContent = listing.listingId || '-';
+    tr.appendChild(tdId);
+    
+    // Title cell
+    const tdTitle = document.createElement('td');
+    tdTitle.style.width = '200px';
+    tdTitle.style.padding = '0.5rem 0.3rem';
+    tdTitle.textContent = listing.title || 'No title';
+    tdTitle.style.whiteSpace = 'nowrap';
+    tdTitle.style.overflow = 'hidden';
+    tdTitle.style.textOverflow = 'ellipsis';
+    tr.appendChild(tdTitle);
+    
+    // Type/Category cell combined
+    const tdTypeCategory = document.createElement('td');
+    tdTypeCategory.style.width = '120px';
+    tdTypeCategory.style.padding = '0.5rem 0.3rem';
+    tdTypeCategory.textContent = `${listing.type || '-'}/${listing.category || '-'}`;
+    tr.appendChild(tdTypeCategory);
+    
+    // Location cell
+    const tdLocation = document.createElement('td');
+    tdLocation.style.width = '120px';
+    tdLocation.style.padding = '0.5rem 0.3rem';
+    tdLocation.textContent = listing.province && listing.district ? 
+      `${listing.province}/${listing.district}` : '-';
+    tr.appendChild(tdLocation);
+    
+    // Square meters cell
+    const tdSquareMeters = document.createElement('td');
+    tdSquareMeters.style.width = '90px';
+    tdSquareMeters.style.padding = '0.5rem 0.3rem';
+    tdSquareMeters.textContent = listing.squareMeters ? 
+      `${listing.squareMeters} m²` : '-';
+    tr.appendChild(tdSquareMeters);
+    
+    // Price cell
+    const tdPrice = document.createElement('td');
+    tdPrice.style.width = '100px';
+    tdPrice.style.padding = '0.5rem 0.3rem';
+    tdPrice.textContent = listing.price ? 
+      `${listing.price.toLocaleString()} TL` : '-';
+    tdPrice.style.color = '#dc3545';
+    tdPrice.style.fontWeight = 'bold';
+    tr.appendChild(tdPrice);
+    
+    // Agent cell (optional)
+    if (showAgent) {
+      const tdAgent = document.createElement('td');
+      tdAgent.style.width = '150px';
+      tdAgent.style.padding = '0.5rem 0.3rem';
+      tdAgent.textContent = listing.agent || '-';
+      tr.appendChild(tdAgent);
+    }
+    
+    // Actions cell
+    const tdActions = document.createElement('td');
+    tdActions.style.width = '44px';
+    tdActions.style.padding = '0.5rem 4px 0.5rem 4px';
+    const viewButton = document.createElement('button');
+    viewButton.className = 'btn btn-primary btn-sm d-flex align-items-center justify-content-center';
+    viewButton.style.fontSize = '0.875rem';
+    viewButton.style.padding = '0';
+    viewButton.style.width = '32px';
+    viewButton.style.height = '32px';
+    viewButton.style.lineHeight = '1';
+    viewButton.style.minWidth = '32px';
+    viewButton.style.marginLeft = '2px';
+    viewButton.innerHTML = '<i class="fas fa-eye" style="margin: 0; display: block;"></i>';
+    viewButton.title = 'Detay';
+    viewButton.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
+    tdActions.appendChild(viewButton);
+    tr.appendChild(tdActions);
+    
+    tbody.appendChild(tr);
+  });
+  
+  table.appendChild(tbody);
+  container.appendChild(table);
 }
 
+// Helper function to update filter dropdowns
+function updateFilterDropdowns(data) {
+  const cities = new Set();
+  const rooms = new Set();
+  const agents = new Set();
+  
+  data.forEach(listing => {
+    if (listing.province) cities.add(listing.province);
+    if (listing.roomType) rooms.add(listing.roomType);
+    if (listing.agent) {
+      const agentName = agentMap.get(listing.agent) || listing.agent;
+      agents.add(agentName);
+    }
+  });
+
+  // Update city filter
+  const filterCity = document.getElementById("filterCity");
+  if (filterCity) {
+    filterCity.innerHTML = '<option value="">İl Seç</option>';
+    Array.from(cities).sort().forEach(city => {
+      const opt = document.createElement("option");
+      opt.value = city;
+      opt.text = city;
+      filterCity.appendChild(opt);
+    });
+  }
+
+  // Update room filter
+  const filterRoom = document.getElementById("filterRoom");
+  if (filterRoom) {
+    filterRoom.innerHTML = '<option value="">Oda Sayısı Seç</option>';
+    Array.from(rooms).sort().forEach(room => {
+      const opt = document.createElement("option");
+      opt.value = room;
+      opt.text = room;
+      filterRoom.appendChild(opt);
+    });
+  }
+
+  // Update agent filter
+  const filterAgent = document.getElementById("filterAgent");
+  if (filterAgent) {
+    filterAgent.innerHTML = '<option value="">Temsilci Seç</option>';
+    Array.from(agents).sort().forEach(agentName => {
+      const opt = document.createElement("option");
+      opt.value = agentName;
+      opt.text = agentName;
+      filterAgent.appendChild(opt);
+    });
+  }
+}
+
+// Update the applyFilters function to include agent filtering
 window.applyFilters = function() {
   const city = document.getElementById("filterCity").value;
   const room = document.getElementById("filterRoom").value;
   const type = document.getElementById("filterType").value;
   const category = document.getElementById("filterCategory").value;
+  const agent = document.getElementById("filterAgent").value;
   
   const activeTab = document.querySelector('.tab-pane.active');
   const isAllListings = activeTab.id === 'allListings';
@@ -531,6 +720,10 @@ window.applyFilters = function() {
   if (room) filteredData = filteredData.filter(l => l.roomType === room);
   if (type) filteredData = filteredData.filter(l => l.type === type);
   if (category) filteredData = filteredData.filter(l => l.category === category);
+  if (agent) filteredData = filteredData.filter(l => {
+    const agentName = agentMap.get(l.agent) || l.agent;
+    return agentName === agent;
+  });
 
   const container = document.getElementById(isAllListings ? 'allListings' : 'myListings');
   renderListings(container, filteredData, isAllListings);
@@ -595,37 +788,96 @@ window.deleteAgent = async (agentId) => {
   }
 };
 
-// Helper function to update filter dropdowns
-function updateFilterDropdowns(data) {
-  const cities = new Set();
-  const rooms = new Set();
-  data.forEach(listing => {
-    if (listing.province) cities.add(listing.province);
-    if (listing.roomType) rooms.add(listing.roomType);
-  });
+// Load profile information
+async function loadProfile() {
+  const user = auth.currentUser;
+  if (!user) return;
 
-  const filterCity = document.getElementById("filterCity");
-  if (filterCity) {
-    filterCity.innerHTML = '<option value="">İl Seç</option>';
-    Array.from(cities).sort().forEach(city => {
-      const opt = document.createElement("option");
-      opt.value = city;
-      opt.text = city;
-      filterCity.appendChild(opt);
-    });
-  }
+  const profileContent = document.querySelector('.profile-content');
+  if (!profileContent) return;
 
-  const filterRoom = document.getElementById("filterRoom");
-  if (filterRoom) {
-    filterRoom.innerHTML = '<option value="">Oda Sayısı Seç</option>';
-    Array.from(rooms).sort().forEach(room => {
-      const opt = document.createElement("option");
-      opt.value = room;
-      opt.text = room;
-      filterRoom.appendChild(opt);
-    });
+  try {
+    let userData;
+    
+    if (user.email === 'admin@office.com') {
+      // For admin, get data from users collection
+      const userDoc = await getDoc(doc(db, 'users', 'admin@office.com'));
+      userData = userDoc.data();
+    } else {
+      // For agents, get data from agents collection
+      const agentsSnapshot = await getDocs(query(collection(db, 'agents'), where('email', '==', user.email)));
+      if (!agentsSnapshot.empty) {
+        userData = agentsSnapshot.docs[0].data();
+      }
+    }
+
+    if (userData) {
+      const profileHtml = `
+        <div class="alert alert-info mb-3">
+          <i class="fas fa-info-circle"></i> Kişisel bilgilerinizi değiştirmek için lütfen sistem yöneticiniz ile iletişime geçin.
+        </div>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th style="width: 200px; background-color: #f8f9fa;">Ad</th>
+              <td>${userData.firstName || '-'}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">Soyad</th>
+              <td>${userData.lastName || '-'}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">E-posta</th>
+              <td>${user.email}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">Telefon</th>
+              <td>${userData.phone || '-'}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">Rol</th>
+              <td>${user.email === 'admin@office.com' ? 'Yönetici' : 'Temsilci'}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      profileContent.innerHTML = profileHtml;
+    } else {
+      // If no user data found, create default admin data
+      if (user.email === 'admin@office.com') {
+        const defaultAdminData = {
+          firstName: 'Admin',
+          lastName: 'User',
+          phone: '-',
+          role: 'Yönetici'
+        };
+        await setDoc(doc(db, 'users', 'admin@office.com'), defaultAdminData);
+        loadProfile(); // Reload profile with new data
+      } else {
+        profileContent.innerHTML = '<div class="alert alert-warning">Profil bilgileri bulunamadı.</div>';
+      }
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    profileContent.innerHTML = '<div class="alert alert-danger">Profil bilgileri yüklenirken bir hata oluştu.</div>';
   }
 }
+
+// Add event listener for tab changes
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('a[data-toggle="tab"]');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('shown.bs.tab', function (e) {
+      const targetId = e.target.getAttribute('href').substring(1);
+      
+      // Load profile if profile tab is selected
+      if (targetId === 'profile') {
+        loadProfile();
+      }
+    });
+  });
+});
 
 // Export db and Firestore functions
 export { collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };
