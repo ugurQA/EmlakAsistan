@@ -418,13 +418,17 @@ async function loadAgents() {
       const agent = doc.data();
       const row = document.createElement('tr');
       
+      // Get the date from either createdAt or timestamp field
+      const dateField = agent.createdAt || agent.timestamp || agent.dateCreated;
+      const formattedDate = dateField ? dateField.toDate().toLocaleDateString('tr-TR') : '-';
+      
       // Create cells with consistent styling
       row.innerHTML = `
         <td class="text-center" style="width: 50px;">${rowNumber++}</td>
         <td style="width: 150px;">${agent.firstName || '-'}</td>
         <td style="width: 150px;">${agent.lastName || '-'}</td>
         <td style="width: 150px;">${agent.phone || '-'}</td>
-        <td class="text-center" style="width: 120px;">${agent.createdAt ? agent.createdAt.toDate().toLocaleDateString('tr-TR') : '-'}</td>
+        <td class="text-center" style="width: 120px;">${formattedDate}</td>
         <td class="text-center" style="width: 100px;">${agent.listingCount || '0'}</td>
         <td class="text-center" style="width: 80px;">
           <button class="btn btn-primary btn-sm d-flex align-items-center justify-content-center" 

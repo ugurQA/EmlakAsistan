@@ -11,10 +11,18 @@
         body {
             background-color: #f0f4f8;
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .outer-wrapper {
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
         }
         .container {
-            max-width: 1000px;
-            margin: 2rem auto;
+            width: 800px;
+            padding: 0 24px;
         }
         .card {
             border: none;
@@ -30,6 +38,7 @@
         .card-header h3 {
             color: #2c5282;
             margin: 0;
+            text-align: center;
         }
         .card-body {
             padding: 2rem;
@@ -41,10 +50,13 @@
         .form-label {
             font-weight: 500;
             color: #4a5568;
+            margin-bottom: 0.5rem;
         }
         .form-control {
             border: 1px solid #e2e8f0;
             border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            color: #4a5568;
         }
         .form-control:focus {
             border-color: #3182ce;
@@ -74,47 +86,57 @@
         }
         .btn-sm {
             padding: 0.5rem 1rem;
+            font-size: 0.875rem;
         }
         .btn-sm i {
             margin-right: 0.5rem;
         }
+        .form-control::placeholder {
+            color: #a0aec0;
+        }
+        .form-control:disabled {
+            background-color: #f8fafc;
+            color: #718096;
+        }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="text-center mb-0">Yeni Temsilci Ekle</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="addAgentForm">
-                            <div class="mb-3">
-                                <label for="firstName" class="form-label">Adı</label>
-                                <input type="text" class="form-control" id="firstName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="lastName" class="form-label">Soyadı</label>
-                                <input type="text" class="form-control" id="lastName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Telefon</label>
-                                <input type="tel" class="form-control" id="phone" required pattern="[0-9]{10}" placeholder="5XX XXX XXXX">
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">E-posta</label>
-                                <input type="email" class="form-control" id="email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Şifre</label>
-                                <input type="password" class="form-control" id="password" required>
-                            </div>
-                            <div class="action-buttons">
-                                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Temsilci Ekle</button>
-                                <button type="button" class="btn btn-secondary btn-sm" onclick="window.returnToDashboard()"><i class="fas fa-arrow-left"></i> İptal</button>
-                            </div>
-                        </form>
+    <div class="outer-wrapper">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="text-center mb-0">Yeni Temsilci Ekle</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="addAgentForm">
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">Adı</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Soyadı</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" id="phone" required pattern="[0-9]{10}" placeholder="5XX XXX XXXX">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">E-posta</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Şifre</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                                <div class="action-buttons">
+                                    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Temsilci Ekle</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.returnToDashboard()"><i class="fas fa-arrow-left"></i> İptal</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
