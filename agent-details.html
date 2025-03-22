@@ -277,11 +277,42 @@
 
     async function saveChanges() {
       try {
+        // Get form values
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+
+        // Validate required fields
+        if (!firstName || !lastName || !email || !phone) {
+          alert('Lütfen tüm alanları doldurun!');
+          return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert('Geçerli bir e-posta adresi girin!');
+          return;
+        }
+
+        // Validate phone number format (Turkish format)
+        const phoneRegex = /^(\+90|0)?[0-9]{10}$/;
+        if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
+          alert('Geçerli bir telefon numarası girin! (Örnek: 0555 555 55 55)');
+          return;
+        }
+
+        // Show confirmation dialog
+        if (!confirm('Temsilci bilgilerini güncellemek istediğinizden emin misiniz?')) {
+          return;
+        }
+
         const updatedData = {
-          firstName: document.getElementById('firstName').value,
-          lastName: document.getElementById('lastName').value,
-          email: document.getElementById('email').value,
-          phone: document.getElementById('phone').value
+          firstName,
+          lastName,
+          email,
+          phone
         };
 
         await updateDoc(doc(db, 'agents', agentId), updatedData);

@@ -649,6 +649,27 @@
       const deleteBtn = document.querySelector('button[onclick="showDeleteConfirm()"]');
       const backBtn = document.querySelector('button[onclick="window.returnToDashboard()"]');
 
+      // Validate price and square meters
+      const priceInput = table.querySelector('[data-field="price"] input');
+      const squareMetersInput = table.querySelector('[data-field="squareMeters"] input');
+      
+      if (priceInput && (parseFloat(priceInput.value) < 0)) {
+        alert('Fiyat 0\'dan küçük olamaz!');
+        return;
+      }
+      
+      if (squareMetersInput && (parseFloat(squareMetersInput.value) < 0)) {
+        alert('Metrekare 0\'dan küçük olamaz!');
+        return;
+      }
+
+      // Validate photo upload limit
+      const imageUploadInput = document.querySelector('#imageUploadDiv input[type="file"]');
+      if (imageUploadInput && imageUploadInput.files.length > 10) {
+        alert('En fazla 10 fotoğraf yükleyebilirsiniz!');
+        return;
+      }
+
       cells.forEach(cell => {
         const field = cell.dataset.field;
         if (field === "listingId" || field === "timestamp" || field === "agent") return;
@@ -656,9 +677,12 @@
         if (field === "description" || field === "notes") {
           const textarea = cell.querySelector("textarea");
           updatedData[field] = textarea ? textarea.value : cell.textContent;
-        } else if (field === "roomType" || field === "heating" || field === "site" || field === "parking" || field === "developmentStatus" || field === "floor" || field === "totalFloors") {
+        } else if (field === "roomType" || field === "heating" || field === "site" || 
+                   field === "parking" || field === "developmentStatus" || 
+                   field === "floor" || field === "totalFloors") {
           const select = cell.querySelector("select");
-          updatedData[field] = select ? select.value : cell.textContent;
+          // Keep original value if select is not found or no value is selected
+          updatedData[field] = select ? (select.value || originalData[field]) : originalData[field];
         } else if (field === "price" || field === "squareMeters") {
           const input = cell.querySelector("input");
           updatedData[field] = input ? (parseFloat(input.value) || 0) : 0;
@@ -672,7 +696,12 @@
       const uploadPromises = [];
       newImages.forEach(file => {
         const photoRef = ref(storage, `photos/${docId}/${file.name}`);
-        uploadPromises.push(uploadBytes(photoRef, file).then(snapshot => {
+        uploadPromises.push(uploadBytes(photoRef, file, {
+          metadata: {
+            agent: auth.currentUser.email,
+            contentType: file.type
+          }
+        }).then(snapshot => {
           return getDownloadURL(snapshot.ref).then(url => {
             images.push(url);
           });

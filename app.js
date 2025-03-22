@@ -1,6 +1,6 @@
 // app.js
 import { auth, db } from './firebaseConfig.js';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, updateDoc, doc, getDoc, deleteDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 import { createListingsTable } from './components.js';
@@ -24,8 +24,10 @@ const resetCounterOnce = async () => {
   }
 };
 
-// Initialize counter when the application starts
-resetCounterOnce();
+// Initialize counter only on pages that need it
+if (window.location.pathname.includes('add.html') || window.location.pathname.includes('dashboard.html')) {
+  resetCounterOnce();
+}
 
 // Load cities and districts data
 let locationData = null;
@@ -177,6 +179,30 @@ window.addListing = async function() {
     console.log("Generated listingId:", paddedId);
 
         const photos = document.getElementById("photos").files;
+        
+        // Validate photos
+        if (photos.length > 10) {
+          alert('En fazla 10 fotoğraf yükleyebilirsiniz!');
+          return;
+        }
+
+        // Validate each photo
+        for (let i = 0; i < photos.length; i++) {
+          const photo = photos[i];
+          
+          // Check file type
+          if (!photo.type.startsWith('image/')) {
+            alert('Sadece resim dosyaları yükleyebilirsiniz!');
+            return;
+          }
+          
+          // Check file size (5MB limit)
+          if (photo.size > 5 * 1024 * 1024) {
+            alert('Her fotoğraf en fazla 5MB olabilir!');
+            return;
+          }
+        }
+
         const category = document.getElementById("category").value;
         const listing = {
           title: document.getElementById("title").value,
@@ -213,42 +239,63 @@ window.addListing = async function() {
 
         if (photos.length > 0) {
           const uploadPromises = [];
-      const photoUrls = [];
-      
+          const photoUrls = [];
+          const uploadedFiles = [];
+          
           for (let i = 0; i < photos.length; i++) {
-        const photo = photos[i];
-        const photoRef = ref(storage, `photos/${docRef.id}/${photo.name}`);
-        
-        const uploadPromise = uploadBytes(photoRef, photo)
-          .then(snapshot => {
-            console.log(`Successfully uploaded photo ${i + 1}:`, photo.name);
-            return getDownloadURL(snapshot.ref);
-          })
-          .then(url => {
-            console.log(`Got download URL for photo ${i + 1}:`, url);
-            photoUrls.push(url);
-          })
-          .catch(error => {
-            console.error(`Error uploading photo ${i + 1}:`, error);
-            throw error;
-          });
-        
-        uploadPromises.push(uploadPromise);
-      }
-      
-      try {
-          await Promise.all(uploadPromises);
-        console.log('All photos uploaded successfully. URLs:', photoUrls);
-        
-          // Update Firestore with photo URLs
-        await updateDoc(docRef, { photos: photoUrls });
-        console.log('Firestore document updated with photo URLs');
-      } catch (error) {
-        console.error('Error during photo upload:', error);
-        alert('Error uploading photos: ' + error.message);
-        return;
-      }
-    }
+            const photo = photos[i];
+            const photoRef = ref(storage, `photos/${docRef.id}/${photo.name}`);
+            
+            const uploadPromise = uploadBytes(photoRef, photo, {
+              metadata: {
+                agent: user.email,
+                contentType: photo.type
+              }
+            })
+              .then(snapshot => {
+                console.log(`Successfully uploaded photo ${i + 1}:`, photo.name);
+                uploadedFiles.push(snapshot.ref);
+                return getDownloadURL(snapshot.ref);
+              })
+              .then(url => {
+                console.log(`Got download URL for photo ${i + 1}:`, url);
+                photoUrls.push(url);
+              })
+              .catch(error => {
+                console.error(`Error uploading photo ${i + 1}:`, error);
+                // Delete any uploaded files if there's an error
+                uploadedFiles.forEach(file => {
+                  deleteObject(file).catch(err => console.error('Error deleting file:', err));
+                });
+                throw error;
+              });
+            
+            uploadPromises.push(uploadPromise);
+          }
+          
+          try {
+            await Promise.all(uploadPromises);
+            console.log('All photos uploaded successfully. URLs:', photoUrls);
+            
+            // Update Firestore with photo URLs
+            try {
+              await updateDoc(docRef, { photos: photoUrls });
+              console.log('Firestore document updated with photo URLs');
+            } catch (updateError) {
+              console.error('Error updating Firestore with photo URLs:', updateError);
+              // If Firestore update fails, delete all uploaded photos
+              const deletePromises = uploadedFiles.map(file => 
+                deleteObject(file).catch(err => console.error('Error deleting photo:', err))
+              );
+              await Promise.all(deletePromises);
+              throw updateError;
+            }
+          } catch (error) {
+            console.error('Error during photo upload:', error);
+            alert('Fotoğraf yüklenirken hata oluştu: ' + error.message);
+            return;
+          }
+        }
 
     alert(`İlan eklendi! ID: ${paddedId}`);
     document.getElementById("listingForm").reset();
@@ -273,45 +320,6 @@ if (window.location.pathname.includes("add.html")) {
   if (categorySelect) categorySelect.addEventListener("change", updateDetails);
   if (photosInput) photosInput.addEventListener("change", displayPhotos);
 }
-
-// Export main functions and attach to window
-window.login = function() {
-  console.log("Login function called");
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  
-  if (!email || !password) {
-    window.showError("Lütfen e-posta ve şifre alanlarını doldurun.");
-    return;
-  }
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      console.log("Login successful with email:", email);
-        window.location.href = "dashboard.html";
-    })
-    .catch(err => {
-      console.log("Login error: ", err.message);
-      let errorMessage = "Giriş yapılırken bir hata oluştu.";
-      
-      switch (err.code) {
-        case 'auth/invalid-email':
-          errorMessage = "Geçersiz e-posta adresi.";
-          break;
-        case 'auth/user-disabled':
-          errorMessage = "Bu hesap devre dışı bırakılmış.";
-          break;
-        case 'auth/user-not-found':
-          errorMessage = "Bu e-posta adresiyle kayıtlı bir kullanıcı bulunamadı.";
-          break;
-        case 'auth/wrong-password':
-          errorMessage = "Hatalı şifre.";
-          break;
-      }
-      
-      window.showError(errorMessage);
-    });
-};
 
 window.logout = function() {
   console.log("Logout function called");
@@ -488,7 +496,7 @@ async function loadAgents() {
 onAuthStateChanged(auth, async (user) => {
   if (user && window.location.pathname.includes("dashboard.html")) {
     console.log("Loading dashboard for user:", user.email);
-    const isAdmin = user.email === 'admin@office.com';
+    const isAdmin = user.email === 'admin@office.com' || user.email === 'admin-test@testapp.com';
     
     // Get all tab elements
     const myListingsTab = document.querySelector('a[href="#myListings"]').parentElement;
@@ -833,9 +841,9 @@ async function loadProfile() {
   try {
     let userData;
     
-    if (user.email === 'admin@office.com') {
+    if (user.email === 'admin@office.com' || user.email === 'admin-test@testapp.com') {
       // For admin, get data from users collection
-      const userDoc = await getDoc(doc(db, 'users', 'admin@office.com'));
+      const userDoc = await getDoc(doc(db, 'users', user.email));
       userData = userDoc.data();
     } else {
       // For agents, get data from agents collection
