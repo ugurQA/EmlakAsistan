@@ -1,0 +1,4380 @@
+[
+  {
+    "value": 1,
+    "text": "Adana",
+    "districts": [
+      {
+        "value": 1757,
+        "text": "Aladağ"
+      },
+      {
+        "value": 1219,
+        "text": "Ceyhan"
+      },
+      {
+        "value": 2033,
+        "text": "Çukurova"
+      },
+      {
+        "value": 1329,
+        "text": "Feke"
+      },
+      {
+        "value": 1806,
+        "text": "İmamoğlu"
+      },
+      {
+        "value": 1437,
+        "text": "Karaisalı"
+      },
+      {
+        "value": 1443,
+        "text": "Karataş"
+      },
+      {
+        "value": 1486,
+        "text": "Kozan"
+      },
+      {
+        "value": 1580,
+        "text": "Pozantı"
+      },
+      {
+        "value": 1588,
+        "text": "Saimbeyli"
+      },
+      {
+        "value": 2032,
+        "text": "Sarıçam"
+      },
+      {
+        "value": 1104,
+        "text": "Seyhan"
+      },
+      {
+        "value": 1687,
+        "text": "Tufanbeyli"
+      },
+      {
+        "value": 1734,
+        "text": "Yumurtalık"
+      },
+      {
+        "value": 1748,
+        "text": "Yüreğir"
+      }
+    ]
+  },
+  {
+    "value": 2,
+    "text": "Adıyaman",
+    "districts": [
+      {
+        "value": 1182,
+        "text": "Besni"
+      },
+      {
+        "value": 1246,
+        "text": "Çelikhan"
+      },
+      {
+        "value": 1347,
+        "text": "Gerger"
+      },
+      {
+        "value": 1354,
+        "text": "Gölbaşı"
+      },
+      {
+        "value": 1425,
+        "text": "Kahta"
+      },
+      {
+        "value": 1105,
+        "text": "Merkez"
+      },
+      {
+        "value": 1592,
+        "text": "Samsat"
+      },
+      {
+        "value": 1985,
+        "text": "Sincik"
+      },
+      {
+        "value": 1989,
+        "text": "Tut"
+      }
+    ]
+  },
+  {
+    "value": 3,
+    "text": "Afyonkarahisar",
+    "districts": [
+      {
+        "value": 1771,
+        "text": "Başmakçı"
+      },
+      {
+        "value": 1773,
+        "text": "Bayat"
+      },
+      {
+        "value": 1200,
+        "text": "Bolvadin"
+      },
+      {
+        "value": 1239,
+        "text": "Çay"
+      },
+      {
+        "value": 1906,
+        "text": "Çobanlar"
+      },
+      {
+        "value": 1267,
+        "text": "Dazkırı"
+      },
+      {
+        "value": 1281,
+        "text": "Dinar"
+      },
+      {
+        "value": 1306,
+        "text": "Emirdağ"
+      },
+      {
+        "value": 1923,
+        "text": "Evciler"
+      },
+      {
+        "value": 1944,
+        "text": "Hocalar"
+      },
+      {
+        "value": 1404,
+        "text": "İhsaniye"
+      },
+      {
+        "value": 1809,
+        "text": "İscehisar"
+      },
+      {
+        "value": 1961,
+        "text": "Kızılören"
+      },
+      {
+        "value": 1108,
+        "text": "Merkez"
+      },
+      {
+        "value": 1594,
+        "text": "Sandıklı"
+      },
+      {
+        "value": 1626,
+        "text": "Sinanpaşa"
+      },
+      {
+        "value": 1664,
+        "text": "Şuhut"
+      },
+      {
+        "value": 1639,
+        "text": "Sultandağı"
+      }
+    ]
+  },
+  {
+    "value": 4,
+    "text": "Ağrı",
+    "districts": [
+      {
+        "value": 1283,
+        "text": "Diyadin"
+      },
+      {
+        "value": 1287,
+        "text": "Doğubayazıt"
+      },
+      {
+        "value": 1301,
+        "text": "Eleşkirt"
+      },
+      {
+        "value": 1379,
+        "text": "Hamur"
+      },
+      {
+        "value": 1111,
+        "text": "Merkez"
+      },
+      {
+        "value": 1568,
+        "text": "Patnos"
+      },
+      {
+        "value": 1667,
+        "text": "Taşlıçay"
+      },
+      {
+        "value": 1691,
+        "text": "Tutak"
+      }
+    ]
+  },
+  {
+    "value": 68,
+    "text": "Aksaray",
+    "districts": [
+      {
+        "value": 1860,
+        "text": "Ağaçören"
+      },
+      {
+        "value": 1921,
+        "text": "Eskil"
+      },
+      {
+        "value": 1932,
+        "text": "Gülağaç"
+      },
+      {
+        "value": 1861,
+        "text": "Güzelyurt"
+      },
+      {
+        "value": 1120,
+        "text": "Merkez"
+      },
+      {
+        "value": 1557,
+        "text": "Ortaköy"
+      },
+      {
+        "value": 1866,
+        "text": "Sarıyahşi"
+      },
+      {
+        "value": 2106,
+        "text": "Sultanhanı"
+      }
+    ]
+  },
+  {
+    "value": 5,
+    "text": "Amasya",
+    "districts": [
+      {
+        "value": 1363,
+        "text": "Göynücek"
+      },
+      {
+        "value": 1368,
+        "text": "Gümüşhacıköy"
+      },
+      {
+        "value": 1938,
+        "text": "Hamamözü"
+      },
+      {
+        "value": 1134,
+        "text": "Merkez"
+      },
+      {
+        "value": 1524,
+        "text": "Merzifon"
+      },
+      {
+        "value": 1641,
+        "text": "Suluova"
+      },
+      {
+        "value": 1668,
+        "text": "Taşova"
+      }
+    ]
+  },
+  {
+    "value": 6,
+    "text": "Ankara",
+    "districts": [
+      {
+        "value": 1872,
+        "text": "Akyurt"
+      },
+      {
+        "value": 1130,
+        "text": "Altındağ"
+      },
+      {
+        "value": 1157,
+        "text": "Ayaş"
+      },
+      {
+        "value": 1167,
+        "text": "Bala"
+      },
+      {
+        "value": 1187,
+        "text": "Beypazarı"
+      },
+      {
+        "value": 1227,
+        "text": "Çamlıdere"
+      },
+      {
+        "value": 1231,
+        "text": "Çankaya"
+      },
+      {
+        "value": 1260,
+        "text": "Çubuk"
+      },
+      {
+        "value": 1302,
+        "text": "Elmadağ"
+      },
+      {
+        "value": 1922,
+        "text": "Etimesgut"
+      },
+      {
+        "value": 1924,
+        "text": "Evren"
+      },
+      {
+        "value": 1744,
+        "text": "Gölbaşı"
+      },
+      {
+        "value": 1365,
+        "text": "Güdül"
+      },
+      {
+        "value": 1387,
+        "text": "Haymana"
+      },
+      {
+        "value": 1815,
+        "text": "Kahramankazan"
+      },
+      {
+        "value": 1427,
+        "text": "Kalecik"
+      },
+      {
+        "value": 1745,
+        "text": "Keçiören"
+      },
+      {
+        "value": 1473,
+        "text": "Kızılcahamam"
+      },
+      {
+        "value": 1746,
+        "text": "Mamak"
+      },
+      {
+        "value": 1539,
+        "text": "Nallıhan"
+      },
+      {
+        "value": 1578,
+        "text": "Polatlı"
+      },
+      {
+        "value": 2034,
+        "text": "Pursaklar"
+      },
+      {
+        "value": 1658,
+        "text": "Şereflikoçhisar"
+      },
+      {
+        "value": 1747,
+        "text": "Sincan"
+      },
+      {
+        "value": 1723,
+        "text": "Yenimahalle"
+      }
+    ]
+  },
+  {
+    "value": 7,
+    "text": "Antalya",
+    "districts": [
+      {
+        "value": 1121,
+        "text": "Akseki"
+      },
+      {
+        "value": 2035,
+        "text": "Aksu"
+      },
+      {
+        "value": 1126,
+        "text": "Alanya"
+      },
+      {
+        "value": 1811,
+        "text": "Demre"
+      },
+      {
+        "value": 2036,
+        "text": "Döşemealtı"
+      },
+      {
+        "value": 1303,
+        "text": "Elmalı"
+      },
+      {
+        "value": 1333,
+        "text": "Finike"
+      },
+      {
+        "value": 1337,
+        "text": "Gazipaşa"
+      },
+      {
+        "value": 1370,
+        "text": "Gündoğmuş"
+      },
+      {
+        "value": 1946,
+        "text": "İbradı"
+      },
+      {
+        "value": 1451,
+        "text": "Kaş"
+      },
+      {
+        "value": 1959,
+        "text": "Kemer"
+      },
+      {
+        "value": 2037,
+        "text": "Kepez"
+      },
+      {
+        "value": 2038,
+        "text": "Konyaaltı"
+      },
+      {
+        "value": 1483,
+        "text": "Korkuteli"
+      },
+      {
+        "value": 1492,
+        "text": "Kumluca"
+      },
+      {
+        "value": 1512,
+        "text": "Manavgat"
+      },
+      {
+        "value": 2039,
+        "text": "Muratpaşa"
+      },
+      {
+        "value": 1616,
+        "text": "Serik"
+      }
+    ]
+  },
+  {
+    "value": 75,
+    "text": "Ardahan",
+    "districts": [
+      {
+        "value": 1252,
+        "text": "Çıldır"
+      },
+      {
+        "value": 2008,
+        "text": "Damal"
+      },
+      {
+        "value": 1356,
+        "text": "Göle"
+      },
+      {
+        "value": 1380,
+        "text": "Hanak"
+      },
+      {
+        "value": 1144,
+        "text": "Merkez"
+      },
+      {
+        "value": 1579,
+        "text": "Posof"
+      }
+    ]
+  },
+  {
+    "value": 8,
+    "text": "Artvin",
+    "districts": [
+      {
+        "value": 1145,
+        "text": "Ardanuç"
+      },
+      {
+        "value": 1147,
+        "text": "Arhavi"
+      },
+      {
+        "value": 1202,
+        "text": "Borçka"
+      },
+      {
+        "value": 1395,
+        "text": "Hopa"
+      },
+      {
+        "value": 2105,
+        "text": "Kemalpaşa"
+      },
+      {
+        "value": 1152,
+        "text": "Merkez"
+      },
+      {
+        "value": 1828,
+        "text": "Murgul"
+      },
+      {
+        "value": 1653,
+        "text": "Şavşat"
+      },
+      {
+        "value": 1736,
+        "text": "Yusufeli"
+      }
+    ]
+  },
+  {
+    "value": 9,
+    "text": "Aydın",
+    "districts": [
+      {
+        "value": 1206,
+        "text": "Bozdoğan"
+      },
+      {
+        "value": 1781,
+        "text": "Buharkent"
+      },
+      {
+        "value": 1256,
+        "text": "Çine"
+      },
+      {
+        "value": 2000,
+        "text": "Didim"
+      },
+      {
+        "value": 2076,
+        "text": "Efeler"
+      },
+      {
+        "value": 1348,
+        "text": "Germencik"
+      },
+      {
+        "value": 1807,
+        "text": "İncirliova"
+      },
+      {
+        "value": 1435,
+        "text": "Karacasu"
+      },
+      {
+        "value": 1957,
+        "text": "Karpuzlu"
+      },
+      {
+        "value": 1479,
+        "text": "Koçarlı"
+      },
+      {
+        "value": 1968,
+        "text": "Köşk"
+      },
+      {
+        "value": 1497,
+        "text": "Kuşadası"
+      },
+      {
+        "value": 1498,
+        "text": "Kuyucak"
+      },
+      {
+        "value": 1542,
+        "text": "Nazilli"
+      },
+      {
+        "value": 1637,
+        "text": "Söke"
+      },
+      {
+        "value": 1640,
+        "text": "Sultanhisar"
+      },
+      {
+        "value": 1724,
+        "text": "Yenipazar"
+      }
+    ]
+  },
+  {
+    "value": 10,
+    "text": "Balıkesir",
+    "districts": [
+      {
+        "value": 2077,
+        "text": "Altıeylül"
+      },
+      {
+        "value": 1161,
+        "text": "Ayvalık"
+      },
+      {
+        "value": 1169,
+        "text": "Balya"
+      },
+      {
+        "value": 1171,
+        "text": "Bandırma"
+      },
+      {
+        "value": 1191,
+        "text": "Bigadiç"
+      },
+      {
+        "value": 1216,
+        "text": "Burhaniye"
+      },
+      {
+        "value": 1291,
+        "text": "Dursunbey"
+      },
+      {
+        "value": 1294,
+        "text": "Edremit"
+      },
+      {
+        "value": 1310,
+        "text": "Erdek"
+      },
+      {
+        "value": 1928,
+        "text": "Gömeç"
+      },
+      {
+        "value": 1360,
+        "text": "Gönen"
+      },
+      {
+        "value": 1384,
+        "text": "Havran"
+      },
+      {
+        "value": 1418,
+        "text": "İvrindi"
+      },
+      {
+        "value": 2078,
+        "text": "Karesi"
+      },
+      {
+        "value": 1462,
+        "text": "Kepsut"
+      },
+      {
+        "value": 1514,
+        "text": "Manyas"
+      },
+      {
+        "value": 1824,
+        "text": "Marmara"
+      },
+      {
+        "value": 1608,
+        "text": "Savaştepe"
+      },
+      {
+        "value": 1619,
+        "text": "Sındırgı"
+      },
+      {
+        "value": 1644,
+        "text": "Susurluk"
+      }
+    ]
+  },
+  {
+    "value": 74,
+    "text": "Bartın",
+    "districts": [
+      {
+        "value": 1761,
+        "text": "Amasra"
+      },
+      {
+        "value": 1496,
+        "text": "Kurucaşile"
+      },
+      {
+        "value": 1172,
+        "text": "Merkez"
+      },
+      {
+        "value": 1701,
+        "text": "Ulus"
+      }
+    ]
+  },
+  {
+    "value": 72,
+    "text": "Batman",
+    "districts": [
+      {
+        "value": 1184,
+        "text": "Beşiri"
+      },
+      {
+        "value": 1345,
+        "text": "Gercüş"
+      },
+      {
+        "value": 1941,
+        "text": "Hasankeyf"
+      },
+      {
+        "value": 1487,
+        "text": "Kozluk"
+      },
+      {
+        "value": 1174,
+        "text": "Merkez"
+      },
+      {
+        "value": 1607,
+        "text": "Sason"
+      }
+    ]
+  },
+  {
+    "value": 69,
+    "text": "Bayburtt",
+    "districts": [
+      {
+        "value": 1767,
+        "text": "Aydıntepe"
+      },
+      {
+        "value": 1788,
+        "text": "Demirözü"
+      },
+      {
+        "value": 1176,
+        "text": "Merkez"
+      }
+    ]
+  },
+  {
+    "value": 11,
+    "text": "Bilecik",
+    "districts": [
+      {
+        "value": 1210,
+        "text": "Bozüyük"
+      },
+      {
+        "value": 1359,
+        "text": "Gölpazarı"
+      },
+      {
+        "value": 1948,
+        "text": "İnhisar"
+      },
+      {
+        "value": 1192,
+        "text": "Merkez"
+      },
+      {
+        "value": 1559,
+        "text": "Osmaneli"
+      },
+      {
+        "value": 1571,
+        "text": "Pazaryeri"
+      },
+      {
+        "value": 1636,
+        "text": "Söğüt"
+      },
+      {
+        "value": 1857,
+        "text": "Yenipazar"
+      }
+    ]
+  },
+  {
+    "value": 12,
+    "text": "Bingöl",
+    "districts": [
+      {
+        "value": 1750,
+        "text": "Adaklı"
+      },
+      {
+        "value": 1344,
+        "text": "Genç"
+      },
+      {
+        "value": 1446,
+        "text": "Karlıova"
+      },
+      {
+        "value": 1475,
+        "text": "Kiğı"
+      },
+      {
+        "value": 1193,
+        "text": "Merkez"
+      },
+      {
+        "value": 1633,
+        "text": "Solhan"
+      },
+      {
+        "value": 1855,
+        "text": "Yayladere"
+      },
+      {
+        "value": 1996,
+        "text": "Yedisu"
+      }
+    ]
+  },
+  {
+    "value": 13,
+    "text": "Bitlis",
+    "districts": [
+      {
+        "value": 1106,
+        "text": "Adilcevaz"
+      },
+      {
+        "value": 1112,
+        "text": "Ahlat"
+      },
+      {
+        "value": 1798,
+        "text": "Güroymak"
+      },
+      {
+        "value": 1394,
+        "text": "Hizan"
+      },
+      {
+        "value": 1196,
+        "text": "Merkez"
+      },
+      {
+        "value": 1537,
+        "text": "Mutki"
+      },
+      {
+        "value": 1669,
+        "text": "Tatvan"
+      }
+    ]
+  },
+  {
+    "value": 14,
+    "text": "Bolu",
+    "districts": [
+      {
+        "value": 1916,
+        "text": "Dörtdivan"
+      },
+      {
+        "value": 1346,
+        "text": "Gerede"
+      },
+      {
+        "value": 1364,
+        "text": "Göynük"
+      },
+      {
+        "value": 1466,
+        "text": "Kıbrıscık"
+      },
+      {
+        "value": 1522,
+        "text": "Mengen"
+      },
+      {
+        "value": 1199,
+        "text": "Merkez"
+      },
+      {
+        "value": 1531,
+        "text": "Mudurnu"
+      },
+      {
+        "value": 1610,
+        "text": "Seben"
+      },
+      {
+        "value": 1997,
+        "text": "Yeniçağa"
+      }
+    ]
+  },
+  {
+    "value": 15,
+    "text": "Burdur",
+    "districts": [
+      {
+        "value": 1109,
+        "text": "Ağlasun"
+      },
+      {
+        "value": 1874,
+        "text": "Altınyayla"
+      },
+      {
+        "value": 1211,
+        "text": "Bucak"
+      },
+      {
+        "value": 1899,
+        "text": "Çavdır"
+      },
+      {
+        "value": 1903,
+        "text": "Çeltikçi"
+      },
+      {
+        "value": 1357,
+        "text": "Gölhisar"
+      },
+      {
+        "value": 1813,
+        "text": "Karamanlı"
+      },
+      {
+        "value": 1816,
+        "text": "Kemer"
+      },
+      {
+        "value": 1215,
+        "text": "Merkez"
+      },
+      {
+        "value": 1672,
+        "text": "Tefenni"
+      },
+      {
+        "value": 1728,
+        "text": "Yeşilova"
+      }
+    ]
+  },
+  {
+    "value": 16,
+    "text": "Bursa",
+    "districts": [
+      {
+        "value": 1783,
+        "text": "Büyükorhan"
+      },
+      {
+        "value": 1343,
+        "text": "Gemlik"
+      },
+      {
+        "value": 1935,
+        "text": "Gürsu"
+      },
+      {
+        "value": 1799,
+        "text": "Harmancık"
+      },
+      {
+        "value": 1411,
+        "text": "İnegöl"
+      },
+      {
+        "value": 1420,
+        "text": "İznik"
+      },
+      {
+        "value": 1434,
+        "text": "Karacabey"
+      },
+      {
+        "value": 1457,
+        "text": "Keles"
+      },
+      {
+        "value": 1960,
+        "text": "Kestel"
+      },
+      {
+        "value": 1535,
+        "text": "M.kemalpaşa"
+      },
+      {
+        "value": 1530,
+        "text": "Mudanya"
+      },
+      {
+        "value": 1829,
+        "text": "Nilüfer"
+      },
+      {
+        "value": 1553,
+        "text": "Orhaneli"
+      },
+      {
+        "value": 1554,
+        "text": "Orhangazi"
+      },
+      {
+        "value": 1832,
+        "text": "Osmangazi"
+      },
+      {
+        "value": 1725,
+        "text": "Yenişehir"
+      },
+      {
+        "value": 1859,
+        "text": "Yıldırım"
+      }
+    ]
+  },
+  {
+    "value": 17,
+    "text": "Çanakkale",
+    "districts": [
+      {
+        "value": 1160,
+        "text": "Ayvacık"
+      },
+      {
+        "value": 1180,
+        "text": "Bayramiç"
+      },
+      {
+        "value": 1190,
+        "text": "Biga"
+      },
+      {
+        "value": 1205,
+        "text": "Bozcaada"
+      },
+      {
+        "value": 1229,
+        "text": "Çan"
+      },
+      {
+        "value": 1293,
+        "text": "Eceabat"
+      },
+      {
+        "value": 1326,
+        "text": "Ezine"
+      },
+      {
+        "value": 1340,
+        "text": "Gelibolu"
+      },
+      {
+        "value": 1408,
+        "text": "Gökçeada"
+      },
+      {
+        "value": 1503,
+        "text": "Lapseki"
+      },
+      {
+        "value": 1230,
+        "text": "Merkez"
+      },
+      {
+        "value": 1722,
+        "text": "Yenice"
+      }
+    ]
+  },
+  {
+    "value": 18,
+    "text": "Çankırı",
+    "districts": [
+      {
+        "value": 1765,
+        "text": "Atkaracalar"
+      },
+      {
+        "value": 1885,
+        "text": "Bayramören"
+      },
+      {
+        "value": 1248,
+        "text": "Çerkeş"
+      },
+      {
+        "value": 1300,
+        "text": "Eldivan"
+      },
+      {
+        "value": 1399,
+        "text": "Ilgaz"
+      },
+      {
+        "value": 1817,
+        "text": "Kızılırmak"
+      },
+      {
+        "value": 1963,
+        "text": "Korgun"
+      },
+      {
+        "value": 1494,
+        "text": "Kurşunlu"
+      },
+      {
+        "value": 1232,
+        "text": "Merkez"
+      },
+      {
+        "value": 1555,
+        "text": "Orta"
+      },
+      {
+        "value": 1649,
+        "text": "Şabanözü"
+      },
+      {
+        "value": 1718,
+        "text": "Yapraklı"
+      }
+    ]
+  },
+  {
+    "value": 19,
+    "text": "Çorum",
+    "districts": [
+      {
+        "value": 1124,
+        "text": "Alaca"
+      },
+      {
+        "value": 1177,
+        "text": "Bayat"
+      },
+      {
+        "value": 1778,
+        "text": "Boğazkale"
+      },
+      {
+        "value": 1911,
+        "text": "Dodurga"
+      },
+      {
+        "value": 1414,
+        "text": "İskilip"
+      },
+      {
+        "value": 1445,
+        "text": "Kargı"
+      },
+      {
+        "value": 1972,
+        "text": "Laçin"
+      },
+      {
+        "value": 1520,
+        "text": "Mecitözü"
+      },
+      {
+        "value": 1259,
+        "text": "Merkez"
+      },
+      {
+        "value": 1976,
+        "text": "Oğuzlar"
+      },
+      {
+        "value": 1556,
+        "text": "Ortaköy"
+      },
+      {
+        "value": 1558,
+        "text": "Osmancık"
+      },
+      {
+        "value": 1642,
+        "text": "Sungurlu"
+      },
+      {
+        "value": 1850,
+        "text": "Uğurludağ"
+      }
+    ]
+  },
+  {
+    "value": 20,
+    "text": "Denizli",
+    "districts": [
+      {
+        "value": 1102,
+        "text": "Acıpayam"
+      },
+      {
+        "value": 1769,
+        "text": "Babadağ"
+      },
+      {
+        "value": 1881,
+        "text": "Baklan"
+      },
+      {
+        "value": 1774,
+        "text": "Bekilli"
+      },
+      {
+        "value": 1888,
+        "text": "Beyağaç"
+      },
+      {
+        "value": 1889,
+        "text": "Bozkurt"
+      },
+      {
+        "value": 1214,
+        "text": "Buldan"
+      },
+      {
+        "value": 1224,
+        "text": "Çal"
+      },
+      {
+        "value": 1226,
+        "text": "Çameli"
+      },
+      {
+        "value": 1233,
+        "text": "Çardak"
+      },
+      {
+        "value": 1257,
+        "text": "Çivril"
+      },
+      {
+        "value": 1371,
+        "text": "Güney"
+      },
+      {
+        "value": 1803,
+        "text": "Honaz"
+      },
+      {
+        "value": 1426,
+        "text": "Kale"
+      },
+      {
+        "value": 2079,
+        "text": "Merkezefendi"
+      },
+      {
+        "value": 1871,
+        "text": "Pamukkale"
+      },
+      {
+        "value": 1597,
+        "text": "Sarayköy"
+      },
+      {
+        "value": 1840,
+        "text": "Serinhisar"
+      },
+      {
+        "value": 1670,
+        "text": "Tavas"
+      }
+    ]
+  },
+  {
+    "value": 21,
+    "text": "Diyarbakır",
+    "districts": [
+      {
+        "value": 2040,
+        "text": "Bağlar"
+      },
+      {
+        "value": 1195,
+        "text": "Bismil"
+      },
+      {
+        "value": 1249,
+        "text": "Çermik"
+      },
+      {
+        "value": 1253,
+        "text": "Çınar"
+      },
+      {
+        "value": 1263,
+        "text": "Çüngüş"
+      },
+      {
+        "value": 1278,
+        "text": "Dicle"
+      },
+      {
+        "value": 1791,
+        "text": "Eğil"
+      },
+      {
+        "value": 1315,
+        "text": "Ergani"
+      },
+      {
+        "value": 1381,
+        "text": "Hani"
+      },
+      {
+        "value": 1389,
+        "text": "Hazro"
+      },
+      {
+        "value": 2041,
+        "text": "Kayapınar"
+      },
+      {
+        "value": 1962,
+        "text": "Kocaköy"
+      },
+      {
+        "value": 1490,
+        "text": "Kulp"
+      },
+      {
+        "value": 1504,
+        "text": "Lice"
+      },
+      {
+        "value": 1624,
+        "text": "Silvan"
+      },
+      {
+        "value": 2042,
+        "text": "Sur"
+      },
+      {
+        "value": 2043,
+        "text": "Yenişehir"
+      }
+    ]
+  },
+  {
+    "value": 81,
+    "text": "Düzce",
+    "districts": [
+      {
+        "value": 1116,
+        "text": "Akçakoca"
+      },
+      {
+        "value": 1905,
+        "text": "Çilimli"
+      },
+      {
+        "value": 1784,
+        "text": "Cumayeri"
+      },
+      {
+        "value": 1794,
+        "text": "Gölyaka"
+      },
+      {
+        "value": 2017,
+        "text": "Gümüşova"
+      },
+      {
+        "value": 2031,
+        "text": "Kaynaşlı"
+      },
+      {
+        "value": 1292,
+        "text": "Merkez"
+      },
+      {
+        "value": 1730,
+        "text": "Yığılca"
+      }
+    ]
+  },
+  {
+    "value": 22,
+    "text": "Edirne",
+    "districts": [
+      {
+        "value": 1307,
+        "text": "Enez"
+      },
+      {
+        "value": 1385,
+        "text": "Havsa"
+      },
+      {
+        "value": 1412,
+        "text": "İpsala"
+      },
+      {
+        "value": 1464,
+        "text": "Keşan"
+      },
+      {
+        "value": 1502,
+        "text": "Lalapaşa"
+      },
+      {
+        "value": 1523,
+        "text": "Meriç"
+      },
+      {
+        "value": 1295,
+        "text": "Merkez"
+      },
+      {
+        "value": 1988,
+        "text": "Süloğlu"
+      },
+      {
+        "value": 1705,
+        "text": "Uzunköprü"
+      }
+    ]
+  },
+  {
+    "value": 23,
+    "text": "Elazığ",
+    "districts": [
+      {
+        "value": 1110,
+        "text": "Ağın"
+      },
+      {
+        "value": 1873,
+        "text": "Alacakaya"
+      },
+      {
+        "value": 1762,
+        "text": "Arıcak"
+      },
+      {
+        "value": 1173,
+        "text": "Baskil"
+      },
+      {
+        "value": 1438,
+        "text": "Karakoçan"
+      },
+      {
+        "value": 1455,
+        "text": "Keban"
+      },
+      {
+        "value": 1820,
+        "text": "Kovancılar"
+      },
+      {
+        "value": 1506,
+        "text": "Maden"
+      },
+      {
+        "value": 1298,
+        "text": "Merkez"
+      },
+      {
+        "value": 1566,
+        "text": "Palu"
+      },
+      {
+        "value": 1631,
+        "text": "Sivrice"
+      }
+    ]
+  },
+  {
+    "value": 24,
+    "text": "Erzincan",
+    "districts": [
+      {
+        "value": 1243,
+        "text": "Çayırlı"
+      },
+      {
+        "value": 1406,
+        "text": "İliç"
+      },
+      {
+        "value": 1459,
+        "text": "Kemah"
+      },
+      {
+        "value": 1460,
+        "text": "Kemaliye"
+      },
+      {
+        "value": 1318,
+        "text": "Merkez"
+      },
+      {
+        "value": 1977,
+        "text": "Otlukbeli"
+      },
+      {
+        "value": 1583,
+        "text": "Refahiye"
+      },
+      {
+        "value": 1675,
+        "text": "Tercan"
+      },
+      {
+        "value": 1853,
+        "text": "Üzümlü"
+      }
+    ]
+  },
+  {
+    "value": 25,
+    "text": "Erzurum",
+    "districts": [
+      {
+        "value": 1153,
+        "text": "Aşkale"
+      },
+      {
+        "value": 1945,
+        "text": "Aziziye"
+      },
+      {
+        "value": 1235,
+        "text": "Çat"
+      },
+      {
+        "value": 1392,
+        "text": "Hınıs"
+      },
+      {
+        "value": 1396,
+        "text": "Horasan"
+      },
+      {
+        "value": 1416,
+        "text": "İspir"
+      },
+      {
+        "value": 1812,
+        "text": "Karaçoban"
+      },
+      {
+        "value": 1444,
+        "text": "Karayazı"
+      },
+      {
+        "value": 1967,
+        "text": "Köprüköy"
+      },
+      {
+        "value": 1540,
+        "text": "Narman"
+      },
+      {
+        "value": 1550,
+        "text": "Oltu"
+      },
+      {
+        "value": 1551,
+        "text": "Olur"
+      },
+      {
+        "value": 2044,
+        "text": "Palandöken"
+      },
+      {
+        "value": 1567,
+        "text": "Pasinler"
+      },
+      {
+        "value": 1865,
+        "text": "Pazaryolu"
+      },
+      {
+        "value": 1657,
+        "text": "Şenkaya"
+      },
+      {
+        "value": 1674,
+        "text": "Tekman"
+      },
+      {
+        "value": 1683,
+        "text": "Tortum"
+      },
+      {
+        "value": 1851,
+        "text": "Uzundere"
+      },
+      {
+        "value": 2045,
+        "text": "Yakutiye"
+      }
+    ]
+  },
+  {
+    "value": 26,
+    "text": "Eskişehir",
+    "districts": [
+      {
+        "value": 1759,
+        "text": "Alpu"
+      },
+      {
+        "value": 1777,
+        "text": "Beylikova"
+      },
+      {
+        "value": 1255,
+        "text": "Çifteler"
+      },
+      {
+        "value": 1934,
+        "text": "Günyüzü"
+      },
+      {
+        "value": 1939,
+        "text": "Han"
+      },
+      {
+        "value": 1808,
+        "text": "İnönü"
+      },
+      {
+        "value": 1508,
+        "text": "Mahmudiye"
+      },
+      {
+        "value": 1973,
+        "text": "Mihalgazi"
+      },
+      {
+        "value": 1527,
+        "text": "Mihalıççık"
+      },
+      {
+        "value": 2046,
+        "text": "Odunpazarı"
+      },
+      {
+        "value": 1599,
+        "text": "Sarıcakaya"
+      },
+      {
+        "value": 1618,
+        "text": "Seyitgazi"
+      },
+      {
+        "value": 1632,
+        "text": "Sivrihisar"
+      },
+      {
+        "value": 2047,
+        "text": "Tepebaşı"
+      }
+    ]
+  },
+  {
+    "value": 27,
+    "text": "Gaziantep",
+    "districts": [
+      {
+        "value": 1139,
+        "text": "Araban"
+      },
+      {
+        "value": 1415,
+        "text": "İslahiye"
+      },
+      {
+        "value": 1956,
+        "text": "Karkamış"
+      },
+      {
+        "value": 1546,
+        "text": "Nizip"
+      },
+      {
+        "value": 1974,
+        "text": "Nurdağı"
+      },
+      {
+        "value": 1549,
+        "text": "Oğuzeli"
+      },
+      {
+        "value": 1841,
+        "text": "Şahinbey"
+      },
+      {
+        "value": 1844,
+        "text": "Şehitkamil"
+      },
+      {
+        "value": 1720,
+        "text": "Yavuzeli"
+      }
+    ]
+  },
+  {
+    "value": 28,
+    "text": "Giresun",
+    "districts": [
+      {
+        "value": 1133,
+        "text": "Alucra"
+      },
+      {
+        "value": 1212,
+        "text": "Bulancak"
+      },
+      {
+        "value": 1893,
+        "text": "Çamoluk"
+      },
+      {
+        "value": 1894,
+        "text": "Çanakçı"
+      },
+      {
+        "value": 1272,
+        "text": "Dereli"
+      },
+      {
+        "value": 1912,
+        "text": "Doğankent"
+      },
+      {
+        "value": 1320,
+        "text": "Espiye"
+      },
+      {
+        "value": 1324,
+        "text": "Eynesil"
+      },
+      {
+        "value": 1361,
+        "text": "Görele"
+      },
+      {
+        "value": 1930,
+        "text": "Güce"
+      },
+      {
+        "value": 1465,
+        "text": "Keşap"
+      },
+      {
+        "value": 1352,
+        "text": "Merkez"
+      },
+      {
+        "value": 1837,
+        "text": "Piraziz"
+      },
+      {
+        "value": 1654,
+        "text": "Şebinkarahisar"
+      },
+      {
+        "value": 1678,
+        "text": "Tirebolu"
+      },
+      {
+        "value": 1854,
+        "text": "Yağlıdere"
+      }
+    ]
+  },
+  {
+    "value": 29,
+    "text": "Gümüşhane",
+    "districts": [
+      {
+        "value": 1458,
+        "text": "Kelkit"
+      },
+      {
+        "value": 1822,
+        "text": "Köse"
+      },
+      {
+        "value": 1971,
+        "text": "Kürtün"
+      },
+      {
+        "value": 1369,
+        "text": "Merkez"
+      },
+      {
+        "value": 1660,
+        "text": "Şiran"
+      },
+      {
+        "value": 1684,
+        "text": "Torul"
+      }
+    ]
+  },
+  {
+    "value": 30,
+    "text": "Hakkari",
+    "districts": [
+      {
+        "value": 1261,
+        "text": "Çukurca"
+      },
+      {
+        "value": 2107,
+        "text": "Derecik"
+      },
+      {
+        "value": 1377,
+        "text": "Merkez"
+      },
+      {
+        "value": 1656,
+        "text": "Şemdinli"
+      },
+      {
+        "value": 1737,
+        "text": "Yüksekova"
+      }
+    ]
+  },
+  {
+    "value": 31,
+    "text": "Hatay",
+    "districts": [
+      {
+        "value": 1131,
+        "text": "Altınözü"
+      },
+      {
+        "value": 2080,
+        "text": "Antakya"
+      },
+      {
+        "value": 2081,
+        "text": "Arsuz"
+      },
+      {
+        "value": 1887,
+        "text": "Belen"
+      },
+      {
+        "value": 2082,
+        "text": "Defne"
+      },
+      {
+        "value": 1289,
+        "text": "Dörtyol"
+      },
+      {
+        "value": 1792,
+        "text": "Erzin"
+      },
+      {
+        "value": 1382,
+        "text": "Hassa"
+      },
+      {
+        "value": 1413,
+        "text": "İskenderun"
+      },
+      {
+        "value": 1468,
+        "text": "Kırıkhan"
+      },
+      {
+        "value": 1970,
+        "text": "Kumlu"
+      },
+      {
+        "value": 2083,
+        "text": "Payas"
+      },
+      {
+        "value": 1585,
+        "text": "Reyhanlı"
+      },
+      {
+        "value": 1591,
+        "text": "Samandağ"
+      },
+      {
+        "value": 1721,
+        "text": "Yayladağı"
+      }
+    ]
+  },
+  {
+    "value": 76,
+    "text": "Iğdır",
+    "districts": [
+      {
+        "value": 1142,
+        "text": "Aralık"
+      },
+      {
+        "value": 2011,
+        "text": "Karakoyunlu"
+      },
+      {
+        "value": 1398,
+        "text": "Merkez"
+      },
+      {
+        "value": 1692,
+        "text": "Tuzluca"
+      }
+    ]
+  },
+  {
+    "value": 32,
+    "text": "Isparta",
+    "districts": [
+      {
+        "value": 1755,
+        "text": "Aksu"
+      },
+      {
+        "value": 1154,
+        "text": "Atabey"
+      },
+      {
+        "value": 1297,
+        "text": "Eğirdir"
+      },
+      {
+        "value": 1341,
+        "text": "Gelendost"
+      },
+      {
+        "value": 1929,
+        "text": "Gönen"
+      },
+      {
+        "value": 1456,
+        "text": "Keçiborlu"
+      },
+      {
+        "value": 1401,
+        "text": "Merkez"
+      },
+      {
+        "value": 1651,
+        "text": "Şarkikaraağaç"
+      },
+      {
+        "value": 1615,
+        "text": "Senirkent"
+      },
+      {
+        "value": 1648,
+        "text": "Sütçüler"
+      },
+      {
+        "value": 1699,
+        "text": "Uluborlu"
+      },
+      {
+        "value": 1717,
+        "text": "Yalvaç"
+      },
+      {
+        "value": 2001,
+        "text": "Yenişarbademli"
+      }
+    ]
+  },
+  {
+    "value": 34,
+    "text": "İstanbul",
+    "districts": [
+      {
+        "value": 1103,
+        "text": "Adalar"
+      },
+      {
+        "value": 2048,
+        "text": "Arnavutköy"
+      },
+      {
+        "value": 2049,
+        "text": "Ataşehir"
+      },
+      {
+        "value": 2003,
+        "text": "Avcılar"
+      },
+      {
+        "value": 2004,
+        "text": "Bağcılar"
+      },
+      {
+        "value": 2005,
+        "text": "Bahçelievler"
+      },
+      {
+        "value": 1166,
+        "text": "Bakırköy"
+      },
+      {
+        "value": 2050,
+        "text": "Başakşehir"
+      },
+      {
+        "value": 1886,
+        "text": "Bayrampaşa"
+      },
+      {
+        "value": 1183,
+        "text": "Beşiktaş"
+      },
+      {
+        "value": 1185,
+        "text": "Beykoz"
+      },
+      {
+        "value": 2051,
+        "text": "Beylikdüzü"
+      },
+      {
+        "value": 1186,
+        "text": "Beyoğlu"
+      },
+      {
+        "value": 1782,
+        "text": "Büyükçekmece"
+      },
+      {
+        "value": 1237,
+        "text": "Çatalca"
+      },
+      {
+        "value": 2052,
+        "text": "Çekmeköy"
+      },
+      {
+        "value": 2016,
+        "text": "Esenler"
+      },
+      {
+        "value": 2053,
+        "text": "Esenyurt"
+      },
+      {
+        "value": 1325,
+        "text": "Eyüpsultan"
+      },
+      {
+        "value": 1327,
+        "text": "Fatih"
+      },
+      {
+        "value": 1336,
+        "text": "Gaziosmanpaşa"
+      },
+      {
+        "value": 2010,
+        "text": "Güngören"
+      },
+      {
+        "value": 1421,
+        "text": "Kadıköy"
+      },
+      {
+        "value": 1810,
+        "text": "Kağıthane"
+      },
+      {
+        "value": 1449,
+        "text": "Kartal"
+      },
+      {
+        "value": 1823,
+        "text": "Küçükçekmece"
+      },
+      {
+        "value": 2012,
+        "text": "Maltepe"
+      },
+      {
+        "value": 1835,
+        "text": "Pendik"
+      },
+      {
+        "value": 2054,
+        "text": "Sancaktepe"
+      },
+      {
+        "value": 1604,
+        "text": "Sarıyer"
+      },
+      {
+        "value": 1659,
+        "text": "Şile"
+      },
+      {
+        "value": 1622,
+        "text": "Silivri"
+      },
+      {
+        "value": 1663,
+        "text": "Şişli"
+      },
+      {
+        "value": 2014,
+        "text": "Sultanbeyli"
+      },
+      {
+        "value": 2055,
+        "text": "Sultangazi"
+      },
+      {
+        "value": 2015,
+        "text": "Tuzla"
+      },
+      {
+        "value": 1852,
+        "text": "Ümraniye"
+      },
+      {
+        "value": 1708,
+        "text": "Üsküdar"
+      },
+      {
+        "value": 1739,
+        "text": "Zeytinburnu"
+      }
+    ]
+  },
+  {
+    "value": 35,
+    "text": "İzmir",
+    "districts": [
+      {
+        "value": 1128,
+        "text": "Aliağa"
+      },
+      {
+        "value": 2006,
+        "text": "Balçova"
+      },
+      {
+        "value": 1178,
+        "text": "Bayındır"
+      },
+      {
+        "value": 2056,
+        "text": "Bayraklı"
+      },
+      {
+        "value": 1181,
+        "text": "Bergama"
+      },
+      {
+        "value": 1776,
+        "text": "Beydağ"
+      },
+      {
+        "value": 1203,
+        "text": "Bornova"
+      },
+      {
+        "value": 1780,
+        "text": "Buca"
+      },
+      {
+        "value": 1251,
+        "text": "Çeşme"
+      },
+      {
+        "value": 2007,
+        "text": "Çiğli"
+      },
+      {
+        "value": 1280,
+        "text": "Dikili"
+      },
+      {
+        "value": 1334,
+        "text": "Foça"
+      },
+      {
+        "value": 2009,
+        "text": "Gaziemir"
+      },
+      {
+        "value": 2018,
+        "text": "Güzelbahçe"
+      },
+      {
+        "value": 2057,
+        "text": "Karabağlar"
+      },
+      {
+        "value": 1432,
+        "text": "Karaburun"
+      },
+      {
+        "value": 1448,
+        "text": "Karşıyaka"
+      },
+      {
+        "value": 1461,
+        "text": "Kemalpaşa"
+      },
+      {
+        "value": 1467,
+        "text": "Kınık"
+      },
+      {
+        "value": 1477,
+        "text": "Kiraz"
+      },
+      {
+        "value": 1819,
+        "text": "Konak"
+      },
+      {
+        "value": 1826,
+        "text": "Menderes"
+      },
+      {
+        "value": 1521,
+        "text": "Menemen"
+      },
+      {
+        "value": 2013,
+        "text": "Narlıdere"
+      },
+      {
+        "value": 1563,
+        "text": "Ödemiş"
+      },
+      {
+        "value": 1611,
+        "text": "Seferihisar"
+      },
+      {
+        "value": 1612,
+        "text": "Selçuk"
+      },
+      {
+        "value": 1677,
+        "text": "Tire"
+      },
+      {
+        "value": 1682,
+        "text": "Torbalı"
+      },
+      {
+        "value": 1703,
+        "text": "Urla"
+      }
+    ]
+  },
+  {
+    "value": 46,
+    "text": "Kahramanmaraş",
+    "districts": [
+      {
+        "value": 1107,
+        "text": "Afşin"
+      },
+      {
+        "value": 1136,
+        "text": "Andırın"
+      },
+      {
+        "value": 1785,
+        "text": "Çağlayancerit"
+      },
+      {
+        "value": 2084,
+        "text": "Dulkadiroğlu"
+      },
+      {
+        "value": 1919,
+        "text": "Ekinözü"
+      },
+      {
+        "value": 1299,
+        "text": "Elbistan"
+      },
+      {
+        "value": 1353,
+        "text": "Göksun"
+      },
+      {
+        "value": 1975,
+        "text": "Nurhak"
+      },
+      {
+        "value": 2085,
+        "text": "Onikişubat"
+      },
+      {
+        "value": 1570,
+        "text": "Pazarcık"
+      },
+      {
+        "value": 1694,
+        "text": "Türkoğlu"
+      }
+    ]
+  },
+  {
+    "value": 78,
+    "text": "Karabük",
+    "districts": [
+      {
+        "value": 1296,
+        "text": "Eflani"
+      },
+      {
+        "value": 1321,
+        "text": "Eskipazar"
+      },
+      {
+        "value": 1433,
+        "text": "Merkez"
+      },
+      {
+        "value": 1561,
+        "text": "Ovacık"
+      },
+      {
+        "value": 1587,
+        "text": "Safranbolu"
+      },
+      {
+        "value": 1856,
+        "text": "Yenice"
+      }
+    ]
+  },
+  {
+    "value": 70,
+    "text": "Karaman",
+    "districts": [
+      {
+        "value": 1768,
+        "text": "Ayrancı"
+      },
+      {
+        "value": 1884,
+        "text": "Başyayla"
+      },
+      {
+        "value": 1316,
+        "text": "Ermenek"
+      },
+      {
+        "value": 1862,
+        "text": "Kazımkarabekir"
+      },
+      {
+        "value": 1439,
+        "text": "Merkez"
+      },
+      {
+        "value": 1983,
+        "text": "Sarıveliler"
+      }
+    ]
+  },
+  {
+    "value": 36,
+    "text": "Kars",
+    "districts": [
+      {
+        "value": 1756,
+        "text": "Akyaka"
+      },
+      {
+        "value": 1149,
+        "text": "Arpaçay"
+      },
+      {
+        "value": 1279,
+        "text": "Digor"
+      },
+      {
+        "value": 1424,
+        "text": "Kağızman"
+      },
+      {
+        "value": 1447,
+        "text": "Merkez"
+      },
+      {
+        "value": 1601,
+        "text": "Sarıkamış"
+      },
+      {
+        "value": 1614,
+        "text": "Selim"
+      },
+      {
+        "value": 1645,
+        "text": "Susuz"
+      }
+    ]
+  },
+  {
+    "value": 37,
+    "text": "Kastamonu",
+    "districts": [
+      {
+        "value": 1101,
+        "text": "Abana"
+      },
+      {
+        "value": 1867,
+        "text": "Ağlı"
+      },
+      {
+        "value": 1140,
+        "text": "Araç"
+      },
+      {
+        "value": 1162,
+        "text": "Azdavay"
+      },
+      {
+        "value": 1208,
+        "text": "Bozkurt"
+      },
+      {
+        "value": 1238,
+        "text": "Çatalzeytin"
+      },
+      {
+        "value": 1221,
+        "text": "Cide"
+      },
+      {
+        "value": 1264,
+        "text": "Daday"
+      },
+      {
+        "value": 1277,
+        "text": "Devrekani"
+      },
+      {
+        "value": 1915,
+        "text": "Doğanyurt"
+      },
+      {
+        "value": 1940,
+        "text": "Hanönü"
+      },
+      {
+        "value": 1805,
+        "text": "İhsangazi"
+      },
+      {
+        "value": 1410,
+        "text": "İnebolu"
+      },
+      {
+        "value": 1499,
+        "text": "Küre"
+      },
+      {
+        "value": 1450,
+        "text": "Merkez"
+      },
+      {
+        "value": 1836,
+        "text": "Pınarbaşı"
+      },
+      {
+        "value": 1845,
+        "text": "Şenpazar"
+      },
+      {
+        "value": 1984,
+        "text": "Seydiler"
+      },
+      {
+        "value": 1666,
+        "text": "Taşköprü"
+      },
+      {
+        "value": 1685,
+        "text": "Tosya"
+      }
+    ]
+  },
+  {
+    "value": 38,
+    "text": "Kayseri",
+    "districts": [
+      {
+        "value": 1752,
+        "text": "Akkışla"
+      },
+      {
+        "value": 1218,
+        "text": "Bünyan"
+      },
+      {
+        "value": 1275,
+        "text": "Develi"
+      },
+      {
+        "value": 1330,
+        "text": "Felahiye"
+      },
+      {
+        "value": 1936,
+        "text": "Hacılar"
+      },
+      {
+        "value": 1409,
+        "text": "İncesu"
+      },
+      {
+        "value": 1863,
+        "text": "Kocasinan"
+      },
+      {
+        "value": 1864,
+        "text": "Melikgazi"
+      },
+      {
+        "value": 1978,
+        "text": "Özvatan"
+      },
+      {
+        "value": 1576,
+        "text": "Pınarbaşı"
+      },
+      {
+        "value": 1603,
+        "text": "Sarıoğlan"
+      },
+      {
+        "value": 1605,
+        "text": "Sarız"
+      },
+      {
+        "value": 1846,
+        "text": "Talas"
+      },
+      {
+        "value": 1680,
+        "text": "Tomarza"
+      },
+      {
+        "value": 1715,
+        "text": "Yahyalı"
+      },
+      {
+        "value": 1727,
+        "text": "Yeşilhisar"
+      }
+    ]
+  },
+  {
+    "value": 79,
+    "text": "Kılıs",
+    "districts": [
+      {
+        "value": 2023,
+        "text": "Elbeyli"
+      },
+      {
+        "value": 1476,
+        "text": "Merkez"
+      },
+      {
+        "value": 2024,
+        "text": "Musabeyli"
+      },
+      {
+        "value": 2025,
+        "text": "Polateli"
+      }
+    ]
+  },
+  {
+    "value": 71,
+    "text": "Kirikkale",
+    "districts": [
+      {
+        "value": 1880,
+        "text": "Bahşili"
+      },
+      {
+        "value": 1882,
+        "text": "Balışeyh"
+      },
+      {
+        "value": 1901,
+        "text": "Çelebi"
+      },
+      {
+        "value": 1268,
+        "text": "Delice"
+      },
+      {
+        "value": 1954,
+        "text": "Karakeçili"
+      },
+      {
+        "value": 1463,
+        "text": "Keskin"
+      },
+      {
+        "value": 1469,
+        "text": "Merkez"
+      },
+      {
+        "value": 1638,
+        "text": "Sulakyurt"
+      },
+      {
+        "value": 1992,
+        "text": "Yahşihan"
+      }
+    ]
+  },
+  {
+    "value": 39,
+    "text": "Kirklarelı",
+    "districts": [
+      {
+        "value": 1163,
+        "text": "Babaeski"
+      },
+      {
+        "value": 1270,
+        "text": "Demirköy"
+      },
+      {
+        "value": 1480,
+        "text": "Kofçaz"
+      },
+      {
+        "value": 1505,
+        "text": "Lüleburgaz"
+      },
+      {
+        "value": 1471,
+        "text": "Merkez"
+      },
+      {
+        "value": 1572,
+        "text": "Pehlivanköy"
+      },
+      {
+        "value": 1577,
+        "text": "Pınarhisar"
+      },
+      {
+        "value": 1714,
+        "text": "Vize"
+      }
+    ]
+  },
+  {
+    "value": 40,
+    "text": "Kirşehir",
+    "districts": [
+      {
+        "value": 1869,
+        "text": "Akçakent"
+      },
+      {
+        "value": 1754,
+        "text": "Akpınar"
+      },
+      {
+        "value": 1890,
+        "text": "Boztepe"
+      },
+      {
+        "value": 1254,
+        "text": "Çiçekdağı"
+      },
+      {
+        "value": 1429,
+        "text": "Kaman"
+      },
+      {
+        "value": 1472,
+        "text": "Merkez"
+      },
+      {
+        "value": 1529,
+        "text": "Mucur"
+      }
+    ]
+  },
+  {
+    "value": 41,
+    "text": "Kocaeli",
+    "districts": [
+      {
+        "value": 2058,
+        "text": "Başiskele"
+      },
+      {
+        "value": 2059,
+        "text": "Çayırova"
+      },
+      {
+        "value": 2060,
+        "text": "Darıca"
+      },
+      {
+        "value": 2030,
+        "text": "Derince"
+      },
+      {
+        "value": 2061,
+        "text": "Dilovası"
+      },
+      {
+        "value": 1338,
+        "text": "Gebze"
+      },
+      {
+        "value": 1355,
+        "text": "Gölcük"
+      },
+      {
+        "value": 2062,
+        "text": "İzmit"
+      },
+      {
+        "value": 1430,
+        "text": "Kandıra"
+      },
+      {
+        "value": 1440,
+        "text": "Karamürsel"
+      },
+      {
+        "value": 2063,
+        "text": "Kartepe"
+      },
+      {
+        "value": 1821,
+        "text": "Körfez"
+      }
+    ]
+  },
+  {
+    "value": 42,
+    "text": "Konya",
+    "districts": [
+      {
+        "value": 1868,
+        "text": "Ahırlı"
+      },
+      {
+        "value": 1753,
+        "text": "Akören"
+      },
+      {
+        "value": 1122,
+        "text": "Akşehir"
+      },
+      {
+        "value": 1760,
+        "text": "Altınekin"
+      },
+      {
+        "value": 1188,
+        "text": "Beyşehir"
+      },
+      {
+        "value": 1207,
+        "text": "Bozkır"
+      },
+      {
+        "value": 1902,
+        "text": "Çeltik"
+      },
+      {
+        "value": 1222,
+        "text": "Cihanbeyli"
+      },
+      {
+        "value": 1262,
+        "text": "Çumra"
+      },
+      {
+        "value": 1907,
+        "text": "Derbent"
+      },
+      {
+        "value": 1789,
+        "text": "Derebucak"
+      },
+      {
+        "value": 1285,
+        "text": "Doğanhisar"
+      },
+      {
+        "value": 1920,
+        "text": "Emirgazi"
+      },
+      {
+        "value": 1312,
+        "text": "Ereğli"
+      },
+      {
+        "value": 1933,
+        "text": "Güneysınır"
+      },
+      {
+        "value": 1375,
+        "text": "Hadim"
+      },
+      {
+        "value": 1937,
+        "text": "Halkapınar"
+      },
+      {
+        "value": 1804,
+        "text": "Hüyük"
+      },
+      {
+        "value": 1400,
+        "text": "Ilgın"
+      },
+      {
+        "value": 1422,
+        "text": "Kadınhanı"
+      },
+      {
+        "value": 1441,
+        "text": "Karapınar"
+      },
+      {
+        "value": 1814,
+        "text": "Karatay"
+      },
+      {
+        "value": 1491,
+        "text": "Kulu"
+      },
+      {
+        "value": 1827,
+        "text": "Meram"
+      },
+      {
+        "value": 1598,
+        "text": "Sarayönü"
+      },
+      {
+        "value": 1839,
+        "text": "Selçuklu"
+      },
+      {
+        "value": 1617,
+        "text": "Seydişehir"
+      },
+      {
+        "value": 1848,
+        "text": "Taşkent"
+      },
+      {
+        "value": 1990,
+        "text": "Tuzlukçu"
+      },
+      {
+        "value": 1994,
+        "text": "Yalıhüyük"
+      },
+      {
+        "value": 1735,
+        "text": "Yunak"
+      }
+    ]
+  },
+  {
+    "value": 43,
+    "text": "Kütahya",
+    "districts": [
+      {
+        "value": 1132,
+        "text": "Altıntaş"
+      },
+      {
+        "value": 1764,
+        "text": "Aslanapa"
+      },
+      {
+        "value": 1898,
+        "text": "Çavdarhisar"
+      },
+      {
+        "value": 1288,
+        "text": "Domaniç"
+      },
+      {
+        "value": 1790,
+        "text": "Dumlupınar"
+      },
+      {
+        "value": 1304,
+        "text": "Emet"
+      },
+      {
+        "value": 1339,
+        "text": "Gediz"
+      },
+      {
+        "value": 1802,
+        "text": "Hisarcık"
+      },
+      {
+        "value": 1500,
+        "text": "Merkez"
+      },
+      {
+        "value": 1979,
+        "text": "Pazarlar"
+      },
+      {
+        "value": 1843,
+        "text": "Şaphane"
+      },
+      {
+        "value": 1625,
+        "text": "Simav"
+      },
+      {
+        "value": 1671,
+        "text": "Tavşanlı"
+      }
+    ]
+  },
+  {
+    "value": 44,
+    "text": "Malatya",
+    "districts": [
+      {
+        "value": 1114,
+        "text": "Akçadağ"
+      },
+      {
+        "value": 1143,
+        "text": "Arapgir"
+      },
+      {
+        "value": 1148,
+        "text": "Arguvan"
+      },
+      {
+        "value": 1772,
+        "text": "Battalgazi"
+      },
+      {
+        "value": 1265,
+        "text": "Darende"
+      },
+      {
+        "value": 1286,
+        "text": "Doğanşehir"
+      },
+      {
+        "value": 1914,
+        "text": "Doğanyol"
+      },
+      {
+        "value": 1390,
+        "text": "Hekimhan"
+      },
+      {
+        "value": 1953,
+        "text": "Kale"
+      },
+      {
+        "value": 1969,
+        "text": "Kuluncak"
+      },
+      {
+        "value": 1582,
+        "text": "Pütürge"
+      },
+      {
+        "value": 1995,
+        "text": "Yazıhan"
+      },
+      {
+        "value": 1729,
+        "text": "Yeşilyurt"
+      }
+    ]
+  },
+  {
+    "value": 45,
+    "text": "Manisa",
+    "districts": [
+      {
+        "value": 1751,
+        "text": "Ahmetli"
+      },
+      {
+        "value": 1118,
+        "text": "Akhisar"
+      },
+      {
+        "value": 1127,
+        "text": "Alaşehir"
+      },
+      {
+        "value": 1269,
+        "text": "Demirci"
+      },
+      {
+        "value": 1793,
+        "text": "Gölmarmara"
+      },
+      {
+        "value": 1362,
+        "text": "Gördes"
+      },
+      {
+        "value": 1470,
+        "text": "Kırkağaç"
+      },
+      {
+        "value": 1965,
+        "text": "Köprübaşı"
+      },
+      {
+        "value": 1489,
+        "text": "Kula"
+      },
+      {
+        "value": 1590,
+        "text": "Salihli"
+      },
+      {
+        "value": 1600,
+        "text": "Sarıgöl"
+      },
+      {
+        "value": 1606,
+        "text": "Saruhanlı"
+      },
+      {
+        "value": 2086,
+        "text": "Şehzadeler"
+      },
+      {
+        "value": 1613,
+        "text": "Selendi"
+      },
+      {
+        "value": 1634,
+        "text": "Soma"
+      },
+      {
+        "value": 1689,
+        "text": "Turgutlu"
+      },
+      {
+        "value": 2087,
+        "text": "Yunusemre"
+      }
+    ]
+  },
+  {
+    "value": 47,
+    "text": "Mardin",
+    "districts": [
+      {
+        "value": 2088,
+        "text": "Artuklu"
+      },
+      {
+        "value": 1787,
+        "text": "Dargeçit"
+      },
+      {
+        "value": 1273,
+        "text": "Derik"
+      },
+      {
+        "value": 1474,
+        "text": "Kızıltepe"
+      },
+      {
+        "value": 1519,
+        "text": "Mazıdağı"
+      },
+      {
+        "value": 1526,
+        "text": "Midyat"
+      },
+      {
+        "value": 1547,
+        "text": "Nusaybin"
+      },
+      {
+        "value": 1564,
+        "text": "Ömerli"
+      },
+      {
+        "value": 1609,
+        "text": "Savur"
+      },
+      {
+        "value": 2002,
+        "text": "Yeşilli"
+      }
+    ]
+  },
+  {
+    "value": 33,
+    "text": "Mersin",
+    "districts": [
+      {
+        "value": 2064,
+        "text": "Akdeniz"
+      },
+      {
+        "value": 1135,
+        "text": "Anamur"
+      },
+      {
+        "value": 1766,
+        "text": "Aydıncık"
+      },
+      {
+        "value": 1779,
+        "text": "Bozyazı"
+      },
+      {
+        "value": 1892,
+        "text": "Çamlıyayla"
+      },
+      {
+        "value": 1311,
+        "text": "Erdemli"
+      },
+      {
+        "value": 1366,
+        "text": "Gülnar"
+      },
+      {
+        "value": 2065,
+        "text": "Mezitli"
+      },
+      {
+        "value": 1536,
+        "text": "Mut"
+      },
+      {
+        "value": 1621,
+        "text": "Silifke"
+      },
+      {
+        "value": 1665,
+        "text": "Tarsus"
+      },
+      {
+        "value": 2066,
+        "text": "Toroslar"
+      },
+      {
+        "value": 2067,
+        "text": "Yenişehir"
+      }
+    ]
+  },
+  {
+    "value": 48,
+    "text": "Muğla",
+    "districts": [
+      {
+        "value": 1197,
+        "text": "Bodrum"
+      },
+      {
+        "value": 1742,
+        "text": "Dalaman"
+      },
+      {
+        "value": 1266,
+        "text": "Datça"
+      },
+      {
+        "value": 1331,
+        "text": "Fethiye"
+      },
+      {
+        "value": 1958,
+        "text": "Kavaklıdere"
+      },
+      {
+        "value": 1488,
+        "text": "Köyceğiz"
+      },
+      {
+        "value": 1517,
+        "text": "Marmaris"
+      },
+      {
+        "value": 2089,
+        "text": "Menteşe"
+      },
+      {
+        "value": 1528,
+        "text": "Milas"
+      },
+      {
+        "value": 1831,
+        "text": "Ortaca"
+      },
+      {
+        "value": 2090,
+        "text": "Seydikemer"
+      },
+      {
+        "value": 1695,
+        "text": "Ula"
+      },
+      {
+        "value": 1719,
+        "text": "Yatağan"
+      }
+    ]
+  },
+  {
+    "value": 49,
+    "text": "Muş",
+    "districts": [
+      {
+        "value": 1213,
+        "text": "Bulanık"
+      },
+      {
+        "value": 1801,
+        "text": "Hasköy"
+      },
+      {
+        "value": 1964,
+        "text": "Korkut"
+      },
+      {
+        "value": 1510,
+        "text": "Malazgirt"
+      },
+      {
+        "value": 1534,
+        "text": "Merkez"
+      },
+      {
+        "value": 1711,
+        "text": "Varto"
+      }
+    ]
+  },
+  {
+    "value": 50,
+    "text": "Nevşehir",
+    "districts": [
+      {
+        "value": 1749,
+        "text": "Acıgöl"
+      },
+      {
+        "value": 1155,
+        "text": "Avanos"
+      },
+      {
+        "value": 1274,
+        "text": "Derinkuyu"
+      },
+      {
+        "value": 1367,
+        "text": "Gülşehir"
+      },
+      {
+        "value": 1374,
+        "text": "Hacıbektaş"
+      },
+      {
+        "value": 1485,
+        "text": "Kozaklı"
+      },
+      {
+        "value": 1543,
+        "text": "Merkez"
+      },
+      {
+        "value": 1707,
+        "text": "Ürgüp"
+      }
+    ]
+  },
+  {
+    "value": 51,
+    "text": "Niğde",
+    "districts": [
+      {
+        "value": 1876,
+        "text": "Altunhisar"
+      },
+      {
+        "value": 1201,
+        "text": "Bor"
+      },
+      {
+        "value": 1225,
+        "text": "Çamardı"
+      },
+      {
+        "value": 1904,
+        "text": "Çiftlik"
+      },
+      {
+        "value": 1544,
+        "text": "Merkez"
+      },
+      {
+        "value": 1700,
+        "text": "Ulukışla"
+      }
+    ]
+  },
+  {
+    "value": 52,
+    "text": "Ordu",
+    "districts": [
+      {
+        "value": 1119,
+        "text": "Akkuş"
+      },
+      {
+        "value": 2103,
+        "text": "Altınordu"
+      },
+      {
+        "value": 1158,
+        "text": "Aybastı"
+      },
+      {
+        "value": 1891,
+        "text": "Çamaş"
+      },
+      {
+        "value": 1897,
+        "text": "Çatalpınar"
+      },
+      {
+        "value": 1900,
+        "text": "Çaybaşı"
+      },
+      {
+        "value": 1328,
+        "text": "Fatsa"
+      },
+      {
+        "value": 1358,
+        "text": "Gölköy"
+      },
+      {
+        "value": 1795,
+        "text": "Gülyalı"
+      },
+      {
+        "value": 1797,
+        "text": "Gürgentepe"
+      },
+      {
+        "value": 1947,
+        "text": "İkizce"
+      },
+      {
+        "value": 1950,
+        "text": "Kabadüz"
+      },
+      {
+        "value": 1951,
+        "text": "Kabataş"
+      },
+      {
+        "value": 1482,
+        "text": "Korgan"
+      },
+      {
+        "value": 1493,
+        "text": "Kumru"
+      },
+      {
+        "value": 1525,
+        "text": "Mesudiye"
+      },
+      {
+        "value": 1573,
+        "text": "Perşembe"
+      },
+      {
+        "value": 1696,
+        "text": "Ulubey"
+      },
+      {
+        "value": 1706,
+        "text": "Ünye"
+      }
+    ]
+  },
+  {
+    "value": 80,
+    "text": "Osmaniye",
+    "districts": [
+      {
+        "value": 1165,
+        "text": "Bahçe"
+      },
+      {
+        "value": 1743,
+        "text": "Düziçi"
+      },
+      {
+        "value": 2027,
+        "text": "Hasanbeyli"
+      },
+      {
+        "value": 1423,
+        "text": "Kadirli"
+      },
+      {
+        "value": 1560,
+        "text": "Merkez"
+      },
+      {
+        "value": 2028,
+        "text": "Sumbas"
+      },
+      {
+        "value": 2029,
+        "text": "Toprakkale"
+      }
+    ]
+  },
+  {
+    "value": 53,
+    "text": "Rize",
+    "districts": [
+      {
+        "value": 1146,
+        "text": "Ardeşen"
+      },
+      {
+        "value": 1228,
+        "text": "Çamlıhemşin"
+      },
+      {
+        "value": 1241,
+        "text": "Çayeli"
+      },
+      {
+        "value": 1908,
+        "text": "Derepazarı"
+      },
+      {
+        "value": 1332,
+        "text": "Fındıklı"
+      },
+      {
+        "value": 1796,
+        "text": "Güneysu"
+      },
+      {
+        "value": 1943,
+        "text": "Hemşin"
+      },
+      {
+        "value": 1405,
+        "text": "İkizdere"
+      },
+      {
+        "value": 1949,
+        "text": "İyidere"
+      },
+      {
+        "value": 1428,
+        "text": "Kalkandere"
+      },
+      {
+        "value": 1586,
+        "text": "Merkez"
+      },
+      {
+        "value": 1569,
+        "text": "Pazar"
+      }
+    ]
+  },
+  {
+    "value": 54,
+    "text": "Sakarya",
+    "districts": [
+      {
+        "value": 2068,
+        "text": "Adapazarı"
+      },
+      {
+        "value": 1123,
+        "text": "Akyazı"
+      },
+      {
+        "value": 2069,
+        "text": "Arifiye"
+      },
+      {
+        "value": 2070,
+        "text": "Erenler"
+      },
+      {
+        "value": 1925,
+        "text": "Ferizli"
+      },
+      {
+        "value": 1351,
+        "text": "Geyve"
+      },
+      {
+        "value": 1391,
+        "text": "Hendek"
+      },
+      {
+        "value": 1955,
+        "text": "Karapürçek"
+      },
+      {
+        "value": 1442,
+        "text": "Karasu"
+      },
+      {
+        "value": 1453,
+        "text": "Kaynarca"
+      },
+      {
+        "value": 1818,
+        "text": "Kocaali"
+      },
+      {
+        "value": 1833,
+        "text": "Pamukova"
+      },
+      {
+        "value": 1595,
+        "text": "Sapanca"
+      },
+      {
+        "value": 2071,
+        "text": "Serdivan"
+      },
+      {
+        "value": 1986,
+        "text": "Söğütlü"
+      },
+      {
+        "value": 1847,
+        "text": "Taraklı"
+      }
+    ]
+  },
+  {
+    "value": 55,
+    "text": "Samsun",
+    "districts": [
+      {
+        "value": 1830,
+        "text": "19mayıs"
+      },
+      {
+        "value": 1125,
+        "text": "Alaçam"
+      },
+      {
+        "value": 1763,
+        "text": "Asarcık"
+      },
+      {
+        "value": 2072,
+        "text": "Atakum"
+      },
+      {
+        "value": 1879,
+        "text": "Ayvacık"
+      },
+      {
+        "value": 1164,
+        "text": "Bafra"
+      },
+      {
+        "value": 2073,
+        "text": "Canik"
+      },
+      {
+        "value": 1234,
+        "text": "Çarşamba"
+      },
+      {
+        "value": 1386,
+        "text": "Havza"
+      },
+      {
+        "value": 2074,
+        "text": "İlkadım"
+      },
+      {
+        "value": 1452,
+        "text": "Kavak"
+      },
+      {
+        "value": 1501,
+        "text": "Ladik"
+      },
+      {
+        "value": 1838,
+        "text": "Salıpazarı"
+      },
+      {
+        "value": 1849,
+        "text": "Tekkeköy"
+      },
+      {
+        "value": 1676,
+        "text": "Terme"
+      },
+      {
+        "value": 1712,
+        "text": "Vezirköprü"
+      },
+      {
+        "value": 1993,
+        "text": "Yakakent"
+      }
+    ]
+  },
+  {
+    "value": 63,
+    "text": "Şanlıurfa",
+    "districts": [
+      {
+        "value": 1115,
+        "text": "Akçakale"
+      },
+      {
+        "value": 1194,
+        "text": "Birecik"
+      },
+      {
+        "value": 1209,
+        "text": "Bozova"
+      },
+      {
+        "value": 1220,
+        "text": "Ceylanpınar"
+      },
+      {
+        "value": 2091,
+        "text": "Eyyübiye"
+      },
+      {
+        "value": 1378,
+        "text": "Halfeti"
+      },
+      {
+        "value": 2092,
+        "text": "Haliliye"
+      },
+      {
+        "value": 1800,
+        "text": "Harran"
+      },
+      {
+        "value": 1393,
+        "text": "Hilvan"
+      },
+      {
+        "value": 2093,
+        "text": "Karaköprü"
+      },
+      {
+        "value": 1630,
+        "text": "Siverek"
+      },
+      {
+        "value": 1643,
+        "text": "Suruç"
+      },
+      {
+        "value": 1713,
+        "text": "Viranşehir"
+      }
+    ]
+  },
+  {
+    "value": 56,
+    "text": "Siirt",
+    "districts": [
+      {
+        "value": 1179,
+        "text": "Baykan"
+      },
+      {
+        "value": 1317,
+        "text": "Eruh"
+      },
+      {
+        "value": 1495,
+        "text": "Kurtalan"
+      },
+      {
+        "value": 1620,
+        "text": "Merkez"
+      },
+      {
+        "value": 1575,
+        "text": "Pervari"
+      },
+      {
+        "value": 1662,
+        "text": "Şirvan"
+      },
+      {
+        "value": 1878,
+        "text": "Tillo"
+      }
+    ]
+  },
+  {
+    "value": 57,
+    "text": "Sinop",
+    "districts": [
+      {
+        "value": 1156,
+        "text": "Ayancık"
+      },
+      {
+        "value": 1204,
+        "text": "Boyabat"
+      },
+      {
+        "value": 1910,
+        "text": "Dikmen"
+      },
+      {
+        "value": 1290,
+        "text": "Durağan"
+      },
+      {
+        "value": 1314,
+        "text": "Erfelek"
+      },
+      {
+        "value": 1349,
+        "text": "Gerze"
+      },
+      {
+        "value": 1627,
+        "text": "Merkez"
+      },
+      {
+        "value": 1981,
+        "text": "Saraydüzü"
+      },
+      {
+        "value": 1693,
+        "text": "Türkeli"
+      }
+    ]
+  },
+  {
+    "value": 73,
+    "text": "Şırnak",
+    "districts": [
+      {
+        "value": 1189,
+        "text": "Beytüşşebap"
+      },
+      {
+        "value": 1223,
+        "text": "Cizre"
+      },
+      {
+        "value": 1931,
+        "text": "Güçlükonak"
+      },
+      {
+        "value": 1403,
+        "text": "İdil"
+      },
+      {
+        "value": 1661,
+        "text": "Merkez"
+      },
+      {
+        "value": 1623,
+        "text": "Silopi"
+      },
+      {
+        "value": 1698,
+        "text": "Uludere"
+      }
+    ]
+  },
+  {
+    "value": 58,
+    "text": "Sivas",
+    "districts": [
+      {
+        "value": 1870,
+        "text": "Akıncılar"
+      },
+      {
+        "value": 1875,
+        "text": "Altınyayla"
+      },
+      {
+        "value": 1282,
+        "text": "Divriği"
+      },
+      {
+        "value": 1913,
+        "text": "Doğanşar"
+      },
+      {
+        "value": 1342,
+        "text": "Gemerek"
+      },
+      {
+        "value": 1927,
+        "text": "Gölova"
+      },
+      {
+        "value": 1373,
+        "text": "Gürün"
+      },
+      {
+        "value": 1376,
+        "text": "Hafik"
+      },
+      {
+        "value": 1407,
+        "text": "İmranlı"
+      },
+      {
+        "value": 1431,
+        "text": "Kangal"
+      },
+      {
+        "value": 1484,
+        "text": "Koyulhisar"
+      },
+      {
+        "value": 1628,
+        "text": "Merkez"
+      },
+      {
+        "value": 1650,
+        "text": "Şarkışla"
+      },
+      {
+        "value": 1646,
+        "text": "Suşehri"
+      },
+      {
+        "value": 1991,
+        "text": "Ulaş"
+      },
+      {
+        "value": 1731,
+        "text": "Yıldızeli"
+      },
+      {
+        "value": 1738,
+        "text": "Zara"
+      }
+    ]
+  },
+  {
+    "value": 59,
+    "text": "Tekirdağ",
+    "districts": [
+      {
+        "value": 1250,
+        "text": "Çerkezköy"
+      },
+      {
+        "value": 1258,
+        "text": "Çorlu"
+      },
+      {
+        "value": 2094,
+        "text": "Ergene"
+      },
+      {
+        "value": 1388,
+        "text": "Hayrabolu"
+      },
+      {
+        "value": 2095,
+        "text": "Kapaklı"
+      },
+      {
+        "value": 1511,
+        "text": "Malkara"
+      },
+      {
+        "value": 1825,
+        "text": "Marmaraereğlisi"
+      },
+      {
+        "value": 1538,
+        "text": "Muratlı"
+      },
+      {
+        "value": 1596,
+        "text": "Saray"
+      },
+      {
+        "value": 1652,
+        "text": "Şarköy"
+      },
+      {
+        "value": 2096,
+        "text": "Süleymanpaşa"
+      }
+    ]
+  },
+  {
+    "value": 60,
+    "text": "Tokat",
+    "districts": [
+      {
+        "value": 1129,
+        "text": "Almus"
+      },
+      {
+        "value": 1151,
+        "text": "Artova"
+      },
+      {
+        "value": 1883,
+        "text": "Başçiftlik"
+      },
+      {
+        "value": 1308,
+        "text": "Erbaa"
+      },
+      {
+        "value": 1679,
+        "text": "Merkez"
+      },
+      {
+        "value": 1545,
+        "text": "Niksar"
+      },
+      {
+        "value": 1834,
+        "text": "Pazar"
+      },
+      {
+        "value": 1584,
+        "text": "Reşadiye"
+      },
+      {
+        "value": 1987,
+        "text": "Sulusaray"
+      },
+      {
+        "value": 1690,
+        "text": "Turhal"
+      },
+      {
+        "value": 1858,
+        "text": "Yeşilyurt"
+      },
+      {
+        "value": 1740,
+        "text": "Zile"
+      }
+    ]
+  },
+  {
+    "value": 61,
+    "text": "Trabzon",
+    "districts": [
+      {
+        "value": 1113,
+        "text": "Akçaabat"
+      },
+      {
+        "value": 1141,
+        "text": "Araklı"
+      },
+      {
+        "value": 1150,
+        "text": "Arsin"
+      },
+      {
+        "value": 1775,
+        "text": "Beşikdüzü"
+      },
+      {
+        "value": 1896,
+        "text": "Çarşıbaşı"
+      },
+      {
+        "value": 1244,
+        "text": "Çaykara"
+      },
+      {
+        "value": 1909,
+        "text": "Dernekpazarı"
+      },
+      {
+        "value": 1917,
+        "text": "Düzköy"
+      },
+      {
+        "value": 1942,
+        "text": "Hayrat"
+      },
+      {
+        "value": 1966,
+        "text": "Köprübaşı"
+      },
+      {
+        "value": 1507,
+        "text": "Maçka"
+      },
+      {
+        "value": 1548,
+        "text": "Of"
+      },
+      {
+        "value": 2097,
+        "text": "Ortahisar"
+      },
+      {
+        "value": 1842,
+        "text": "Şalpazarı"
+      },
+      {
+        "value": 1647,
+        "text": "Sürmene"
+      },
+      {
+        "value": 1681,
+        "text": "Tonya"
+      },
+      {
+        "value": 1709,
+        "text": "Vakfıkebir"
+      },
+      {
+        "value": 1732,
+        "text": "Yomra"
+      }
+    ]
+  },
+  {
+    "value": 62,
+    "text": "Tunceli",
+    "districts": [
+      {
+        "value": 1247,
+        "text": "Çemişgezek"
+      },
+      {
+        "value": 1397,
+        "text": "Hozat"
+      },
+      {
+        "value": 1518,
+        "text": "Mazgirt"
+      },
+      {
+        "value": 1688,
+        "text": "Merkez"
+      },
+      {
+        "value": 1541,
+        "text": "Nazımiye"
+      },
+      {
+        "value": 1562,
+        "text": "Ovacık"
+      },
+      {
+        "value": 1574,
+        "text": "Pertek"
+      },
+      {
+        "value": 1581,
+        "text": "Pülümür"
+      }
+    ]
+  },
+  {
+    "value": 64,
+    "text": "Uşak",
+    "districts": [
+      {
+        "value": 1170,
+        "text": "Banaz"
+      },
+      {
+        "value": 1323,
+        "text": "Eşme"
+      },
+      {
+        "value": 1436,
+        "text": "Karahallı"
+      },
+      {
+        "value": 1704,
+        "text": "Merkez"
+      },
+      {
+        "value": 1629,
+        "text": "Sivaslı"
+      },
+      {
+        "value": 1697,
+        "text": "Ulubey"
+      }
+    ]
+  },
+  {
+    "value": 65,
+    "text": "Van",
+    "districts": [
+      {
+        "value": 1770,
+        "text": "Bahçesaray"
+      },
+      {
+        "value": 1175,
+        "text": "Başkale"
+      },
+      {
+        "value": 1786,
+        "text": "Çaldıran"
+      },
+      {
+        "value": 1236,
+        "text": "Çatak"
+      },
+      {
+        "value": 1918,
+        "text": "Edremit"
+      },
+      {
+        "value": 1309,
+        "text": "Erciş"
+      },
+      {
+        "value": 1350,
+        "text": "Gevaş"
+      },
+      {
+        "value": 1372,
+        "text": "Gürpınar"
+      },
+      {
+        "value": 2098,
+        "text": "İpekyolu"
+      },
+      {
+        "value": 1533,
+        "text": "Muradiye"
+      },
+      {
+        "value": 1565,
+        "text": "Özalp"
+      },
+      {
+        "value": 1980,
+        "text": "Saray"
+      },
+      {
+        "value": 2099,
+        "text": "Tuşba"
+      }
+    ]
+  },
+  {
+    "value": 77,
+    "text": "Yalova",
+    "districts": [
+      {
+        "value": 2019,
+        "text": "Altınova"
+      },
+      {
+        "value": 2020,
+        "text": "Armutlu"
+      },
+      {
+        "value": 2022,
+        "text": "Çiftlikköy"
+      },
+      {
+        "value": 2021,
+        "text": "Çınarcık"
+      },
+      {
+        "value": 1716,
+        "text": "Merkez"
+      },
+      {
+        "value": 2026,
+        "text": "Termal"
+      }
+    ]
+  },
+  {
+    "value": 66,
+    "text": "Yozgat",
+    "districts": [
+      {
+        "value": 1117,
+        "text": "Akdağmadeni"
+      },
+      {
+        "value": 1877,
+        "text": "Aydıncık"
+      },
+      {
+        "value": 1198,
+        "text": "Boğazlıyan"
+      },
+      {
+        "value": 1895,
+        "text": "Çandır"
+      },
+      {
+        "value": 1242,
+        "text": "Çayıralan"
+      },
+      {
+        "value": 1245,
+        "text": "Çekerek"
+      },
+      {
+        "value": 1952,
+        "text": "Kadışehri"
+      },
+      {
+        "value": 1733,
+        "text": "Merkez"
+      },
+      {
+        "value": 1982,
+        "text": "Saraykent"
+      },
+      {
+        "value": 1602,
+        "text": "Sarıkaya"
+      },
+      {
+        "value": 1655,
+        "text": "Şefaatli"
+      },
+      {
+        "value": 1635,
+        "text": "Sorgun"
+      },
+      {
+        "value": 1998,
+        "text": "Yenifakılı"
+      },
+      {
+        "value": 1726,
+        "text": "Yerköy"
+      }
+    ]
+  },
+  {
+    "value": 67,
+    "text": "Zonguldak",
+    "districts": [
+      {
+        "value": 1758,
+        "text": "Alaplı"
+      },
+      {
+        "value": 1240,
+        "text": "Çaycuma"
+      },
+      {
+        "value": 1276,
+        "text": "Devrek"
+      },
+      {
+        "value": 1313,
+        "text": "Ereğli"
+      },
+      {
+        "value": 1926,
+        "text": "Gökçebey"
+      },
+      {
+        "value": 2100,
+        "text": "Kilimli"
+      },
+      {
+        "value": 2101,
+        "text": "Kozlu"
+      },
+      {
+        "value": 1741,
+        "text": "Merkez"
+      }
+    ]
+  }
+]

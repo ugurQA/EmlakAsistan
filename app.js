@@ -27,6 +27,65 @@ const resetCounterOnce = async () => {
 // Initialize counter when the application starts
 resetCounterOnce();
 
+// Load cities and districts data
+let locationData = null;
+let provinceSelectInitialized = false;
+
+async function loadLocationData() {
+  try {
+    // Only load data if not already loaded
+    if (!locationData) {
+      const response = await fetch('locations/cities_and_districts.json');
+      locationData = await response.json();
+    }
+
+    // Update the province select options
+    const provinceSelect = document.getElementById("province");
+    if (provinceSelect && !provinceSelectInitialized) {
+      // Clear existing options
+      provinceSelect.innerHTML = '<option value="----">----</option>';
+      
+      // Add city options
+      locationData.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city.text;
+        option.textContent = city.text;
+        provinceSelect.appendChild(option);
+      });
+
+      // Add event listener for province selection
+      provinceSelect.addEventListener('change', function() {
+        const selectedCity = locationData.find(city => city.text === this.value);
+        const districtSelect = document.getElementById("district");
+        
+        if (districtSelect) {
+          // Clear and reset district select
+          districtSelect.innerHTML = '<option value="----">----</option>';
+          
+          if (selectedCity) {
+            // Add district options
+            selectedCity.districts.forEach(district => {
+              const option = document.createElement('option');
+              option.value = district.text;
+              option.textContent = district.text;
+              districtSelect.appendChild(option);
+            });
+            districtSelect.disabled = false;
+          } else {
+            districtSelect.disabled = true;
+          }
+        }
+      });
+
+      provinceSelectInitialized = true;
+    }
+
+  } catch (error) {
+    console.error('Error loading location data:', error);
+    alert('Lokasyon verileri yüklenirken bir hata oluştu.');
+  }
+}
+
 // Export helper functions
 export function updateSubcategories() {
   console.log("updateSubcategories called for type:", document.getElementById("type").value);
@@ -64,33 +123,6 @@ export function updateDetails() {
   if (arsaDetails) arsaDetails.style.display = category === "Arsa" ? "block" : "none";
 }
 
-export function updateDistricts() {
-  console.log("updateDistricts called for province:", document.getElementById("province").value);
-  const province = document.getElementById("province").value;
-  const districtSelect = document.getElementById("district");
-  if (districtSelect) {
-    districtSelect.innerHTML = "";
-    const defaultOpt = document.createElement("option");
-    defaultOpt.value = "----";
-    defaultOpt.text = "----";
-    districtSelect.appendChild(defaultOpt);
-    const districts = {
-      "İzmir": ["Buca", "Gaziemir", "Karabağlar", "Bornova", "Balçova"],
-      "Aydın": ["Efeler", "Nazilli", "Söke", "Kuşadası", "Didim"],
-      "Manisa": ["Yunusemre", "Şehzadeler", "Akhisar", "Turgutlu"],
-      "Ankara": ["Çankaya", "Keçiören", "Mamak", "Polatlı", "Eryaman"]
-    };
-    if (districts[province]) {
-      districts[province].forEach(district => {
-        const opt = document.createElement("option");
-        opt.value = district;
-        opt.text = district;
-        districtSelect.appendChild(opt);
-      });
-    }
-  }
-}
-
 export function displayPhotos(event) {
   console.log("displayPhotos called");
   const photoPreview = document.getElementById("photoPreview");
@@ -114,16 +146,16 @@ export function displayPhotos(event) {
 
 // Add Listing Function
 window.addListing = async function() {
-  const user = auth.currentUser;
-  console.log("Current user before save:", user);
-  if (!user) {
-    console.log("No authenticated user");
-    alert("Please log in first.");
-    return;
-  }
-  console.log("Authenticated user:", user.email);
+      const user = auth.currentUser;
+      console.log("Current user before save:", user);
+      if (!user) {
+        console.log("No authenticated user");
+        alert("Please log in first.");
+        return;
+      }
+      console.log("Authenticated user:", user.email);
 
-  try {
+      try {
     // Get and increment the counter atomically
     const counterRef = doc(db, "counters", "listings");
     let counterDoc = await getDoc(counterRef);
@@ -144,46 +176,46 @@ window.addListing = async function() {
     document.getElementById("listingId").value = paddedId;
     console.log("Generated listingId:", paddedId);
 
-    const photos = document.getElementById("photos").files;
-    const category = document.getElementById("category").value;
-    const listing = {
-      title: document.getElementById("title").value,
-      type: document.getElementById("type").value,
-      category: category,
-      address: document.getElementById("address").value,
-      province: document.getElementById("province").value,
-      district: document.getElementById("district").value,
-      price: parseFloat(document.getElementById("price").value) || 0,
-      contact: document.getElementById("contact").value,
-      squareMeters: parseFloat(document.getElementById("squareMeters").value) || 0,
+        const photos = document.getElementById("photos").files;
+        const category = document.getElementById("category").value;
+        const listing = {
+          title: document.getElementById("title").value,
+          type: document.getElementById("type").value,
+          category: category,
+          address: document.getElementById("address").value,
+          province: document.getElementById("province").value,
+          district: document.getElementById("district").value,
+          price: parseFloat(document.getElementById("price").value) || 0,
+          contact: document.getElementById("contact").value,
+          squareMeters: parseFloat(document.getElementById("squareMeters").value) || 0,
       listingId: paddedId,
-      agent: user.email,
-      timestamp: serverTimestamp(),
-      photos: [] // Array to store photo URLs
-    };
+          agent: user.email,
+          timestamp: serverTimestamp(),
+          photos: [] // Array to store photo URLs
+        };
 
-    if (category === "Konut") {
-      listing.roomType = document.getElementById("roomType").value;
-      listing.floor = document.getElementById("floor").value;
-      listing.totalFloors = document.getElementById("totalFloors").value;
-      listing.heating = document.getElementById("heating").value;
-      listing.parking = document.getElementById("parking").value;
-      listing.site = document.getElementById("site").value;
-      listing.description = document.getElementById("description").value;
-      listing.notes = document.getElementById("notes").value;
-    } else if (category === "Arsa") {
-      listing.developmentStatus = document.getElementById("developmentStatus").value;
-    }
+        if (category === "Konut") {
+          listing.roomType = document.getElementById("roomType").value;
+          listing.floor = document.getElementById("floor").value;
+          listing.totalFloors = document.getElementById("totalFloors").value;
+          listing.heating = document.getElementById("heating").value;
+          listing.parking = document.getElementById("parking").value;
+          listing.site = document.getElementById("site").value;
+          listing.description = document.getElementById("description").value;
+          listing.notes = document.getElementById("notes").value;
+        } else if (category === "Arsa") {
+          listing.developmentStatus = document.getElementById("developmentStatus").value;
+        }
 
-    console.log("Attempting to save listing:", listing);
-    const docRef = await addDoc(collection(db, "properties"), listing);
-    console.log("Listing saved with ID:", docRef.id);
+        console.log("Attempting to save listing:", listing);
+        const docRef = await addDoc(collection(db, "properties"), listing);
+        console.log("Listing saved with ID:", docRef.id);
 
-    if (photos.length > 0) {
-      const uploadPromises = [];
+        if (photos.length > 0) {
+          const uploadPromises = [];
       const photoUrls = [];
       
-      for (let i = 0; i < photos.length; i++) {
+          for (let i = 0; i < photos.length; i++) {
         const photo = photos[i];
         const photoRef = ref(storage, `photos/${docRef.id}/${photo.name}`);
         
@@ -205,10 +237,10 @@ window.addListing = async function() {
       }
       
       try {
-        await Promise.all(uploadPromises);
+          await Promise.all(uploadPromises);
         console.log('All photos uploaded successfully. URLs:', photoUrls);
         
-        // Update Firestore with photo URLs
+          // Update Firestore with photo URLs
         await updateDoc(docRef, { photos: photoUrls });
         console.log('Firestore document updated with photo URLs');
       } catch (error) {
@@ -221,26 +253,24 @@ window.addListing = async function() {
     alert(`İlan eklendi! ID: ${paddedId}`);
     document.getElementById("listingForm").reset();
     updateDetails();
-    document.getElementById("photoPreview").innerHTML = "";
-    window.location.href = "dashboard.html";
-  } catch (err) {
-    console.log("Save error:", err.message);
-    alert("İlan kaydedilemedi: " + err.message);
-  }
+        document.getElementById("photoPreview").innerHTML = "";
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        console.log("Save error:", err.message);
+        alert("İlan kaydedilemedi: " + err.message);
+      }
 };
 
 // Initial page load and event listeners for add.html
 if (window.location.pathname.includes("add.html")) {
   console.log("Initializing add.html");
+  loadLocationData(); // Load location data
   updateSubcategories();
-  updateDistricts();
   const typeSelect = document.getElementById("type");
   const categorySelect = document.getElementById("category");
-  const provinceSelect = document.getElementById("province");
   const photosInput = document.getElementById("photos");
   if (typeSelect) typeSelect.addEventListener("change", updateSubcategories);
   if (categorySelect) categorySelect.addEventListener("change", updateDetails);
-  if (provinceSelect) provinceSelect.addEventListener("change", updateDistricts);
   if (photosInput) photosInput.addEventListener("change", displayPhotos);
 }
 
@@ -258,7 +288,7 @@ window.login = function() {
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log("Login successful with email:", email);
-      window.location.href = "dashboard.html";
+        window.location.href = "dashboard.html";
     })
     .catch(err => {
       console.log("Login error: ", err.message);
@@ -545,7 +575,7 @@ function renderListings(container, data, showAgent = false) {
   
   thead.appendChild(headerRow);
   table.appendChild(thead);
-  
+
   // Create body
   const tbody = document.createElement('tbody');
   data.forEach(listing => {
@@ -568,7 +598,7 @@ function renderListings(container, data, showAgent = false) {
     }
     tdImage.appendChild(img);
     tr.appendChild(tdImage);
-    
+
     // ID cell
     const tdId = document.createElement('td');
     tdId.style.width = '60px';
@@ -585,7 +615,7 @@ function renderListings(container, data, showAgent = false) {
     tdTitle.style.overflow = 'hidden';
     tdTitle.style.textOverflow = 'ellipsis';
     tr.appendChild(tdTitle);
-    
+
     // Type/Category cell combined
     const tdTypeCategory = document.createElement('td');
     tdTypeCategory.style.width = '120px';
@@ -600,7 +630,7 @@ function renderListings(container, data, showAgent = false) {
     tdLocation.textContent = listing.province && listing.district ? 
       `${listing.province}/${listing.district}` : '-';
     tr.appendChild(tdLocation);
-    
+
     // Square meters cell
     const tdSquareMeters = document.createElement('td');
     tdSquareMeters.style.width = '90px';
@@ -608,7 +638,7 @@ function renderListings(container, data, showAgent = false) {
     tdSquareMeters.textContent = listing.squareMeters ? 
       `${listing.squareMeters} m²` : '-';
     tr.appendChild(tdSquareMeters);
-    
+
     // Price cell
     const tdPrice = document.createElement('td');
     tdPrice.style.width = '100px';
@@ -618,7 +648,7 @@ function renderListings(container, data, showAgent = false) {
     tdPrice.style.color = '#dc3545';
     tdPrice.style.fontWeight = 'bold';
     tr.appendChild(tdPrice);
-    
+
     // Agent cell (optional)
     if (showAgent) {
       const tdAgent = document.createElement('td');
@@ -646,7 +676,7 @@ function renderListings(container, data, showAgent = false) {
     viewButton.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
     tdActions.appendChild(viewButton);
     tr.appendChild(tdActions);
-    
+
     tbody.appendChild(tr);
   });
   
@@ -716,7 +746,7 @@ window.applyFilters = function() {
   
   const activeTab = document.querySelector('.tab-pane.active');
   const isAllListings = activeTab.id === 'allListings';
-  
+
   let dataToFilter = isAllListings ? allListingsData : listingsData;
   let filteredData = [...dataToFilter];
 
