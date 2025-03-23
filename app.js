@@ -362,67 +362,57 @@ async function loadAgentFilter() {
 
 // Load listings function
 async function loadListings(showAll = false) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  console.log("Loading listings for user:", user.email, "showAll:", showAll);
-  
   try {
-    // Load agents first if showing all listings
-    if (showAll) {
-      await loadAgentFilter();
-    }
-
-    const containerId = showAll ? "allListings" : "myListings";
-    const container = document.getElementById(containerId);
-    if (!container) {
-      console.error(`Container not found for ${containerId}`);
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No user logged in');
       return;
     }
 
     let q;
     if (showAll) {
-      q = query(collection(db, "properties"));
+      q = query(collection(db, 'properties'));
     } else {
-      q = query(collection(db, "properties"), where("agent", "==", user.email));
+      q = query(collection(db, 'properties'), where('agent', '==', user.email));
     }
 
     const querySnapshot = await getDocs(q);
-    console.log(`${showAll ? "All" : "Personal"} listings snapshot size:`, querySnapshot.size);
-
-    if (querySnapshot.empty) {
-      container.innerHTML = '<div class="alert alert-info">Henüz ilan bulunmamaktadır.</div>';
-      return;
+    const listings = [];
+    
+    for (const doc of querySnapshot.docs) {
+      const listing = doc.data();
+      listing.id = doc.id;
+      
+      // Get agent name from the agent email
+      if (listing.agent) {
+        try {
+          const agentsSnapshot = await getDocs(query(collection(db, 'agents'), where('email', '==', listing.agent)));
+          if (!agentsSnapshot.empty) {
+            const agentData = agentsSnapshot.docs[0].data();
+            listing.agentName = agentData.firstName;
+            listing.agentSurname = agentData.lastName;
+          }
+        } catch (error) {
+          console.error('Error fetching agent details:', error);
+        }
+      }
+      
+      listings.push(listing);
     }
 
-    const data = [];
-    querySnapshot.forEach((doc) => {
-      data.push({ id: doc.id, ...doc.data() });
-    });
-
-    // Sort by timestamp
-    data.sort((a, b) => {
-      const timeA = a.timestamp?.seconds || 0;
-      const timeB = b.timestamp?.seconds || 0;
-      return timeB - timeA;
-    });
-
-    // Store data for filtering
     if (showAll) {
-      allListingsData = data;
-      // Update filter dropdowns
-      updateFilterDropdowns(data);
+      allListingsData = listings;
+      console.log('All listings snapshot size:', listings.length);
     } else {
-      listingsData = data;
+      listingsData = listings;
+      console.log('Personal listings snapshot size:', listings.length);
     }
 
-    renderListings(container, data, showAll);
+    const container = showAll ? document.getElementById('allListings') : document.getElementById('myListings');
+    renderListings(container, listings, showAll);
+
   } catch (error) {
-    console.error("Error loading listings:", error);
-    const container = document.getElementById(showAll ? "allListings" : "myListings");
-    if (container) {
-      container.innerHTML = '<div class="alert alert-danger">İlanlar yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.</div>';
-    }
+    console.error('Error loading listings:', error);
   }
 }
 
@@ -440,7 +430,7 @@ async function loadAgents() {
     if (querySnapshot.empty) {
       agentsTableBody.innerHTML = `
         <tr>
-          <td colspan="7">
+          <td colspan="6">
             <div class="alert alert-info text-center">
               Henüz temsilci bulunmamaktadır.
             </div>
@@ -462,20 +452,19 @@ async function loadAgents() {
       
       // Create cells with consistent styling
       row.innerHTML = `
-        <td class="text-center" style="width: 50px;">${rowNumber++}</td>
-        <td style="width: 150px;">${agent.firstName || '-'}</td>
-        <td style="width: 150px;">${agent.lastName || '-'}</td>
-        <td style="width: 150px;">${agent.phone || '-'}</td>
-        <td class="text-center" style="width: 120px;">${formattedDate}</td>
-        <td class="text-center" style="width: 100px;">${agent.listingCount || '0'}</td>
-        <td class="text-center" style="width: 80px;">
-          <button class="btn btn-primary btn-sm d-flex align-items-center justify-content-center" 
-                  style="width: 32px; height: 32px; padding: 0; margin: 0 auto;"
-                  onclick="window.location.href='agent-details.html?id=${doc.id}'">
-            <i class="fas fa-eye" style="margin: 0;"></i>
-          </button>
-        </td>
+        <td class="text-center" style="width: 50px; font-size: 0.9rem;">${rowNumber++}</td>
+        <td style="width: 150px; font-size: 0.9rem;">${agent.firstName || '-'}</td>
+        <td style="width: 150px; font-size: 0.9rem;">${agent.lastName || '-'}</td>
+        <td style="width: 150px; font-size: 0.9rem;">${agent.phone || '-'}</td>
+        <td class="text-center" style="width: 120px; font-size: 0.9rem;">${formattedDate}</td>
+        <td class="text-center" style="width: 100px; font-size: 0.9rem;">${agent.listingCount || '0'}</td>
       `;
+      
+      // Make the entire row clickable
+      row.style.cursor = 'pointer';
+      row.onclick = () => window.location.href = `agent-details.html?id=${doc.id}`;
+      row.onmouseover = () => row.style.backgroundColor = '#f8f9fa';
+      row.onmouseout = () => row.style.backgroundColor = '';
       
       agentsTableBody.appendChild(row);
     });
@@ -483,7 +472,7 @@ async function loadAgents() {
     console.error('Error loading agents:', error);
     agentsTableBody.innerHTML = `
       <tr>
-        <td colspan="7">
+        <td colspan="6">
           <div class="alert alert-danger text-center">
             Temsilciler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.
           </div>
@@ -554,6 +543,7 @@ function renderListings(container, data, showAgent = false) {
     --bs-table-cell-padding-x: 0.3rem;
     table-layout: fixed;
     width: 100%;
+    font-size: 0.9rem;
   `;
   
   // Create header
@@ -562,15 +552,14 @@ function renderListings(container, data, showAgent = false) {
   const headerRow = document.createElement('tr');
   
   const columns = [
-    { id: 'image', label: 'Fotoğraf', width: '50px' },
-    { id: 'listingId', label: 'ID', width: '60px' },
-    { id: 'title', label: 'Başlık', width: '200px' },
-    { id: 'typeCategory', label: 'Tür/Kategori', width: '120px' },
-    { id: 'location', label: 'Konum', width: '120px' },
-    { id: 'squareMeters', label: 'Metrekare', width: '90px' },
-    { id: 'price', label: 'Fiyat', width: '100px' },
-    ...(showAgent ? [{ id: 'agent', label: 'Temsilci', width: '150px' }] : []),
-    { id: 'actions', label: '', width: '44px' }
+    { id: 'image', label: 'Fotoğraf', width: '50px', center: true },
+    { id: 'listingId', label: 'ID', width: '60px', center: true },
+    { id: 'title', label: 'Başlık', width: '200px', center: false },
+    { id: 'typeCategory', label: 'Tür/Kategori', width: '120px', center: true },
+    { id: 'location', label: 'Konum', width: '120px', center: true },
+    { id: 'squareMeters', label: 'Metrekare', width: '90px', center: true },
+    { id: 'price', label: 'Fiyat', width: '100px', center: true },
+    ...(showAgent ? [{ id: 'agent', label: 'Temsilci', width: '150px', center: true }] : [])
   ];
   
   columns.forEach(column => {
@@ -578,6 +567,9 @@ function renderListings(container, data, showAgent = false) {
     th.textContent = column.label;
     th.style.width = column.width;
     th.style.padding = '0.5rem 0.3rem';
+    if (column.center) {
+      th.style.textAlign = 'center';
+    }
     headerRow.appendChild(th);
   });
   
@@ -593,6 +585,7 @@ function renderListings(container, data, showAgent = false) {
     const tdImage = document.createElement('td');
     tdImage.style.width = '50px';
     tdImage.style.padding = '0.5rem 0.3rem';
+    tdImage.style.textAlign = 'center';
     const img = document.createElement('img');
     img.style.width = '40px';
     img.style.height = '40px';
@@ -611,6 +604,7 @@ function renderListings(container, data, showAgent = false) {
     const tdId = document.createElement('td');
     tdId.style.width = '60px';
     tdId.style.padding = '0.5rem 0.3rem';
+    tdId.style.textAlign = 'center';
     tdId.textContent = listing.listingId || '-';
     tr.appendChild(tdId);
     
@@ -628,21 +622,24 @@ function renderListings(container, data, showAgent = false) {
     const tdTypeCategory = document.createElement('td');
     tdTypeCategory.style.width = '120px';
     tdTypeCategory.style.padding = '0.5rem 0.3rem';
-    tdTypeCategory.textContent = `${listing.type || '-'}/${listing.category || '-'}`;
+    tdTypeCategory.style.textAlign = 'center';
+    tdTypeCategory.innerHTML = `${listing.type || '-'}<br>${listing.category || '-'}`;
     tr.appendChild(tdTypeCategory);
     
     // Location cell
     const tdLocation = document.createElement('td');
     tdLocation.style.width = '120px';
     tdLocation.style.padding = '0.5rem 0.3rem';
-    tdLocation.textContent = listing.province && listing.district ? 
-      `${listing.province}/${listing.district}` : '-';
+    tdLocation.style.textAlign = 'center';
+    tdLocation.innerHTML = listing.province && listing.district ? 
+      `${listing.province}<br>${listing.district}` : '-';
     tr.appendChild(tdLocation);
 
     // Square meters cell
     const tdSquareMeters = document.createElement('td');
     tdSquareMeters.style.width = '90px';
     tdSquareMeters.style.padding = '0.5rem 0.3rem';
+    tdSquareMeters.style.textAlign = 'center';
     tdSquareMeters.textContent = listing.squareMeters ? 
       `${listing.squareMeters} m²` : '-';
     tr.appendChild(tdSquareMeters);
@@ -651,6 +648,7 @@ function renderListings(container, data, showAgent = false) {
     const tdPrice = document.createElement('td');
     tdPrice.style.width = '100px';
     tdPrice.style.padding = '0.5rem 0.3rem';
+    tdPrice.style.textAlign = 'center';
     tdPrice.textContent = listing.price ? 
       `${listing.price.toLocaleString()} TL` : '-';
     tdPrice.style.color = '#dc3545';
@@ -662,28 +660,17 @@ function renderListings(container, data, showAgent = false) {
       const tdAgent = document.createElement('td');
       tdAgent.style.width = '150px';
       tdAgent.style.padding = '0.5rem 0.3rem';
-      tdAgent.textContent = listing.agent || '-';
+      tdAgent.style.textAlign = 'center';
+      tdAgent.innerHTML = listing.agentName && listing.agentSurname ? 
+        `${listing.agentName}<br>${listing.agentSurname}` : '-';
       tr.appendChild(tdAgent);
     }
     
-    // Actions cell
-    const tdActions = document.createElement('td');
-    tdActions.style.width = '44px';
-    tdActions.style.padding = '0.5rem 4px 0.5rem 4px';
-    const viewButton = document.createElement('button');
-    viewButton.className = 'btn btn-primary btn-sm d-flex align-items-center justify-content-center';
-    viewButton.style.fontSize = '0.875rem';
-    viewButton.style.padding = '0';
-    viewButton.style.width = '32px';
-    viewButton.style.height = '32px';
-    viewButton.style.lineHeight = '1';
-    viewButton.style.minWidth = '32px';
-    viewButton.style.marginLeft = '2px';
-    viewButton.innerHTML = '<i class="fas fa-eye" style="margin: 0; display: block;"></i>';
-    viewButton.title = 'Detay';
-    viewButton.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
-    tdActions.appendChild(viewButton);
-    tr.appendChild(tdActions);
+    // Make the entire row clickable
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
+    tr.onmouseover = () => tr.style.backgroundColor = '#f8f9fa';
+    tr.onmouseout = () => tr.style.backgroundColor = '';
 
     tbody.appendChild(tr);
   });
@@ -772,14 +759,12 @@ window.applyFilters = function() {
 };
 
 window.sortListings = function(criterion) {
-  const activeTab = document.querySelector('.tab-pane.active');
-  const isAllListings = activeTab.id === 'allListings';
+  const isAllListings = document.querySelector('#allListings').classList.contains('active');
+  const sortedData = [...(isAllListings ? allListingsData : listingsData)];
   
-  let dataToSort = isAllListings ? allListingsData : listingsData;
-  let sortedData = [...dataToSort];
   sortedData.sort((a, b) => (a[criterion] || 0) - (b[criterion] || 0));
   
-  const container = isAllListings ? document.getElementById('allListingsContent') : document.getElementById('listings');
+  const container = isAllListings ? document.getElementById('allListings') : document.getElementById('myListings');
   renderListings(container, sortedData, isAllListings);
   document.getElementById("sortOptions").style.display = "none";
 };
