@@ -62,8 +62,13 @@ async function loadLocationData() {
   try {
     // Only load data if not already loaded
     if (!locationData) {
+      console.log('Loading location data...');
       const response = await fetch('locations/cities_and_districts.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       locationData = await response.json();
+      console.log('Location data loaded:', locationData.length, 'cities');
     }
 
     // Update the province select options
@@ -107,9 +112,11 @@ async function loadLocationData() {
       provinceSelectInitialized = true;
     }
 
+    return locationData;
   } catch (error) {
     console.error('Error loading location data:', error);
     alert('Lokasyon verileri yüklenirken bir hata oluştu.');
+    return null;
   }
 }
 
@@ -595,62 +602,234 @@ async function loadProfile() {
   }
 }
 
-// Dashboard initialization
+// Function to initialize filter dropdowns
+function initializeFilterDropdowns() {
+  const citySelect = document.getElementById('filterCity');
+  const roomSelect = document.getElementById('filterRoom');
+  const typeSelect = document.getElementById('filterType');
+  const categorySelect = document.getElementById('filterCategory');
+  const agentSelect = document.getElementById('filterAgent');
+
+  // Clear existing options
+  citySelect.innerHTML = '<option value="">İl Seç</option>';
+  roomSelect.innerHTML = '<option value="">Oda Sayısı Seç</option>';
+  typeSelect.innerHTML = '<option value="">Tür Seç</option>';
+  categorySelect.innerHTML = '<option value="">Kategori Seç</option>';
+  agentSelect.innerHTML = '<option value="">Temsilci Seç</option>';
+
+  // Add type options
+  ['Satılık', 'Kiralık'].forEach(type => {
+    const option = document.createElement('option');
+    option.value = type;
+    option.textContent = type;
+    typeSelect.appendChild(option);
+  });
+
+  // Add category options
+  ['Konut', 'Arsa'].forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    categorySelect.appendChild(option);
+  });
+
+  // Add room options
+  ['1+0', '1+1', '2+1', '3+1', '4+1', '5+1', '6+1', '7+1', '8+1', '9+1', '10+1'].forEach(room => {
+    const option = document.createElement('option');
+    option.value = room;
+    option.textContent = room;
+    roomSelect.appendChild(option);
+  });
+
+  // Load cities from location data
+  if (locationData) {
+    locationData.forEach(city => {
+      const option = document.createElement('option');
+      option.value = city.text;
+      option.textContent = city.text;
+      citySelect.appendChild(option);
+    });
+  }
+
+  // Load agents
+  loadAgentFilterOptions();
+}
+
+// Update the applyFilters function
+window.applyFilters = function() {
+  const city = document.getElementById("filterCity").value;
+  const room = document.getElementById("filterRoom").value;
+  const type = document.getElementById("filterType").value;
+  const category = document.getElementById("filterCategory").value;
+  const agent = document.getElementById("filterAgent").value;
+  
+  console.log('Applying filters:', { city, room, type, category, agent });
+  
+  const activeTab = document.querySelector('.tab-pane.active');
+  const isAllListings = activeTab.id === 'allListings';
+  const user = auth.currentUser;
+
+  let filteredData = [...allListingsData];
+
+  // Filter by user's listings if on personal tab
+  if (!isAllListings && user) {
+    filteredData = filteredData.filter(l => l.agent === user.email);
+  }
+
+  // Apply filters
+  if (city) {
+    filteredData = filteredData.filter(l => l.province === city);
+    console.log('Filtered by city:', city, 'Count:', filteredData.length);
+  }
+  
+  if (room) {
+    filteredData = filteredData.filter(l => l.roomType === room);
+    console.log('Filtered by room:', room, 'Count:', filteredData.length);
+  }
+  
+  if (type) {
+    filteredData = filteredData.filter(l => l.type === type);
+    console.log('Filtered by type:', type, 'Count:', filteredData.length);
+  }
+  
+  if (category) {
+    filteredData = filteredData.filter(l => l.category === category);
+    console.log('Filtered by category:', category, 'Count:', filteredData.length);
+  }
+  
+  if (agent) {
+    filteredData = filteredData.filter(l => l.agent === agent);
+    console.log('Filtered by agent:', agent, 'Count:', filteredData.length);
+  }
+
+  const container = document.getElementById(isAllListings ? 'allListings' : 'myListings');
+  renderListings(container, filteredData, isAllListings);
+};
+
+// Function to load agent names for filter dropdown
+async function loadAgentFilterOptions() {
+  try {
+    const filterAgentSelect = document.getElementById('filterAgent');
+    if (!filterAgentSelect) return;
+
+    // Clear existing options except the first one
+    while (filterAgentSelect.options.length > 1) {
+      filterAgentSelect.remove(1);
+    }
+
+    // Query users collection for agents
+    const q = query(collection(db, 'users'), where('role', '==', 'Temsilci'));
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((doc) => {
+      const agent = doc.data();
+      const option = document.createElement('option');
+      option.value = agent.email;
+      option.textContent = `${agent.firstName} ${agent.lastName}`;
+      filterAgentSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading agent filter options:', error);
+  }
+}
+
+window.sortListings = function(criterion) {
+  const isAllListings = document.querySelector('#allListings').classList.contains('active');
+  const user = auth.currentUser;
+  
+  let dataToSort = [...allListingsData];
+  if (!isAllListings && user) {
+    dataToSort = dataToSort.filter(l => l.agent === user.email);
+  }
+  
+  dataToSort.sort((a, b) => (a[criterion] || 0) - (b[criterion] || 0));
+  
+  const container = isAllListings ? document.getElementById('allListings') : document.getElementById('myListings');
+  renderListings(container, dataToSort, isAllListings);
+  document.getElementById("sortOptions").style.display = "none";
+};
+
+// Delete Listing
+window.deleteListing = async function(docId) {
+  if (!confirm('Bu ilanı silmek istediğinizden emin misiniz?')) {
+    return;
+  }
+
+  try {
+    const listingRef = doc(db, "properties", docId);
+    const listingSnap = await getDoc(listingRef);
+    if (listingSnap.exists()) {
+      const photos = listingSnap.data().photos || [];
+      const deletePhotoPromises = photos.map(photoUrl => {
+        const photoRef = ref(storage, photoUrl);
+        return deleteObject(photoRef).catch(err => console.log("Error deleting photo:", err));
+      });
+      await Promise.all(deletePhotoPromises);
+    }
+
+    await deleteDoc(listingRef);
+    console.log("Listing deleted successfully");
+    alert("İlan başarıyla silindi!");
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    console.log("Delete error:", err.message);
+    alert("İlan silinirken hata oluştu: " + err.message);
+  }
+};
+
+// Export db and Firestore functions
+export { collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };
+
+// Expose signOut to global scope
+window.signOut = signOut;
+
+// Update the dashboard initialization to include filter dropdowns
 onAuthStateChanged(auth, async (user) => {
   if (user && window.location.pathname.includes("dashboard.html")) {
     console.log("Loading dashboard for user:", user.email);
     
-    // Check user role from users collection
-    const userRole = await getUserRole(user.email);
-    const isAdmin = userRole === 'Yönetici';
-    
-    if (isAdmin) {
-      // Ensure admin users exist
-      await ensureAdminUsers();
-    }
-    
-    // Get all tab elements
-    const myListingsTab = document.querySelector('a[href="#myListings"]').parentElement;
-    const allListingsTab = document.querySelector('a[href="#allListings"]').parentElement;
-    const agentsTab = document.querySelector('a[href="#agents"]').parentElement;
-    const profileTab = document.querySelector('a[href="#profile"]').parentElement;
+    try {
+      // Load location data first
+      await loadLocationData();
+      
+      // Initialize filter dropdowns after location data is loaded
+      initializeFilterDropdowns();
+      
+      // Check user role from users collection
+      const userRole = await getUserRole(user.email);
+      const isAdmin = userRole === 'Yönetici';
+      
+      if (isAdmin) {
+        // Ensure admin users exist
+        await ensureAdminUsers();
+      }
+      
+      // Get all tab elements
+      const myListingsTab = document.querySelector('a[href="#myListings"]').parentElement;
+      const allListingsTab = document.querySelector('a[href="#allListings"]').parentElement;
+      const agentsTab = document.querySelector('a[href="#agents"]').parentElement;
+      const profileTab = document.querySelector('a[href="#profile"]').parentElement;
 
-    // Show/hide tabs based on role
-    myListingsTab.style.display = ''; // Show for both admin and agent
-    allListingsTab.style.display = ''; // Show for both admin and agent
-    agentsTab.style.display = isAdmin ? '' : 'none'; // Only show for admin
-    profileTab.style.display = ''; // Show for both admin and agent
+      // Show/hide tabs based on role
+      myListingsTab.style.display = ''; // Show for both admin and agent
+      allListingsTab.style.display = ''; // Show for both admin and agent
+      agentsTab.style.display = isAdmin ? '' : 'none'; // Only show for admin
+      profileTab.style.display = ''; // Show for both admin and agent
 
-    // Initialize Bootstrap tabs
-    $(document).ready(async function() {
-      try {
-        // Get the active tab ID
-        const activeTabId = $('.tab-pane.active').attr('id');
-        
-        // Only load data for the active tab initially
-        switch(activeTabId) {
-          case 'myListings':
-          case 'allListings':
-            await loadListings(activeTabId === 'allListings');
-            break;
-          case 'agents':
-            if (isAdmin) await loadAgents();
-            break;
-          case 'profile':
-            await loadProfile();
-            break;
-        }
+      // Load agent filter options
+      await loadAgentFilterOptions();
 
-        // Handle tab changes
-        $('a[data-toggle="tab"]').on('shown.bs.tab', async function (e) {
-          const targetId = $(e.target).attr('href').substring(1);
-          console.log("Tab changed to:", targetId);
+      // Initialize Bootstrap tabs
+      $(document).ready(async function() {
+        try {
+          // Get the active tab ID
+          const activeTabId = $('.tab-pane.active').attr('id');
           
-          // Load data based on the selected tab
-          switch(targetId) {
+          // Only load data for the active tab initially
+          switch(activeTabId) {
             case 'myListings':
             case 'allListings':
-              await loadListings(targetId === 'allListings');
+              await loadListings(activeTabId === 'allListings');
               break;
             case 'agents':
               if (isAdmin) await loadAgents();
@@ -659,18 +838,40 @@ onAuthStateChanged(auth, async (user) => {
               await loadProfile();
               break;
           }
-        });
 
-        // Check if we need to switch to agents tab (coming from add-agent page)
-        const returnToAgents = sessionStorage.getItem('returnToAgents');
-        if (returnToAgents === 'true' && isAdmin) {
-          sessionStorage.removeItem('returnToAgents');
-          $('#agents-tab').tab('show');
+          // Handle tab changes
+          $('a[data-toggle="tab"]').on('shown.bs.tab', async function (e) {
+            const targetId = $(e.target).attr('href').substring(1);
+            console.log("Tab changed to:", targetId);
+            
+            // Load data based on the selected tab
+            switch(targetId) {
+              case 'myListings':
+              case 'allListings':
+                await loadListings(targetId === 'allListings');
+                break;
+              case 'agents':
+                if (isAdmin) await loadAgents();
+                break;
+              case 'profile':
+                await loadProfile();
+                break;
+            }
+          });
+
+          // Check if we need to switch to agents tab (coming from add-agent page)
+          const returnToAgents = sessionStorage.getItem('returnToAgents');
+          if (returnToAgents === 'true' && isAdmin) {
+            sessionStorage.removeItem('returnToAgents');
+            $('#agents-tab').tab('show');
+          }
+        } catch (error) {
+          console.error("Error loading initial content:", error);
         }
-      } catch (error) {
-        console.error("Error loading initial content:", error);
-      }
-    });
+      });
+    } catch (error) {
+      console.error("Error initializing dashboard:", error);
+    }
   }
 });
 
@@ -811,80 +1012,3 @@ function renderListings(container, data, showAll = false) {
   table.appendChild(tbody);
   container.appendChild(table);
 }
-
-// Update the applyFilters function
-window.applyFilters = function() {
-  const city = document.getElementById("filterCity").value;
-  const room = document.getElementById("filterRoom").value;
-  const type = document.getElementById("filterType").value;
-  const category = document.getElementById("filterCategory").value;
-  
-  const activeTab = document.querySelector('.tab-pane.active');
-  const isAllListings = activeTab.id === 'allListings';
-  const user = auth.currentUser;
-
-  let filteredData = [...allListingsData];
-
-  // Filter by user's listings if on personal tab
-  if (!isAllListings && user) {
-    filteredData = filteredData.filter(l => l.agent === user.email);
-  }
-
-  if (city) filteredData = filteredData.filter(l => l.province === city);
-  if (room) filteredData = filteredData.filter(l => l.roomType === room);
-  if (type) filteredData = filteredData.filter(l => l.type === type);
-  if (category) filteredData = filteredData.filter(l => l.category === category);
-
-  const container = document.getElementById(isAllListings ? 'allListings' : 'myListings');
-  renderListings(container, filteredData, isAllListings);
-};
-
-window.sortListings = function(criterion) {
-  const isAllListings = document.querySelector('#allListings').classList.contains('active');
-  const user = auth.currentUser;
-  
-  let dataToSort = [...allListingsData];
-  if (!isAllListings && user) {
-    dataToSort = dataToSort.filter(l => l.agent === user.email);
-  }
-  
-  dataToSort.sort((a, b) => (a[criterion] || 0) - (b[criterion] || 0));
-  
-  const container = isAllListings ? document.getElementById('allListings') : document.getElementById('myListings');
-  renderListings(container, dataToSort, isAllListings);
-  document.getElementById("sortOptions").style.display = "none";
-};
-
-// Delete Listing
-window.deleteListing = async function(docId) {
-  if (!confirm('Bu ilanı silmek istediğinizden emin misiniz?')) {
-    return;
-  }
-
-  try {
-    const listingRef = doc(db, "properties", docId);
-    const listingSnap = await getDoc(listingRef);
-    if (listingSnap.exists()) {
-      const photos = listingSnap.data().photos || [];
-      const deletePhotoPromises = photos.map(photoUrl => {
-        const photoRef = ref(storage, photoUrl);
-        return deleteObject(photoRef).catch(err => console.log("Error deleting photo:", err));
-      });
-      await Promise.all(deletePhotoPromises);
-    }
-
-    await deleteDoc(listingRef);
-    console.log("Listing deleted successfully");
-    alert("İlan başarıyla silindi!");
-    window.location.href = "dashboard.html";
-  } catch (err) {
-    console.log("Delete error:", err.message);
-    alert("İlan silinirken hata oluştu: " + err.message);
-  }
-};
-
-// Export db and Firestore functions
-export { collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };
-
-// Expose signOut to global scope
-window.signOut = signOut;

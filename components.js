@@ -112,7 +112,25 @@ export function createListingsTable(container, listings, options = {}) {
         // Agent cell (optional)
         if (showAgent) {
             const tdAgent = document.createElement('td');
-            tdAgent.textContent = listing.agent || '-';
+            // Get agent name from the agent field (which contains the email)
+            const agentEmail = listing.agent;
+            if (agentEmail) {
+                // Query the users collection to get the agent's name
+                const q = query(collection(db, 'users'), where('email', '==', agentEmail));
+                getDocs(q).then(querySnapshot => {
+                    if (!querySnapshot.empty) {
+                        const agentData = querySnapshot.docs[0].data();
+                        tdAgent.textContent = `${agentData.firstName} ${agentData.lastName}`;
+                    } else {
+                        tdAgent.textContent = agentEmail;
+                    }
+                }).catch(error => {
+                    console.error('Error fetching agent name:', error);
+                    tdAgent.textContent = agentEmail;
+                });
+            } else {
+                tdAgent.textContent = '-';
+            }
             tr.appendChild(tdAgent);
         }
         
