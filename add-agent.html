@@ -146,7 +146,7 @@
 
     <script type="module">
         import { auth, db } from './firebaseConfig.js';
-        import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+        import { collection, addDoc, serverTimestamp, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
         import { createUserWithEmailAndPassword, initializeAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
         import { getApp, initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 
@@ -172,15 +172,16 @@
                 // Create user with secondary auth instance
                 const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
                 
-                // Add agent to Firestore
-                await addDoc(collection(db, 'agents'), {
+                // Add agent to users collection with role 'Temsilci'
+                await setDoc(doc(db, 'users', email), {
                     firstName: firstName,
                     lastName: lastName,
                     name: `${firstName} ${lastName}`,
                     phone: phone,
                     email: email,
+                    role: 'Temsilci',
                     listingCount: 0,
-                    dateCreated: serverTimestamp(),
+                    createdAt: serverTimestamp(),
                     uid: userCredential.user.uid
                 });
 

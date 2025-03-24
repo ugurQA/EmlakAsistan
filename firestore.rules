@@ -8,31 +8,29 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      return isAuthenticated() && request.auth.token.email == 'admin@office.com';
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.token.email)).data.role == 'Yönetici';
+    }
+
+    function isAgent() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.token.email)).data.role == 'Temsilci';
     }
 
     // Properties collection rules
     match /properties/{document=**} {
       allow read: if true;  // Public read access
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && 
+      allow create: if isAuthenticated() && (isAdmin() || isAgent());
+      allow update, delete: if isAuthenticated() && 
         (resource.data.agent == request.auth.token.email || isAdmin());
-      allow delete: if isAuthenticated() && 
-        (resource.data.agent == request.auth.token.email || isAdmin());
-    }
-
-    // Agents collection rules
-    match /agents/{document=**} {
-      allow read: if isAuthenticated();
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
     }
 
     // Users collection rules
-    match /users/{document=**} {
+    match /users/{userId} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (isAuthenticated() && userId == request.auth.token.email);
+      allow delete: if isAdmin();
     }
 
     // Counters collection rules

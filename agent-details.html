@@ -209,7 +209,7 @@
 
     async function loadAgentDetails(agentId) {
       try {
-        const agentDoc = await getDoc(doc(db, 'agents', agentId));
+        const agentDoc = await getDoc(doc(db, 'users', agentId));
         if (agentDoc.exists()) {
           const data = agentDoc.data();
           originalData = { ...data };
@@ -222,18 +222,8 @@
           document.getElementById('listingCount').value = data.listingCount || 0;
           
           // Format and display the date created
-          if (data.dateCreated) {
-            const date = data.dateCreated.toDate(); // Convert Firestore Timestamp to Date
-            const formattedDate = new Intl.DateTimeFormat('tr-TR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            }).format(date);
-            document.getElementById('dateCreated').value = formattedDate;
-          } else if (data.timestamp) { // Fallback for old records
-            const date = data.timestamp.toDate();
+          if (data.createdAt) {
+            const date = data.createdAt.toDate();
             const formattedDate = new Intl.DateTimeFormat('tr-TR', {
               day: '2-digit',
               month: '2-digit',
@@ -312,11 +302,12 @@
         const updatedData = {
           firstName,
           lastName,
+          name: `${firstName} ${lastName}`,
           email,
           phone
         };
 
-        await updateDoc(doc(db, 'agents', agentId), updatedData);
+        await updateDoc(doc(db, 'users', agentId), updatedData);
         alert('Temsilci bilgileri güncellendi!');
         toggleEditMode();
         loadAgentDetails(agentId);
@@ -342,16 +333,45 @@
 
     async function deleteAgent() {
       try {
-        // Delete the agent document
-        await deleteDoc(doc(db, 'agents', agentId));
+        console.log(`Attempting to delete agent with ID: ${agentId}`);
+        
+        // Delete the agent document from users collection
+        await deleteDoc(doc(db, 'users', agentId));
+        console.log(`Successfully deleted agent from Firestore: ${agentId}`);
         
         // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
         modal.hide();
-        
-        // Show success message and redirect
-        alert('Temsilci başarıyla silindi!');
-        window.location.href = 'dashboard.html';
+
+        try {
+          // Try to directly call the Cloud Function as a backup
+          console.log(`Calling deleteUserComplete function with userId: ${agentId}`);
+          const response = await fetch('https://us-central1-emlakasistan-a76f1.cloudfunctions.net/deleteUserComplete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: agentId })
+          });
+
+          const responseData = await response.json();
+          console.log('Cloud Function response:', responseData);
+
+          if (!response.ok) {
+            console.warn('Backup auth deletion failed, but Firestore deletion succeeded');
+            alert('Temsilci veritabanından silindi fakat kimlik doğrulama sisteminde bir sorun oluştu');
+            // The Firestore trigger should handle the auth deletion, so this is just a backup
+          } else {
+            // Show success message and redirect
+            alert('Temsilci başarıyla silindi!');
+            window.location.href = 'dashboard.html';
+          }
+        } catch (authError) {
+          console.warn('Backup auth deletion failed, but Firestore deletion succeeded', authError);
+          alert('Temsilci veritabanından silindi fakat kimlik doğrulama sisteminde bir sorun oluştu');
+          window.location.href = 'dashboard.html';
+          // The Firestore trigger should handle the auth deletion, so this is just a backup
+        }
       } catch (error) {
         console.error('Error deleting agent:', error);
         alert('Temsilci silinirken bir hata oluştu.');

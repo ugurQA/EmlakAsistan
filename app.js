@@ -8,6 +8,31 @@ import { createListingsTable } from './components.js';
 // Initialize Firebase Storage with custom domain
 const storage = getStorage(undefined, 'gs://emlakasistan-a76f1.firebasestorage.app');
 
+// Cache mechanism for listings data
+let cachedData = {
+  personal: null,
+  all: null,
+  timestamp: null
+};
+
+// Cache duration in milliseconds (5 minutes)
+const CACHE_DURATION = 5 * 60 * 1000;
+
+// Function to check if cache is valid
+function isCacheValid() {
+  return cachedData.timestamp && (Date.now() - cachedData.timestamp) < CACHE_DURATION;
+}
+
+// Function to update cache
+function updateCache(listings, isAll) {
+  if (isAll) {
+    cachedData.all = listings;
+  } else {
+    cachedData.personal = listings;
+  }
+  cachedData.timestamp = Date.now();
+}
+
 // Reset listing counter once
 const resetCounterOnce = async () => {
   try {
@@ -335,30 +360,7 @@ window.logout = function() {
 };
 
 // Load Agent Listings
-let listingsData = [];
 let allListingsData = [];
-let agentMap = new Map(); // Store agent data globally
-
-// Load agents function
-async function loadAgentFilter() {
-  try {
-    const agentsSnapshot = await getDocs(collection(db, 'agents'));
-    const filterAgent = document.getElementById('filterAgent');
-    agentMap.clear(); // Clear existing data
-    
-    if (filterAgent) {
-      filterAgent.innerHTML = '<option value="">Temsilci Seç</option>';
-      agentsSnapshot.forEach(doc => {
-        const agent = doc.data();
-        const fullName = `${agent.firstName} ${agent.lastName}`;
-        agentMap.set(agent.email, fullName);
-        filterAgent.innerHTML += `<option value="${agent.email}">${fullName}</option>`;
-      });
-    }
-  } catch (error) {
-    console.error('Error loading agents for filter:', error);
-  }
-}
 
 // Load listings function
 async function loadListings(showAll = false) {
@@ -369,47 +371,36 @@ async function loadListings(showAll = false) {
       return;
     }
 
-    let q;
-    if (showAll) {
-      q = query(collection(db, 'properties'));
-    } else {
-      q = query(collection(db, 'properties'), where('agent', '==', user.email));
-    }
-
-    const querySnapshot = await getDocs(q);
-    const listings = [];
-    
-    for (const doc of querySnapshot.docs) {
-      const listing = doc.data();
-      listing.id = doc.id;
-      
-      // Get agent name from the agent email
-      if (listing.agent) {
-        try {
-          const agentsSnapshot = await getDocs(query(collection(db, 'agents'), where('email', '==', listing.agent)));
-          if (!agentsSnapshot.empty) {
-            const agentData = agentsSnapshot.docs[0].data();
-            listing.agentName = agentData.firstName;
-            listing.agentSurname = agentData.lastName;
-          }
-        } catch (error) {
-          console.error('Error fetching agent details:', error);
-        }
+    // Check cache first
+    if (isCacheValid()) {
+      const cachedListings = cachedData.all;
+      if (cachedListings) {
+        console.log('Using cached listings');
+        const container = showAll ? document.getElementById('allListings') : document.getElementById('myListings');
+        const listingsToShow = showAll ? cachedListings : cachedListings.filter(listing => listing.agent === user.email);
+        renderListings(container, listingsToShow, showAll);
+        return;
       }
-      
-      listings.push(listing);
     }
 
-    if (showAll) {
-      allListingsData = listings;
-      console.log('All listings snapshot size:', listings.length);
-    } else {
-      listingsData = listings;
-      console.log('Personal listings snapshot size:', listings.length);
+    // Only fetch all listings once
+    if (!allListingsData.length) {
+      const q = query(collection(db, 'properties'));
+      const querySnapshot = await getDocs(q);
+      allListingsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      // Update cache
+      updateCache(allListingsData, true);
     }
+
+    // Filter for personal listings if needed
+    const listingsToShow = showAll ? allListingsData : allListingsData.filter(listing => listing.agent === user.email);
 
     const container = showAll ? document.getElementById('allListings') : document.getElementById('myListings');
-    renderListings(container, listings, showAll);
+    renderListings(container, listingsToShow, showAll);
 
   } catch (error) {
     console.error('Error loading listings:', error);
@@ -425,7 +416,9 @@ async function loadAgents() {
   }
 
   try {
-    const querySnapshot = await getDocs(collection(db, 'agents'));
+    // Query users collection for agents
+    const q = query(collection(db, 'users'), where('role', '==', 'Temsilci'));
+    const querySnapshot = await getDocs(q);
     
     if (querySnapshot.empty) {
       agentsTableBody.innerHTML = `
@@ -446,11 +439,9 @@ async function loadAgents() {
       const agent = doc.data();
       const row = document.createElement('tr');
       
-      // Get the date from either createdAt or timestamp field
-      const dateField = agent.createdAt || agent.timestamp || agent.dateCreated;
+      const dateField = agent.createdAt || agent.timestamp;
       const formattedDate = dateField ? dateField.toDate().toLocaleDateString('tr-TR') : '-';
       
-      // Create cells with consistent styling
       row.innerHTML = `
         <td class="text-center" style="width: 50px; font-size: 0.9rem;">${rowNumber++}</td>
         <td style="width: 150px; font-size: 0.9rem;">${agent.firstName || '-'}</td>
@@ -460,7 +451,6 @@ async function loadAgents() {
         <td class="text-center" style="width: 100px; font-size: 0.9rem;">${agent.listingCount || '0'}</td>
       `;
       
-      // Make the entire row clickable
       row.style.cursor = 'pointer';
       row.onclick = () => window.location.href = `agent-details.html?id=${doc.id}`;
       row.onmouseover = () => row.style.backgroundColor = '#f8f9fa';
@@ -481,11 +471,143 @@ async function loadAgents() {
   }
 }
 
+// User role checking function
+async function getUserRole(userEmail) {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', userEmail));
+    if (userDoc.exists()) {
+      return userDoc.data().role;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting user role:', error);
+    return null;
+  }
+}
+
+// Add after getUserRole function
+async function createAdminUser(email) {
+  try {
+    const adminData = {
+      firstName: 'Admin',
+      lastName: 'User',
+      email: email,
+      role: 'Yönetici',
+      phone: '-',
+      createdAt: serverTimestamp()
+    };
+    
+    await setDoc(doc(db, 'users', email), adminData);
+    console.log('Admin user created successfully');
+    return true;
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+    return false;
+  }
+}
+
+// Add after createAdminUser function
+async function ensureAdminUsers() {
+  const adminEmails = ['admin@office.com', 'admin-test@testapp.com'];
+  
+  try {
+    for (const email of adminEmails) {
+      const userDoc = await getDoc(doc(db, 'users', email));
+      
+      if (!userDoc.exists()) {
+        console.log(`Creating admin user for ${email}`);
+        await createAdminUser(email);
+      } else {
+        console.log(`Admin user ${email} already exists`);
+      }
+    }
+    return true;
+  } catch (error) {
+    console.error('Error ensuring admin users:', error);
+    return false;
+  }
+}
+
+// Modify the loadProfile function
+async function loadProfile() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const profileContent = document.querySelector('.profile-content');
+  if (!profileContent) return;
+
+  try {
+    let userData;
+    const userDoc = await getDoc(doc(db, 'users', user.email));
+    
+    if (!userDoc.exists()) {
+      // If user doesn't exist and is admin-test@testapp.com, create admin user
+      if (user.email === 'admin-test@testapp.com') {
+        await createAdminUser(user.email);
+        userData = {
+          firstName: 'Admin',
+          lastName: 'User',
+          role: 'Yönetici',
+          phone: '-'
+        };
+      }
+    } else {
+      userData = userDoc.data();
+    }
+
+    if (userData) {
+      const profileHtml = `
+        <div class="alert alert-info mb-3">
+          <i class="fas fa-info-circle"></i> Kişisel bilgilerinizi değiştirmek için lütfen sistem yöneticiniz ile iletişime geçin.
+        </div>
+        <table class="table">
+          <tbody>
+            <tr>
+              <th style="width: 200px; background-color: #f8f9fa;">Ad</th>
+              <td>${userData.firstName || '-'}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">Soyad</th>
+              <td>${userData.lastName || '-'}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">E-posta</th>
+              <td>${user.email}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">Telefon</th>
+              <td>${userData.phone || '-'}</td>
+            </tr>
+            <tr>
+              <th style="background-color: #f8f9fa;">Rol</th>
+              <td>${userData.role || 'Temsilci'}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      profileContent.innerHTML = profileHtml;
+    } else {
+      profileContent.innerHTML = '<div class="alert alert-warning">Profil bilgileri bulunamadı.</div>';
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    profileContent.innerHTML = '<div class="alert alert-danger">Profil bilgileri yüklenirken bir hata oluştu.</div>';
+  }
+}
+
 // Dashboard initialization
 onAuthStateChanged(auth, async (user) => {
   if (user && window.location.pathname.includes("dashboard.html")) {
     console.log("Loading dashboard for user:", user.email);
-    const isAdmin = user.email === 'admin@office.com' || user.email === 'admin-test@testapp.com';
+    
+    // Check user role from users collection
+    const userRole = await getUserRole(user.email);
+    const isAdmin = userRole === 'Yönetici';
+    
+    if (isAdmin) {
+      // Ensure admin users exist
+      await ensureAdminUsers();
+    }
     
     // Get all tab elements
     const myListingsTab = document.querySelector('a[href="#myListings"]').parentElement;
@@ -502,20 +624,40 @@ onAuthStateChanged(auth, async (user) => {
     // Initialize Bootstrap tabs
     $(document).ready(async function() {
       try {
-        // Load all content immediately
-        await Promise.all([
-          loadListings(false),  // Load personal listings
-          loadListings(true),   // Load all listings
-          isAdmin ? loadAgents() : Promise.resolve(), // Load agents if admin
-          loadProfile() // Load profile for all users
-        ]);
+        // Get the active tab ID
+        const activeTabId = $('.tab-pane.active').attr('id');
+        
+        // Only load data for the active tab initially
+        switch(activeTabId) {
+          case 'myListings':
+          case 'allListings':
+            await loadListings(activeTabId === 'allListings');
+            break;
+          case 'agents':
+            if (isAdmin) await loadAgents();
+            break;
+          case 'profile':
+            await loadProfile();
+            break;
+        }
 
         // Handle tab changes
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', async function (e) {
           const targetId = $(e.target).attr('href').substring(1);
           console.log("Tab changed to:", targetId);
-          if (targetId === 'profile') {
-            loadProfile();
+          
+          // Load data based on the selected tab
+          switch(targetId) {
+            case 'myListings':
+            case 'allListings':
+              await loadListings(targetId === 'allListings');
+              break;
+            case 'agents':
+              if (isAdmin) await loadAgents();
+              break;
+            case 'profile':
+              await loadProfile();
+              break;
           }
         });
 
@@ -523,7 +665,6 @@ onAuthStateChanged(auth, async (user) => {
         const returnToAgents = sessionStorage.getItem('returnToAgents');
         if (returnToAgents === 'true' && isAdmin) {
           sessionStorage.removeItem('returnToAgents');
-          // Use Bootstrap's tab API to switch tabs
           $('#agents-tab').tab('show');
         }
       } catch (error) {
@@ -533,7 +674,12 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-function renderListings(container, data, showAgent = false) {
+function renderListings(container, data, showAll = false) {
+  if (!container) {
+    console.error('Container not found');
+    return;
+  }
+
   container.innerHTML = '';
   
   const table = document.createElement('table');
@@ -545,12 +691,7 @@ function renderListings(container, data, showAgent = false) {
     width: 100%;
     font-size: 0.9rem;
   `;
-  
-  // Create header
-  const thead = document.createElement('thead');
-  thead.className = 'thead-light';
-  const headerRow = document.createElement('tr');
-  
+
   const columns = [
     { id: 'image', label: 'Fotoğraf', width: '50px', center: true },
     { id: 'listingId', label: 'ID', width: '60px', center: true },
@@ -558,9 +699,12 @@ function renderListings(container, data, showAgent = false) {
     { id: 'typeCategory', label: 'Tür/Kategori', width: '120px', center: true },
     { id: 'location', label: 'Konum', width: '120px', center: true },
     { id: 'squareMeters', label: 'Metrekare', width: '90px', center: true },
-    { id: 'price', label: 'Fiyat', width: '100px', center: true },
-    ...(showAgent ? [{ id: 'agent', label: 'Temsilci', width: '150px', center: true }] : [])
+    { id: 'price', label: 'Fiyat', width: '100px', center: true }
   ];
+  
+  // Create header
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
   
   columns.forEach(column => {
     const th = document.createElement('th');
@@ -580,6 +724,12 @@ function renderListings(container, data, showAgent = false) {
   const tbody = document.createElement('tbody');
   data.forEach(listing => {
     const tr = document.createElement('tr');
+    
+    // Make the entire row clickable
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
+    tr.onmouseover = () => tr.style.backgroundColor = '#f8f9fa';
+    tr.onmouseout = () => tr.style.backgroundColor = '';
     
     // Image cell
     const tdImage = document.createElement('td');
@@ -655,23 +805,6 @@ function renderListings(container, data, showAgent = false) {
     tdPrice.style.fontWeight = 'bold';
     tr.appendChild(tdPrice);
 
-    // Agent cell (optional)
-    if (showAgent) {
-      const tdAgent = document.createElement('td');
-      tdAgent.style.width = '150px';
-      tdAgent.style.padding = '0.5rem 0.3rem';
-      tdAgent.style.textAlign = 'center';
-      tdAgent.innerHTML = listing.agentName && listing.agentSurname ? 
-        `${listing.agentName}<br>${listing.agentSurname}` : '-';
-      tr.appendChild(tdAgent);
-    }
-    
-    // Make the entire row clickable
-    tr.style.cursor = 'pointer';
-    tr.onclick = () => window.location.href = `listing-details.html?id=${listing.id}`;
-    tr.onmouseover = () => tr.style.backgroundColor = '#f8f9fa';
-    tr.onmouseout = () => tr.style.backgroundColor = '';
-
     tbody.appendChild(tr);
   });
   
@@ -679,80 +812,28 @@ function renderListings(container, data, showAgent = false) {
   container.appendChild(table);
 }
 
-// Helper function to update filter dropdowns
-function updateFilterDropdowns(data) {
-  const cities = new Set();
-  const rooms = new Set();
-  const agents = new Set();
-  
-  data.forEach(listing => {
-    if (listing.province) cities.add(listing.province);
-    if (listing.roomType) rooms.add(listing.roomType);
-    if (listing.agent) {
-      const agentName = agentMap.get(listing.agent) || listing.agent;
-      agents.add(agentName);
-    }
-  });
-
-  // Update city filter
-  const filterCity = document.getElementById("filterCity");
-  if (filterCity) {
-    filterCity.innerHTML = '<option value="">İl Seç</option>';
-    Array.from(cities).sort().forEach(city => {
-      const opt = document.createElement("option");
-      opt.value = city;
-      opt.text = city;
-      filterCity.appendChild(opt);
-    });
-  }
-
-  // Update room filter
-  const filterRoom = document.getElementById("filterRoom");
-  if (filterRoom) {
-    filterRoom.innerHTML = '<option value="">Oda Sayısı Seç</option>';
-    Array.from(rooms).sort().forEach(room => {
-      const opt = document.createElement("option");
-      opt.value = room;
-      opt.text = room;
-      filterRoom.appendChild(opt);
-    });
-  }
-
-  // Update agent filter
-  const filterAgent = document.getElementById("filterAgent");
-  if (filterAgent) {
-    filterAgent.innerHTML = '<option value="">Temsilci Seç</option>';
-    Array.from(agents).sort().forEach(agentName => {
-      const opt = document.createElement("option");
-      opt.value = agentName;
-      opt.text = agentName;
-      filterAgent.appendChild(opt);
-    });
-  }
-}
-
-// Update the applyFilters function to include agent filtering
+// Update the applyFilters function
 window.applyFilters = function() {
   const city = document.getElementById("filterCity").value;
   const room = document.getElementById("filterRoom").value;
   const type = document.getElementById("filterType").value;
   const category = document.getElementById("filterCategory").value;
-  const agent = document.getElementById("filterAgent").value;
   
   const activeTab = document.querySelector('.tab-pane.active');
   const isAllListings = activeTab.id === 'allListings';
+  const user = auth.currentUser;
 
-  let dataToFilter = isAllListings ? allListingsData : listingsData;
-  let filteredData = [...dataToFilter];
+  let filteredData = [...allListingsData];
+
+  // Filter by user's listings if on personal tab
+  if (!isAllListings && user) {
+    filteredData = filteredData.filter(l => l.agent === user.email);
+  }
 
   if (city) filteredData = filteredData.filter(l => l.province === city);
   if (room) filteredData = filteredData.filter(l => l.roomType === room);
   if (type) filteredData = filteredData.filter(l => l.type === type);
   if (category) filteredData = filteredData.filter(l => l.category === category);
-  if (agent) filteredData = filteredData.filter(l => {
-    const agentName = agentMap.get(l.agent) || l.agent;
-    return agentName === agent;
-  });
 
   const container = document.getElementById(isAllListings ? 'allListings' : 'myListings');
   renderListings(container, filteredData, isAllListings);
@@ -760,23 +841,26 @@ window.applyFilters = function() {
 
 window.sortListings = function(criterion) {
   const isAllListings = document.querySelector('#allListings').classList.contains('active');
-  const sortedData = [...(isAllListings ? allListingsData : listingsData)];
+  const user = auth.currentUser;
   
-  sortedData.sort((a, b) => (a[criterion] || 0) - (b[criterion] || 0));
+  let dataToSort = [...allListingsData];
+  if (!isAllListings && user) {
+    dataToSort = dataToSort.filter(l => l.agent === user.email);
+  }
+  
+  dataToSort.sort((a, b) => (a[criterion] || 0) - (b[criterion] || 0));
   
   const container = isAllListings ? document.getElementById('allListings') : document.getElementById('myListings');
-  renderListings(container, sortedData, isAllListings);
+  renderListings(container, dataToSort, isAllListings);
   document.getElementById("sortOptions").style.display = "none";
-};
-
-// Add Agent (Admin)
-window.addAgent = function() {
-  window.location.href = 'add-agent.html';
 };
 
 // Delete Listing
 window.deleteListing = async function(docId) {
-  console.log("Deleting listing with ID:", docId);
+  if (!confirm('Bu ilanı silmek istediğinizden emin misiniz?')) {
+    return;
+  }
+
   try {
     const listingRef = doc(db, "properties", docId);
     const listingSnap = await getDoc(listingRef);
@@ -799,112 +883,8 @@ window.deleteListing = async function(docId) {
   }
 };
 
-// Delete agent function
-window.deleteAgent = async (agentId) => {
-  if (!confirm('Bu temsilciyi silmek istediğinizden emin misiniz?')) {
-    return;
-  }
-
-  try {
-    await deleteDoc(doc(db, 'agents', agentId));
-    await loadAgents(); // Refresh the agents list
-    alert('Temsilci başarıyla silindi.');
-  } catch (error) {
-    console.error('Error deleting agent:', error);
-    alert('Temsilci silinirken bir hata oluştu.');
-  }
-};
-
-// Load profile information
-async function loadProfile() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const profileContent = document.querySelector('.profile-content');
-  if (!profileContent) return;
-
-  try {
-    let userData;
-    
-    if (user.email === 'admin@office.com' || user.email === 'admin-test@testapp.com') {
-      // For admin, get data from users collection
-      const userDoc = await getDoc(doc(db, 'users', user.email));
-      userData = userDoc.data();
-    } else {
-      // For agents, get data from agents collection
-      const agentsSnapshot = await getDocs(query(collection(db, 'agents'), where('email', '==', user.email)));
-      if (!agentsSnapshot.empty) {
-        userData = agentsSnapshot.docs[0].data();
-      }
-    }
-
-    if (userData) {
-      const profileHtml = `
-        <div class="alert alert-info mb-3">
-          <i class="fas fa-info-circle"></i> Kişisel bilgilerinizi değiştirmek için lütfen sistem yöneticiniz ile iletişime geçin.
-        </div>
-        <table class="table">
-          <tbody>
-            <tr>
-              <th style="width: 200px; background-color: #f8f9fa;">Ad</th>
-              <td>${userData.firstName || '-'}</td>
-            </tr>
-            <tr>
-              <th style="background-color: #f8f9fa;">Soyad</th>
-              <td>${userData.lastName || '-'}</td>
-            </tr>
-            <tr>
-              <th style="background-color: #f8f9fa;">E-posta</th>
-              <td>${user.email}</td>
-            </tr>
-            <tr>
-              <th style="background-color: #f8f9fa;">Telefon</th>
-              <td>${userData.phone || '-'}</td>
-            </tr>
-            <tr>
-              <th style="background-color: #f8f9fa;">Rol</th>
-              <td>${user.email === 'admin@office.com' ? 'Yönetici' : 'Temsilci'}</td>
-            </tr>
-          </tbody>
-        </table>
-      `;
-      profileContent.innerHTML = profileHtml;
-    } else {
-      // If no user data found, create default admin data
-      if (user.email === 'admin@office.com') {
-        const defaultAdminData = {
-          firstName: 'Admin',
-          lastName: 'User',
-          phone: '-',
-          role: 'Yönetici'
-        };
-        await setDoc(doc(db, 'users', 'admin@office.com'), defaultAdminData);
-        loadProfile(); // Reload profile with new data
-      } else {
-        profileContent.innerHTML = '<div class="alert alert-warning">Profil bilgileri bulunamadı.</div>';
-      }
-    }
-  } catch (error) {
-    console.error('Error loading profile:', error);
-    profileContent.innerHTML = '<div class="alert alert-danger">Profil bilgileri yüklenirken bir hata oluştu.</div>';
-  }
-}
-
-// Add event listener for tab changes
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('a[data-toggle="tab"]');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('shown.bs.tab', function (e) {
-      const targetId = e.target.getAttribute('href').substring(1);
-      
-      // Load profile if profile tab is selected
-      if (targetId === 'profile') {
-        loadProfile();
-      }
-    });
-  });
-});
-
 // Export db and Firestore functions
 export { collection, addDoc, getDoc, doc, updateDoc, deleteDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject };
+
+// Expose signOut to global scope
+window.signOut = signOut;
