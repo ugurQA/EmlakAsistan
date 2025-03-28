@@ -79,7 +79,7 @@ All files are maintained in the root directory to accelerate development. While 
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone <https://github.com/ugurQA/EmlakAsistan>
    cd emlak-asistan
    ```
 
